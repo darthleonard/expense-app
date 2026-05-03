@@ -35,3 +35,14 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 @import "@ionic/angular/css/palettes/dark.class.css";
 /* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+/**
+ * FAB Button Safe Area Fix
+ * Ensures FAB buttons are not hidden behind the native Android navigation bar.
+ * `env(safe-area-inset-bottom)` accounts for gesture/button navigation bars
+ * and the extra 16px provides a comfortable visual gap above them.
+ */
+ion-fab[vertical="bottom"] {
+  margin-bottom: calc(env(safe-area-inset-bottom) + 16px);
+}
+
