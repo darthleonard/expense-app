@@ -1,0 +1,60 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'CONFIG_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section" style="margin-bottom: 20px;">
+    <h1>{{ 'CONFIG_TITLE' | translate }}</h1>
+  </div>
+
+  <ion-list style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <ion-item>
+      <ion-icon name="language" slot="start" color="primary"></ion-icon>
+      <ion-label>{{ 'LANGUAGE' | translate }}</ion-label>
+      <ion-select [(ngModel)]="selectedLanguage" (ionChange)="onLanguageChange($event)" interface="popover">
+        <ion-select-option value="es-MX">Español (México)</ion-select-option>
+        <ion-select-option value="en-US">English (US)</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="home" slot="start" color="primary"></ion-icon>
+      <ion-label>{{ 'INITIAL_SCREEN' | translate }}</ion-label>
+      <ion-select [(ngModel)]="initialScreen" (ionChange)="onInitialScreenChange($event)" interface="popover">
+        <ion-select-option value="dashboard">{{ 'DASHBOARD_TITLE' | translate }}</ion-select-option>
+        <ion-select-option value="home">{{ 'Gastos' | translate }}</ion-select-option>
+        <ion-select-option value="fuel">{{ 'Combustible' | translate }}</ion-select-option>
+        <ion-select-option value="analysis">{{ 'Análisis' | translate }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-icon name="moon" slot="start" color="primary"></ion-icon>
+      <ion-label>{{ 'DARK_THEME' | translate }}</ion-label>
+      <ion-toggle [(ngModel)]="isDarkMode" (ionChange)="onThemeChange($event)"></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <div class="header-section" style="margin-top: 30px; margin-bottom: 20px;">
+    <h2>{{ 'CATALOGS' | translate }}</h2>
+  </div>
+
+  <ion-list style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <ion-item button routerLink="/vehicles" routerDirection="forward">
+      <ion-icon name="car" slot="start" color="primary"></ion-icon>
+      <ion-label>{{ 'VEHICLES' | translate }}</ion-label>
+      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+    </ion-item>
+
+    <ion-item button routerLink="/houses" routerDirection="forward" lines="none">
+      <ion-icon name="home" slot="start" color="primary"></ion-icon>
+      <ion-label>{{ 'HOUSES' | translate }}</ion-label>
+      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

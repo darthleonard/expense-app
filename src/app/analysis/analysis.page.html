@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'ANALYSIS_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section" style="margin-bottom: 20px;">
+    <h1>{{ 'ANALYSIS_TITLE' | translate }}</h1>
+  </div>
+
+  <div *ngIf="isLoading" class="ion-text-center ion-padding ion-margin-top">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>{{ 'ANALYSIS_TITLE' | translate }}...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <ion-card *ngFor="let insight of insights" style="margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 12px;">
+      <ion-item lines="none" style="--background: transparent; padding-top: 8px;">
+        <ion-icon [name]="getIconForType(insight.type)" [color]="getColorForType(insight.type)" slot="start" size="large"></ion-icon>
+        <ion-label>
+          <h2 style="font-weight: 600; font-size: 1.2em;">{{ insight.title | translate }}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-card-content style="font-size: 1.05em; line-height: 1.5; color: var(--ion-color-step-600, #666);">
+        {{ insight.description | translate }}
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+</ion-content>

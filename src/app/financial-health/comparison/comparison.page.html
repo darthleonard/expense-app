@@ -1,0 +1,66 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'COMPARISON' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showHelp()">
+        <ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="!hasIncome" class="ion-text-center ion-padding-top">
+    <ion-icon name="cash-outline" style="font-size: 64px; color: var(--ion-color-medium);"></ion-icon>
+    <h3>{{ 'NO_INCOME_CONFIGURED' | translate }}</h3>
+    <p>{{ 'PLEASE_CONFIGURE_INCOME' | translate }}</p>
+    <ion-button routerLink="/financial-health/settings">{{ 'GO_TO_SETTINGS' | translate }}</ion-button>
+  </div>
+
+  <div *ngIf="hasIncome && values">
+    <div class="ion-text-center ion-padding-bottom">
+      <ion-text color="medium">
+        <small>{{ 'SHOWING_DATA_FOR' | translate }}: {{ displayMonthName }}</small>
+      </ion-text>
+    </div>
+
+    <ion-list lines="none">
+      <ion-list-header>
+        <ion-label color="danger">{{ 'FIXED_EXPENSES' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-icon name="home-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>{{ 'CURRENT' | translate }}: 
+             <span [ngStyle]="{'color': currentMonthFixed > values.fixedExpensesBudget ? 'var(--ion-color-danger)' : 'var(--ion-color-success)'}">
+               {{ currentMonthFixed | currency }}
+             </span>
+          </h2>
+          <p>{{ 'BUDGET' | translate }}: {{ values.fixedExpensesBudget | currency }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-list-header>
+        <ion-label color="warning">{{ 'VARIABLE_EXPENSES' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-icon name="car-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>{{ 'CURRENT' | translate }}: 
+             <span [ngStyle]="{'color': currentMonthVariable > values.variableExpensesBudget ? 'var(--ion-color-danger)' : 'var(--ion-color-success)'}">
+               {{ currentMonthVariable | currency }}
+             </span>
+          </h2>
+          <p>{{ 'BUDGET' | translate }}: {{ values.variableExpensesBudget | currency }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,79 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/config"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'HOUSES' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section" style="margin-bottom: 20px;">
+    <h1>{{ 'HOUSES_CATALOG' | translate }}</h1>
+  </div>
+
+  <ion-list style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <ion-item *ngFor="let house of houses">
+      <ion-icon [name]="house.icon || 'home'" slot="start" color="primary"></ion-icon>
+      <ion-label>
+        <h2>{{ house.name }}</h2>
+        <p *ngIf="house.description">{{ house.description }}</p>
+      </ion-label>
+      <ion-button fill="clear" slot="end" (click)="openModal(house)">
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" color="danger" slot="end" (click)="deleteHouse(house)">
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="houses.length === 0" style="text-align: center; margin-top: 40px; color: var(--ion-color-medium);">
+    <ion-icon name="home-outline" style="font-size: 48px;"></ion-icon>
+    <p>{{ 'NO_HOUSES_REGISTERED' | translate }}</p>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ (editingHouse ? 'EDIT_HOUSE' : 'NEW_HOUSE') | translate }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="stacked">{{ 'NAME' | translate }} <span style="color: red;">*</span></ion-label>
+          <ion-input [(ngModel)]="currentHouse.name" placeholder="{{ 'EG_MAIN_HOUSE' | translate }}"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'DESCRIPTION' | translate }}</ion-label>
+          <ion-input [(ngModel)]="currentHouse.description" placeholder="{{ 'OPTIONAL' | translate }}"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'ICON' | translate }}</ion-label>
+          <ion-select [(ngModel)]="currentHouse.icon" interface="popover">
+            <ion-select-option value="home">{{ 'HOUSING_RENT_MORTGAGE' | translate }}</ion-select-option>
+            <ion-select-option value="business">{{ 'APARTMENT_BUILDING' | translate }}</ion-select-option>
+            <ion-select-option value="briefcase">{{ 'OFFICE' | translate }}</ion-select-option>
+            <ion-select-option value="bed">{{ 'ROOM' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button expand="block" (click)="saveHouse()" class="ion-margin-top" [disabled]="!currentHouse.name?.trim()">
+          {{ 'SAVE' | translate }}
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,57 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="checkUnsavedAndLeave()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'SETTINGS' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showHelp()">
+        <ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="clearAll()">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <ion-icon name="cash-outline" slot="start"></ion-icon>
+      <ion-input type="number" [(ngModel)]="amount" placeholder="{{ 'INCOME_TRACKER' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-select [(ngModel)]="period" interface="popover" placeholder="Period">
+        <ion-select-option value="mensual">{{ 'MONTHLY' | translate }}</ion-select-option>
+        <ion-select-option value="catorcenal">{{ 'BI_WEEKLY' | translate }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" (click)="confirmSave()" [disabled]="!amount || amount <= 0">
+    <ion-icon name="save-outline" slot="end"></ion-icon>
+    Guardar
+  </ion-button>
+
+  <ion-list *ngIf="history.length > 0" class="ion-margin-top">
+    <ion-list-header>
+      <ion-label>Historial</ion-label>
+    </ion-list-header>
+
+    <ion-item *ngFor="let record of history">
+      <ion-label>
+        <h2>{{ record.amount | currency }}</h2>
+        <p>{{ record.period | uppercase }} - {{ record.date | date:'mediumDate' }}</p>
+      </ion-label>
+      <ion-button fill="clear" slot="end" color="danger" (click)="deleteRecord(record.id)">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'DASHBOARD_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  
+  <div class="filters-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <ion-item style="flex: 1; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <ion-icon name="home" slot="start" color="primary"></ion-icon>
+      <ion-select [(ngModel)]="selectedHouseId" (ionChange)="onFilterChange()" interface="popover" placeholder="Filtro Casas" style="width: 100%;">
+        <ion-select-option value="all">{{ 'ALL_HOUSES' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let house of houses" [value]="house.id">{{ house.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item style="flex: 1; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <ion-icon name="car" slot="start" color="primary"></ion-icon>
+      <ion-select [(ngModel)]="selectedCarId" (ionChange)="onFilterChange()" interface="popover" placeholder="Filtro Vehículos" style="width: 100%;">
+        <ion-select-option value="all">{{ 'ALL_VEHICLES' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let car of vehicles" [value]="car.id">{{ car.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <div class="chart-container" style="position: relative; height: 350px; width: 100%; margin-bottom: 30px; background: var(--ion-background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px;">
+    <canvas #pieCanvas></canvas>
+  </div>
+
+  <div class="chart-container" style="position: relative; height: 350px; width: 100%; margin-bottom: 30px; background: var(--ion-background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px;">
+    <canvas #lineCanvas></canvas>
+  </div>
+</ion-content>

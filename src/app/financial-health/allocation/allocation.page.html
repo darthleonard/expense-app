@@ -1,0 +1,103 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'FINANCIAL_HEALTH' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showHelp()">
+        <ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="toggleVisibility()" *ngIf="hasIncome">
+        <ion-icon slot="icon-only" [name]="showValues ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/financial-health/settings">
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/financial-health/projections">
+        <ion-icon slot="icon-only" name="trending-up-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div *ngIf="!hasIncome" class="ion-text-center ion-padding-top">
+    <ion-icon name="cash-outline" style="font-size: 64px; color: var(--ion-color-medium);"></ion-icon>
+    <h3>{{ 'NO_INCOME_CONFIGURED' | translate }}</h3>
+    <p>{{ 'PLEASE_CONFIGURE_INCOME' | translate }}</p>
+    <ion-button routerLink="/financial-health/settings">{{ 'GO_TO_SETTINGS' | translate }}</ion-button>
+  </div>
+
+  <div *ngIf="hasIncome && values">
+    <ion-list lines="none">
+      <ion-list-header>
+        <ion-label color="primary">{{ 'GENERAL' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-icon name="wallet-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h2>{{ 'ESTIMATED_MONTHLY_INCOME' | translate }}</h2>
+          <p>{{ 'BASED_ON_LAST_CONFIG' | translate }}</p>
+        </ion-label>
+        <ion-text slot="end" color="dark">
+          <h3 *ngIf="showValues">{{ values.monthlyIncome | currency }}</h3>
+          <h3 *ngIf="!showValues">----</h3>
+        </ion-text>
+      </ion-item>
+
+      <ion-list-header>
+        <ion-label color="danger">{{ 'FIXED_EXPENSES' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-icon name="home-outline" slot="start" color="danger"></ion-icon>
+        <ion-label>{{ 'BASIC_NEEDS' | translate }}</ion-label>
+        <ion-text slot="end" color="dark">
+          <h3 *ngIf="showValues">{{ values.fixedExpensesBudget | currency }}</h3>
+          <h3 *ngIf="!showValues">----</h3>
+        </ion-text>
+      </ion-item>
+
+      <ion-list-header>
+        <ion-label color="warning">{{ 'VARIABLE_EXPENSES' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-icon name="restaurant-outline" slot="start" color="warning"></ion-icon>
+        <ion-label>{{ 'LIFESTYLE' | translate }}</ion-label>
+        <ion-text slot="end" color="dark">
+          <h3 *ngIf="showValues">{{ values.variableExpensesBudget | currency }}</h3>
+          <h3 *ngIf="!showValues">----</h3>
+        </ion-text>
+      </ion-item>
+
+      <ion-list-header>
+        <ion-label color="success">{{ 'WEALTH_BUILDING' | translate }}</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-icon name="shield-checkmark-outline" slot="start" color="success"></ion-icon>
+        <ion-label>{{ 'PEACE_FUND' | translate }}</ion-label>
+        <ion-text slot="end" color="dark">
+          <h3 *ngIf="showValues">{{ values.peaceFund | currency }}</h3>
+          <h3 *ngIf="!showValues">----</h3>
+        </ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="airplane-outline" slot="start" color="success"></ion-icon>
+        <ion-label>{{ 'PERSONAL_PROJECTS' | translate }}</ion-label>
+        <ion-text slot="end" color="dark">
+          <h3 *ngIf="showValues">{{ values.personalProjects | currency }}</h3>
+          <h3 *ngIf="!showValues">----</h3>
+        </ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="trending-up-outline" slot="start" color="success"></ion-icon>
+        <ion-label>{{ 'RETIREMENT_SAVINGS' | translate }}</ion-label>
+        <ion-text slot="end" color="dark">
+          <h3 *ngIf="showValues">{{ values.retirementSavings | currency }}</h3>
+          <h3 *ngIf="!showValues">----</h3>
+        </ion-text>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
