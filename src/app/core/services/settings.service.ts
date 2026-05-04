@@ -9,15 +9,23 @@ export class SettingsService {
   private _storage: Storage | null = null;
   private defaultLang = 'es-MX';
   public currentLang = 'es-MX';
+  private _initPromise: Promise<void> | null = null;
 
   constructor(private storage: Storage, private translate: TranslateService) {
-    this.init();
+    // Start initialization eagerly so it runs in parallel with Angular bootstrap.
+    // All callers that await init() will share this same promise.
+    this._initPromise = this._doInit();
   }
 
-  async init() {
+  /** Returns a promise that resolves once storage and settings are ready. */
+  async init(): Promise<void> {
+    return this._initPromise!;
+  }
+
+  private async _doInit(): Promise<void> {
     const storage = await this.storage.create();
     this._storage = storage;
-    
+
     // load language
     let lang = await this.getLanguage();
     if (!lang) {
@@ -27,7 +35,7 @@ export class SettingsService {
     this.currentLang = lang;
     this.translate.setDefaultLang(lang);
     this.translate.use(lang);
-    
+
     // load theme
     const theme = await this.getTheme();
     if (theme === 'dark') {
