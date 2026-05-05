@@ -54,18 +54,10 @@ export class DatabaseService extends Dexie {
   constructor() {
     super('ExpenseAppDB');
     this.version(1).stores({
-      expenses: '++id, type, amount, date',
-      fuelRecords: '++id, odometer, unitPrice, totalPrice, liters, date'
-    });
-
-    this.version(2).stores({
       cars: '++id, name',
       houses: '++id, name',
       expenses: '++id, houseId, type, amount, date',
-      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date'
-    });
-
-    this.version(3).stores({
+      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
       incomeRecords: '++id, amount, period, date'
     });
   }
