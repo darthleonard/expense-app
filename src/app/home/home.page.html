@@ -101,10 +101,10 @@
             <ion-input type="number" [(ngModel)]="currentExpense.amount" name="amount" required></ion-input>
           </ion-item>
           
-          <ion-item>
+          <ion-item id="open-expense-date" button detail="false">
             <ion-label position="stacked">{{ 'DATE' | translate }}</ion-label>
             <ion-datetime-button datetime="expense-date"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
+            <ion-modal [keepContentsMounted]="true" trigger="open-expense-date">
               <ng-template>
                 <ion-datetime id="expense-date" presentation="month-year" [(ngModel)]="currentExpense.date" name="date" [locale]="settings.currentLang" showDefaultButtons="true" doneText="{{ 'SAVE' | translate }}" cancelText="{{ 'CANCEL' | translate }}"></ion-datetime>
               </ng-template>

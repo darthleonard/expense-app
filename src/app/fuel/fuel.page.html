@@ -93,10 +93,10 @@
             <ion-input type="number" [(ngModel)]="currentRecord.totalPrice" name="totalPrice"></ion-input>
           </ion-item>
           
-          <ion-item>
+          <ion-item id="open-fuel-date" button detail="false">
             <ion-label position="stacked">{{ 'DATE_AND_TIME' | translate }}</ion-label>
             <ion-datetime-button datetime="fuel-date"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
+            <ion-modal [keepContentsMounted]="true" trigger="open-fuel-date">
               <ng-template>
                 <ion-datetime id="fuel-date" presentation="date-time" [(ngModel)]="currentRecord.date" name="date" [locale]="settings.currentLang" showDefaultButtons="true" doneText="{{ 'SAVE' | translate }}" cancelText="{{ 'CANCEL' | translate }}"></ion-datetime>
               </ng-template>
