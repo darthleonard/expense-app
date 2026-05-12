@@ -24,25 +24,29 @@ export class SettingsService {
   }
 
   private async _doInit(): Promise<void> {
-    await this.platform.ready();
-    const storage = await this.storage.create();
-    this._storage = storage;
+    try {
+      await this.platform.ready();
+      const storage = await this.storage.create();
+      this._storage = storage;
 
-    // load language
-    let lang = await this.getLanguage();
-    if (!lang) {
-      const browserLang = (window.navigator && window.navigator.language) || '';
-      lang = browserLang.toLowerCase().startsWith('es') ? 'es-MX' : 'en-US';
-      await this.setLanguage(lang);
-    }
-    this.currentLang = lang;
-    this.translate.setDefaultLang(lang);
-    this.translate.use(lang);
+      // load language
+      let lang = await this.getLanguage();
+      if (!lang) {
+        const browserLang = (window.navigator && window.navigator.language) || '';
+        lang = browserLang.toLowerCase().startsWith('es') ? 'es-MX' : 'en-US';
+        await this.setLanguage(lang);
+      }
+      this.currentLang = lang;
+      this.translate.setDefaultLang(lang);
+      this.translate.use(lang);
 
-    // load theme
-    const theme = await this.getTheme();
-    if (theme === 'dark') {
-      document.documentElement.classList.add('ion-palette-dark');
+      // load theme
+      const theme = await this.getTheme();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('ion-palette-dark');
+      }
+    } catch (e) {
+      console.error('SettingsService _doInit ERROR:', e);
     }
   }
 
