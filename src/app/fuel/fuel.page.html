@@ -98,7 +98,7 @@
             <ion-datetime-button datetime="fuel-date"></ion-datetime-button>
             <ion-modal [keepContentsMounted]="true">
               <ng-template>
-                <ion-datetime id="fuel-date" presentation="date-time" [(ngModel)]="currentRecord.date" name="date" [locale]="settings.currentLang"></ion-datetime>
+                <ion-datetime id="fuel-date" presentation="date-time" [(ngModel)]="currentRecord.date" name="date" [locale]="settings.currentLang" showDefaultButtons="true" doneText="{{ 'SAVE' | translate }}" cancelText="{{ 'CANCEL' | translate }}"></ion-datetime>
               </ng-template>
             </ion-modal>
           </ion-item>

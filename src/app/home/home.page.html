@@ -106,7 +106,7 @@
             <ion-datetime-button datetime="expense-date"></ion-datetime-button>
             <ion-modal [keepContentsMounted]="true">
               <ng-template>
-                <ion-datetime id="expense-date" presentation="month-year" [(ngModel)]="currentExpense.date" name="date" [locale]="settings.currentLang"></ion-datetime>
+                <ion-datetime id="expense-date" presentation="month-year" [(ngModel)]="currentExpense.date" name="date" [locale]="settings.currentLang" showDefaultButtons="true" doneText="{{ 'SAVE' | translate }}" cancelText="{{ 'CANCEL' | translate }}"></ion-datetime>
               </ng-template>
             </ion-modal>
           </ion-item>
