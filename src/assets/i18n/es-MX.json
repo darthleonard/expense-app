@@ -100,5 +100,6 @@
   "NO_HOUSING_DATA_DESC": "Agrega gastos de vivienda (Casa) para un mejor análisis de tu presupuesto.",
   "FUEL_PREDICTION_TITLE": "Predicción de Combustible",
   "FUEL_PREDICTION_DESC_1": "Basado en tu historial, tu próxima visita a la gasolinera será alrededor del {{date}}.\nPromedio de visitas: cada {{days}} días.",
-  "FUEL_PREDICTION_DESC_2": "No hay suficientes datos de combustible para predecir tu próxima visita. Agrega al menos 2 registros."
+  "FUEL_PREDICTION_DESC_2": "No hay suficientes datos de combustible para predecir tu próxima visita. Agrega al menos 2 registros.",
+  "DISTANCE": "Distancia"
 }

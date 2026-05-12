@@ -12,7 +12,7 @@
   <!-- Vehicle Selector -->
   <div class="ion-padding-horizontal ion-padding-top" *ngIf="vehicles.length > 1" style="margin-bottom: 16px;">
     <ion-item style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-      <ion-icon name="car" slot="start" color="primary"></ion-icon>
+      <ion-icon [name]="getCarIcon(selectedCarId)" slot="start" color="primary"></ion-icon>
       <ion-select [(ngModel)]="selectedCarId" (ionChange)="onCarChange($event)" interface="popover" placeholder="{{ 'SELECT_VEHICLE' | translate }}" style="width: 100%;">
         <ion-select-option *ngFor="let car of vehicles" [value]="car.id">{{ car.name }}</ion-select-option>
       </ion-select>
@@ -31,7 +31,6 @@
   <ion-list *ngIf="vehicles.length > 0">
     <ion-item-sliding *ngFor="let rec of records">
       <ion-item button (click)="openModal(rec)">
-        <ion-icon name="car" slot="start" color="secondary"></ion-icon>
         <ion-label>
           <h2 style="font-weight: 600;">{{ formatDate(rec.date) }}</h2>
           <p>{{ getDisplayDistance(rec.odometer) | number:'1.0-1' }} {{ isImperial ? 'mi' : 'km' }} - {{ getDisplayVolume(rec.liters) | number:'1.1-2' }} {{ isImperial ? 'gal' : 'L' }}</p>
@@ -96,7 +95,12 @@
           
           <ion-item>
             <ion-label position="stacked">{{ 'DATE_AND_TIME' | translate }}</ion-label>
-            <input type="datetime-local" [(ngModel)]="currentRecord.date" name="date" required style="width: 100%; border: none; padding: 10px 0; background: transparent; color: inherit; font-family: inherit; font-size: 16px; outline: none;" />
+            <ion-datetime-button datetime="fuel-date"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="fuel-date" presentation="date-time" [(ngModel)]="currentRecord.date" name="date" [locale]="settings.currentLang"></ion-datetime>
+              </ng-template>
+            </ion-modal>
           </ion-item>
           
           <ion-button expand="block" type="submit" class="ion-margin-top" color="secondary" style="--border-radius: 8px;">

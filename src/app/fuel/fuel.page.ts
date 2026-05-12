@@ -18,7 +18,7 @@ export class FuelPage implements OnInit {
   editingRecord: FuelRecord | null = null;
   currentRecord: any = this.getDefaultRecord();
 
-  constructor(private db: DatabaseService, private settings: SettingsService) { }
+  constructor(private db: DatabaseService, public settings: SettingsService) { }
 
   ngOnInit() {
   }
@@ -72,8 +72,7 @@ export class FuelPage implements OnInit {
       odometer: null,
       unitPrice: null,
       totalPrice: null,
-      liters: null,
-      date: new Date().toISOString().substring(0, 16)
+      date: new Date().toISOString()
     };
   }
 
@@ -93,8 +92,7 @@ export class FuelPage implements OnInit {
         ...record, 
         liters: displayLiters ? parseFloat(displayLiters.toFixed(2)) : null,
         unitPrice: displayPrice ? parseFloat(displayPrice.toFixed(2)) : null,
-        odometer: displayOdometer ? Math.round(displayOdometer) : null,
-        date: record.date.substring(0, 16) 
+        odometer: displayOdometer ? Math.round(displayOdometer) : null
       };
     } else {
       this.editingRecord = null;
@@ -126,18 +124,23 @@ export class FuelPage implements OnInit {
       if (odometer) internalOdometer = odometer * 1.60934;
     }
 
+    const now = new Date().toISOString();
+
     const recToSave: FuelRecord = {
       carId: this.selectedCarId,
       odometer: internalOdometer || 0,
       unitPrice: internalPrice || 0,
       totalPrice: totalPrice || 0,
       liters: internalLiters || 0,
-      date: date || new Date().toISOString()
+      date: date || now,
+      lastModDate: now
     };
 
     if (this.editingRecord && this.editingRecord.id) {
+      recToSave.creationDate = this.editingRecord.creationDate || now;
       await this.db.fuelRecords.update(this.editingRecord.id, recToSave);
     } else {
+      recToSave.creationDate = now;
       await this.db.fuelRecords.add(recToSave);
     }
     this.isModalOpen = false;
@@ -161,5 +164,11 @@ export class FuelPage implements OnInit {
 
   getDisplayUnitPrice(upL: number): number {
     return this.isImperial ? upL * 3.78541 : upL;
+  }
+
+  getCarIcon(carId?: number | null): string {
+    if (!carId) return 'car';
+    const car = this.vehicles.find(v => v.id === carId);
+    return car?.icon || 'car';
   }
 }

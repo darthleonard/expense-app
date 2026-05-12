@@ -94,7 +94,7 @@ export class HomePage implements OnInit {
     return {
       type: 'casa',
       amount: 0,
-      date: new Date().toISOString().substring(0, 10),
+      date: new Date().toISOString(),
       notes: ''
     };
   }
@@ -102,7 +102,7 @@ export class HomePage implements OnInit {
   openModal(expense?: ExpenseRecord) {
     if (expense) {
       this.editingExpense = expense;
-      this.currentExpense = { ...expense, date: expense.date.substring(0, 10) };
+      this.currentExpense = { ...expense };
     } else {
       this.editingExpense = null;
       this.currentExpense = this.getDefaultExpense();
@@ -113,15 +113,21 @@ export class HomePage implements OnInit {
   async saveExpense() {
     if (!this.selectedHouseId || this.currentExpense.amount <= 0 || !this.currentExpense.date) return;
     
+    const now = new Date().toISOString();
+
     if (this.editingExpense && this.editingExpense.id) {
       await this.db.expenses.update(this.editingExpense.id, {
         ...this.currentExpense,
-        houseId: this.selectedHouseId
+        houseId: this.selectedHouseId,
+        lastModDate: now,
+        creationDate: this.editingExpense.creationDate || now
       });
     } else {
       await this.db.expenses.add({
         ...this.currentExpense,
-        houseId: this.selectedHouseId
+        houseId: this.selectedHouseId,
+        creationDate: now,
+        lastModDate: now
       });
     }
     this.isModalOpen = false;
@@ -144,5 +150,11 @@ export class HomePage implements OnInit {
       case 'telecomunicaciones': return 'wifi';
       default: return 'cash';
     }
+  }
+
+  getHouseIcon(houseId: number | null): string {
+    if (!houseId) return 'home';
+    const house = this.houses.find(h => h.id === houseId);
+    return house?.icon || 'home';
   }
 }

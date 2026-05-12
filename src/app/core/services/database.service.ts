@@ -22,6 +22,8 @@ export interface ExpenseRecord {
   amount: number;
   date: string; // ISO string
   notes?: string;
+  creationDate?: string;
+  lastModDate?: string;
 }
 
 export interface FuelRecord {
@@ -32,6 +34,8 @@ export interface FuelRecord {
   totalPrice: number;
   liters: number;
   date: string; // ISO string
+  creationDate?: string;
+  lastModDate?: string;
 }
 
 export interface IncomeRecord {

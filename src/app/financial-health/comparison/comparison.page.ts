@@ -16,7 +16,7 @@ export class ComparisonPage implements ViewWillEnter {
 
   currentMonthFixed: number = 0;
   currentMonthVariable: number = 0;
-  displayMonthName: string = '';
+  selectedMonthIso: string = new Date().toISOString();
 
   constructor(
     private financialHealth: FinancialHealthService,
@@ -26,6 +26,10 @@ export class ComparisonPage implements ViewWillEnter {
   ) {}
 
   async ionViewWillEnter() {
+    await this.loadFinancialData();
+  }
+
+  async loadFinancialData() {
     const record = await this.financialHealth.getLatestIncome();
     if (record) {
       this.hasIncome = true;
@@ -35,6 +39,11 @@ export class ComparisonPage implements ViewWillEnter {
       this.hasIncome = false;
       this.values = null;
     }
+  }
+
+  async onMonthChange(event: any) {
+    this.selectedMonthIso = event.detail.value;
+    await this.calculateMonthlyExpenses();
   }
 
   getLocalMonthYear(dateStr: string) {
@@ -53,32 +62,9 @@ export class ComparisonPage implements ViewWillEnter {
     const expenses = await this.db.expenses.toArray();
     const fuel = await this.db.fuelRecords.toArray();
 
-    const today = new Date();
-    let targetMonth = today.getMonth();
-    let targetYear = today.getFullYear();
-
-    const hasCurrentMonthData = [...expenses].some(e => {
-        const { month, year } = this.getLocalMonthYear(e.date);
-        return month === targetMonth && year === targetYear;
-    }) || [...fuel].some(f => {
-        const { month, year } = this.getLocalMonthYear(f.date);
-        return month === targetMonth && year === targetYear;
-    });
-
-    if (!hasCurrentMonthData && (expenses.length > 0 || fuel.length > 0)) {
-        let latestDate = new Date(0);
-        [...expenses, ...fuel].forEach(item => {
-            const { date } = this.getLocalMonthYear(item.date);
-            if (date > latestDate) latestDate = date;
-        });
-        targetMonth = latestDate.getMonth();
-        targetYear = latestDate.getFullYear();
-    }
-
-    const dummyDate = new Date(targetYear, targetMonth, 1);
-    const formatter = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
-    const monthStr = formatter.format(dummyDate);
-    this.displayMonthName = monthStr.charAt(0).toUpperCase() + monthStr.slice(1);
+    const selectedDate = new Date(this.selectedMonthIso);
+    let targetMonth = selectedDate.getMonth();
+    let targetYear = selectedDate.getFullYear();
 
     this.currentMonthFixed = expenses
       .filter(e => {
@@ -98,9 +84,7 @@ export class ComparisonPage implements ViewWillEnter {
   }
 
   async handleRefresh(event: any) {
-    if (this.hasIncome) {
-      await this.calculateMonthlyExpenses();
-    }
+    await this.loadFinancialData();
     event.target.complete();
   }
 

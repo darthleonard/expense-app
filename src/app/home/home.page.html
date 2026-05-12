@@ -12,7 +12,7 @@
   <!-- House Selector -->
   <div class="ion-padding-horizontal ion-padding-top" *ngIf="houses.length > 1" style="margin-bottom: 16px;">
     <ion-item style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-      <ion-icon name="home" slot="start" color="primary"></ion-icon>
+      <ion-icon [name]="getHouseIcon(selectedHouseId)" slot="start" color="primary"></ion-icon>
       <ion-select [(ngModel)]="selectedHouseId" (ionChange)="onHouseChange($event)" interface="popover" placeholder="{{ 'SELECT_HOUSE' | translate }}" style="width: 100%;">
         <ion-select-option *ngFor="let house of houses" [value]="house.id">{{ house.name }}</ion-select-option>
       </ion-select>
@@ -41,7 +41,6 @@
       <ng-container *ngIf="group.expanded">
         <ion-item-sliding *ngFor="let exp of group.expenses">
           <ion-item button (click)="openModal(exp)">
-            <ion-icon [name]="getIconForType(exp.type)" slot="start" color="primary"></ion-icon>
             <ion-label>
               <h2 style="font-weight: 600;">{{ exp.type | titlecase | translate }}</h2>
               <p>{{ formatDate(exp.date) }}</p>
@@ -104,7 +103,12 @@
           
           <ion-item>
             <ion-label position="stacked">{{ 'DATE' | translate }}</ion-label>
-            <input type="date" [(ngModel)]="currentExpense.date" name="date" required style="width: 100%; border: none; padding: 10px 0; background: transparent; color: inherit; font-family: inherit; font-size: 16px; outline: none;" />
+            <ion-datetime-button datetime="expense-date"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="expense-date" presentation="month-year" [(ngModel)]="currentExpense.date" name="date" [locale]="settings.currentLang"></ion-datetime>
+              </ng-template>
+            </ion-modal>
           </ion-item>
           
           <ion-item>

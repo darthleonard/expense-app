@@ -22,7 +22,11 @@ export class DashboardPage implements OnInit {
   selectedCarId: number | 'all' = 'all';
   selectedHouseId: number | 'all' = 'all';
 
-  constructor(private db: DatabaseService, private translate: TranslateService) { }
+  constructor(private db: DatabaseService, private translate: TranslateService) {
+    this.translate.onLangChange.subscribe(() => {
+      this.loadData();
+    });
+  }
 
   ngOnInit() {
   }
@@ -51,17 +55,23 @@ export class DashboardPage implements OnInit {
     // Sort fuel by date
     fuel.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    let casa = 0, electricidad = 0, agua = 0, gas = 0, telecom = 0;
+    let housing = 0, electricity = 0, water = 0, gas = 0, telecom = 0;
     expenses.forEach(e => {
-      if (e.type === 'casa') casa += e.amount;
-      else if (e.type === 'electricidad') electricidad += e.amount;
-      else if (e.type === 'agua') agua += e.amount;
+      if (e.type === 'casa') housing += e.amount;
+      else if (e.type === 'electricidad') electricity += e.amount;
+      else if (e.type === 'agua') water += e.amount;
       else if (e.type === 'gas') gas += e.amount;
       else if (e.type === 'telecomunicaciones') telecom += e.amount;
     });
 
-    const pieData = [casa, electricidad, agua, gas, telecom];
-    const pieLabels = ['HOUSING_RENT_MORTGAGE', 'ELECTRICITY', 'WATER', 'GAS_BILL', 'Telecom'];
+    const pieData = [housing, electricity, water, gas, telecom];
+    const pieLabels = [
+      this.translate.instant('HOUSING_RENT_MORTGAGE'),
+      this.translate.instant('ELECTRICITY'),
+      this.translate.instant('WATER'),
+      this.translate.instant('GAS_BILL'),
+      this.translate.instant('TELECOMMUNICATIONS')
+    ];
 
     if (this.pieChart) {
       this.pieChart.destroy();
@@ -122,7 +132,7 @@ export class DashboardPage implements OnInit {
         labels: lineLabels,
         datasets: [
           {
-            label: 'Precio Total ($)',
+            label: this.translate.instant('TOTAL_COST') + ' ($)',
             data: priceData,
             borderColor: '#ff6384',
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -131,7 +141,7 @@ export class DashboardPage implements OnInit {
             yAxisID: 'y'
           },
           {
-            label: 'Litros (L)',
+            label: this.translate.instant('VOLUME') + ' (L)',
             data: litersData,
             borderColor: '#36a2eb',
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -140,7 +150,7 @@ export class DashboardPage implements OnInit {
             yAxisID: 'y1'
           },
           {
-            label: 'Distancia (Diff Odómetro)',
+            label: this.translate.instant('DISTANCE'),
             data: diffData,
             borderColor: '#cc65fe',
             backgroundColor: 'rgba(204, 101, 254, 0.2)',

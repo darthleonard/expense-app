@@ -100,5 +100,6 @@
   "NO_HOUSING_DATA_DESC": "Add housing expenses (Rent/Mortgage) for a better budget analysis.",
   "FUEL_PREDICTION_TITLE": "Fuel Prediction",
   "FUEL_PREDICTION_DESC_1": "Based on your history, your next gas station visit will be around {{date}}.\nAverage visit: every {{days}} days.",
-  "FUEL_PREDICTION_DESC_2": "Not enough fuel data to predict your next visit. Add at least 2 records."
+  "FUEL_PREDICTION_DESC_2": "Not enough fuel data to predict your next visit. Add at least 2 records.",
+  "DISTANCE": "Distance"
 }

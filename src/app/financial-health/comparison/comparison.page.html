@@ -25,10 +25,16 @@
   </div>
 
   <div *ngIf="hasIncome && values">
-    <div class="ion-text-center ion-padding-bottom">
+    <div class="ion-text-center ion-padding-bottom" style="display: flex; justify-content: center; align-items: center; gap: 8px;">
       <ion-text color="medium">
-        <small>{{ 'SHOWING_DATA_FOR' | translate }}: {{ displayMonthName }}</small>
+        <small>{{ 'SHOWING_DATA_FOR' | translate }}:</small>
       </ion-text>
+      <ion-datetime-button datetime="comp-month"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="comp-month" presentation="month-year" [value]="selectedMonthIso" (ionChange)="onMonthChange($event)"></ion-datetime>
+        </ng-template>
+      </ion-modal>
     </div>
 
     <ion-list lines="none">

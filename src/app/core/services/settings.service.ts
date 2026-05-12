@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class SettingsService {
   public currentLang = 'es-MX';
   private _initPromise: Promise<void> | null = null;
 
-  constructor(private storage: Storage, private translate: TranslateService) {
+  constructor(private storage: Storage, private translate: TranslateService, private platform: Platform) {
     // Start initialization eagerly so it runs in parallel with Angular bootstrap.
     // All callers that await init() will share this same promise.
     this._initPromise = this._doInit();
@@ -23,13 +24,15 @@ export class SettingsService {
   }
 
   private async _doInit(): Promise<void> {
+    await this.platform.ready();
     const storage = await this.storage.create();
     this._storage = storage;
 
     // load language
     let lang = await this.getLanguage();
     if (!lang) {
-      lang = this.defaultLang;
+      const browserLang = (window.navigator && window.navigator.language) || '';
+      lang = browserLang.toLowerCase().startsWith('es') ? 'es-MX' : 'en-US';
       await this.setLanguage(lang);
     }
     this.currentLang = lang;
