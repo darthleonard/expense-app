@@ -69,7 +69,7 @@
           </ion-select>
         </ion-item>
 
-        <ion-button expand="block" (click)="saveVehicle()" class="ion-margin-top" [disabled]="!currentVehicle.name?.trim()">
+        <ion-button expand="block" (click)="saveVehicle()" class="ion-margin-top" [disabled]="!currentVehicle.name.trim()">
           {{ 'SAVE' | translate }}
         </ion-button>
       </ion-content>
