@@ -68,11 +68,15 @@ export class FuelPage implements OnInit {
   }
 
   getDefaultRecord() {
+    // Build a local datetime string (no Z suffix) so the picker shows the correct local time
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const localDatetime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     return {
       odometer: null,
       unitPrice: null,
       totalPrice: null,
-      date: new Date().toISOString()
+      date: localDatetime
     };
   }
 

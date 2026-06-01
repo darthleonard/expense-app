@@ -54,8 +54,8 @@ export class HomePage implements OnInit {
     
     const groups: { [month: string]: ExpenseRecord[] } = {};
     for (const exp of expenses) {
-      const dateObj = new Date(exp.date);
-      // Format: "YYYY-MM" or "Month YYYY"
+      // Parse as local date to avoid UTC timezone shift (YYYY-MM-DD treated as UTC by default)
+      const dateObj = exp.date.length === 10 ? new Date(exp.date + 'T00:00:00') : new Date(exp.date);
       const monthStr = dateObj.toLocaleDateString(lang, { year: 'numeric', month: 'long' });
       const formattedMonth = monthStr.charAt(0).toUpperCase() + monthStr.slice(1);
       
@@ -85,16 +85,20 @@ export class HomePage implements OnInit {
     group.expanded = !group.expanded;
   }
 
-  formatDate(isoString: string) {
-    const d = new Date(isoString);
+  formatDate(dateStr: string) {
+    // Parse as local date to avoid UTC timezone shift
+    const d = dateStr.length === 10 ? new Date(dateStr + 'T00:00:00') : new Date(dateStr);
     return new Intl.DateTimeFormat(this.settings.currentLang || 'es-MX', { year: 'numeric', month: 'short', day: 'numeric' }).format(d);
   }
 
   getDefaultExpense(): ExpenseRecord {
+    // Use local date string (YYYY-MM-DD) to avoid UTC timezone shift
+    const now = new Date();
+    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     return {
       type: 'casa',
       amount: 0,
-      date: new Date().toISOString(),
+      date: localDate,
       notes: ''
     };
   }
