@@ -1,0 +1,107 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'SHOPPING_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/shopping/establishments" routerDirection="forward" fill="clear">
+        <ion-icon name="storefront-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <!-- Empty state -->
+  <div *ngIf="purchases.length === 0" class="empty-state">
+    <ion-icon name="cart-outline" class="empty-icon"></ion-icon>
+    <h2>{{ 'NO_PURCHASES_YET' | translate }}</h2>
+    <p>{{ 'NO_PURCHASES_HINT' | translate }}</p>
+  </div>
+
+  <!-- Purchases list -->
+  <ion-list *ngIf="purchases.length > 0" lines="none" class="purchases-list">
+    <ion-item-sliding *ngFor="let p of purchases" class="purchase-slide">
+      <ion-item button (click)="openDetail(p)" detail="false" class="purchase-item">
+        <!-- Status bar -->
+        <div slot="start" class="status-bar" [class]="p.status"></div>
+        <div class="item-icon-wrap">
+          <ion-icon [name]="getTypeIcon(p.type)" [color]="getStatusColor(p.status)"></ion-icon>
+        </div>
+        <ion-label class="purchase-label">
+          <div class="purchase-name">{{ p.name }}</div>
+          <div class="purchase-meta">
+            <ion-icon name="storefront-outline" size="small"></ion-icon>
+            <span>{{ p.establishmentNameSnap || ('NO_ESTABLISHMENT' | translate) }}</span>
+            <span class="dot">•</span>
+            <ion-icon name="calendar-outline" size="small"></ion-icon>
+            <span>{{ (p.purchaseDate || p.creationDate) | date:'dd/MM/yy' }}</span>
+          </div>
+          <div class="purchase-total">
+            <ion-badge [color]="getStatusColor(p.status)" class="status-badge">
+              {{ p.status | translate }}
+            </ion-badge>
+            <span class="total-amount">${{ p.totalPriceCalculated | number:'1.2-2' }}</span>
+          </div>
+        </ion-label>
+        <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="confirmDelete(p)">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- FAB: new purchase -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openNewPurchaseModal()" id="fab-new-purchase">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
+
+<!-- New Purchase Modal -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false" [breakpoints]="[0, 0.75]" [initialBreakpoint]="0.75">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ 'NEW_PURCHASE' | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">{{ 'NAME' | translate }} <span style="color:red">*</span></ion-label>
+          <ion-input [(ngModel)]="newPurchase.name" [placeholder]="'PURCHASE_NAME_HINT' | translate" clearInput></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'PURCHASE_TYPE' | translate }}</ion-label>
+          <ion-select [(ngModel)]="newPurchase.type" interface="popover">
+            <ion-select-option value="planificada">{{ 'TYPE_PLANNED' | translate }}</ion-select-option>
+            <ion-select-option value="individual">{{ 'TYPE_INDIVIDUAL' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'ESTABLISHMENT' | translate }}</ion-label>
+          <ion-select [(ngModel)]="newPurchase.establishmentId" interface="popover" [placeholder]="'OPTIONAL' | translate">
+            <ion-select-option *ngFor="let e of establishments" [value]="e.id">{{ e.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" (click)="savePurchase()" class="ion-margin-top" [disabled]="!newPurchase.name?.trim()">
+        {{ 'SAVE' | translate }}
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>

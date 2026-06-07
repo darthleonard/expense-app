@@ -1,0 +1,190 @@
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 0.95em;
+  text-transform: capitalize;
+  ion-icon { font-size: 20px; }
+
+  &.completada {
+    background: rgba(45, 211, 111, 0.12);
+    color: var(--ion-color-success);
+    border-bottom: 2px solid var(--ion-color-success);
+  }
+  &.cancelada {
+    background: rgba(146, 148, 156, 0.12);
+    color: var(--ion-color-medium);
+    border-bottom: 2px solid var(--ion-color-medium);
+  }
+}
+
+.items-list {
+  padding-top: 8px;
+  padding-bottom: 100px; // clearance for footer
+}
+
+.item-slide {
+  margin-bottom: 10px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.purchase-item-row {
+  --background: var(--ion-card-background, #fff);
+  --inner-padding-end: 12px;
+  --padding-start: 8px;
+  border-radius: 14px;
+  transition: opacity 0.2s ease;
+
+  &.bought { opacity: 0.55; }
+}
+
+.item-checkbox {
+  --size: 22px;
+  margin-right: 8px;
+}
+
+.item-label {
+  .item-name {
+    font-weight: 700;
+    font-size: 1em;
+    color: var(--ion-text-color);
+    margin-bottom: 3px;
+  }
+
+  .item-price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85em;
+    color: var(--ion-color-medium);
+
+    .item-total {
+      font-weight: 700;
+      color: var(--ion-text-color);
+    }
+  }
+
+  &.struck .item-name {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+}
+
+.note-section {
+  margin-top: 4px;
+
+  .note-toggle {
+    --padding-start: 0;
+    --padding-end: 0;
+    font-size: 0.78em;
+    height: 24px;
+    color: var(--ion-color-primary);
+    margin: 0;
+  }
+
+  .note-text {
+    font-size: 0.82em;
+    color: var(--ion-color-step-550, #666);
+    background: rgba(56, 128, 255, 0.05);
+    border-left: 3px solid var(--ion-color-primary);
+    padding: 6px 10px;
+    border-radius: 0 6px 6px 0;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+}
+
+.empty-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  color: var(--ion-color-medium);
+  opacity: 0.5;
+  ion-icon { font-size: 64px; margin-bottom: 16px; }
+  p { font-size: 0.95em; }
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+.purchase-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(var(--ion-background-color-rgb, 255,255,255), 0.82);
+  border-top: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+
+  .footer-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ion-text-color);
+    font-size: 0.95em;
+    ion-icon { font-size: 20px; color: var(--ion-color-primary); }
+  }
+
+  .footer-total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 0.8em;
+    color: var(--ion-color-medium);
+    strong {
+      font-size: 1.4em;
+      color: var(--ion-text-color);
+      font-weight: 800;
+    }
+  }
+}
+
+// ─── Add-product modal ────────────────────────────────────────────────────────
+.item-form {
+  margin-top: 16px;
+
+  .selected-product-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--ion-text-color);
+    margin: 0 0 12px 0;
+    ion-icon { font-size: 20px; }
+  }
+
+  .modal-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(56, 128, 255, 0.07);
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: var(--ion-color-medium);
+    strong {
+      font-size: 1.2em;
+      font-weight: 800;
+      color: var(--ion-text-color);
+    }
+  }
+}
+
+:host-context(.ion-palette-dark) {
+  .purchase-footer {
+    background: rgba(18,18,18, 0.88);
+    border-top-color: rgba(255,255,255,0.08);
+  }
+  .purchase-item-row { --background: var(--ion-card-background, #1e1e1e); }
+}

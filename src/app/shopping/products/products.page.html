@@ -1,0 +1,102 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'SHOPPING_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearch()"
+      [placeholder]="'SEARCH_PRODUCTS' | translate"
+      debounce="200">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <div *ngIf="products.length === 0" class="empty-state">
+    <ion-icon name="pricetag-outline"></ion-icon>
+    <p>{{ 'NO_PRODUCTS_YET' | translate }}</p>
+  </div>
+
+  <ion-list *ngIf="products.length > 0" lines="none" class="product-list">
+    <ion-item-sliding *ngFor="let p of products" class="product-slide">
+      <ion-item button (click)="openModal(p)" detail="false" class="product-item">
+        <div class="product-icon-bg" slot="start" [class]="p.category">
+          <ion-icon name="pricetag-outline"></ion-icon>
+        </div>
+        <ion-label>
+          <div class="product-name" [class.inactive]="!p.isActive">{{ p.name }}</div>
+          <div class="product-sub">
+            <ion-badge [color]="getCategoryColor(p.category)" class="cat-badge">
+              {{ p.category | translate }}
+            </ion-badge>
+            <span *ngIf="p.code" class="product-code">{{ p.code }}</span>
+            <ion-badge *ngIf="!p.isActive" color="medium" class="cat-badge">
+              {{ 'INACTIVE' | translate }}
+            </ion-badge>
+          </div>
+          <p *ngIf="p.description" class="product-desc">{{ p.description }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="confirmDelete(p)">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Product Modal -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false" [breakpoints]="[0, 0.85]" [initialBreakpoint]="0.85">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ (editingProduct ? 'EDIT_PRODUCT' : 'NEW_PRODUCT') | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label position="stacked">{{ 'NAME' | translate }} <span style="color:red">*</span></ion-label>
+          <ion-input [(ngModel)]="current.name" clearInput></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">{{ 'DESCRIPTION' | translate }}</ion-label>
+          <ion-input [(ngModel)]="current.description" [placeholder]="'OPTIONAL' | translate"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
+          <ion-select [(ngModel)]="current.category" interface="popover">
+            <ion-select-option value="gasto_fijo">{{ 'CAT_FIXED' | translate }}</ion-select-option>
+            <ion-select-option value="gasto_variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">{{ 'CODE' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label>
+          <ion-input [(ngModel)]="current.code"></ion-input>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-label>{{ 'ACTIVE' | translate }}</ion-label>
+          <ion-toggle [(ngModel)]="current.isActive" slot="end"></ion-toggle>
+        </ion-item>
+      </ion-list>
+      <ion-button expand="block" (click)="save()" class="ion-margin-top" [disabled]="!current.name?.trim()">
+        {{ 'SAVE' | translate }}
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>

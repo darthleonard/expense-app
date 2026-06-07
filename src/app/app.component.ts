@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
     { title: 'FUEL_TITLE', url: '/fuel', icon: 'car' },
     { title: 'ANALYSIS_TITLE', url: '/analysis', icon: 'analytics' },
     { title: 'FINANCIAL_HEALTH', url: '/financial-health', icon: 'heart' },
+    { title: 'SHOPPING_TITLE', url: '/shopping', icon: 'cart' },
     { title: 'CONFIG_TITLE', url: '/config', icon: 'settings' },
   ];
 

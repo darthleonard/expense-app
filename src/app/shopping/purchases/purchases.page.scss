@@ -1,0 +1,106 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--ion-color-medium);
+
+  .empty-icon {
+    font-size: 72px;
+    opacity: 0.3;
+    margin-bottom: 20px;
+  }
+
+  h2 { font-weight: 700; }
+  p  { font-size: 0.95em; opacity: 0.7; }
+}
+
+.purchases-list {
+  background: transparent;
+  padding: 0;
+}
+
+.purchase-slide {
+  margin-bottom: 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.purchase-item {
+  --background: var(--ion-card-background, #fff);
+  --inner-padding-end: 8px;
+  --padding-start: 0;
+  border-radius: 16px;
+  transition: transform 0.15s ease;
+
+  &:active { transform: scale(0.98); }
+}
+
+.status-bar {
+  width: 5px;
+  height: 100%;
+  min-height: 72px;
+  border-radius: 16px 0 0 16px;
+  flex-shrink: 0;
+
+  &.activa     { background: var(--ion-color-primary); }
+  &.completada { background: var(--ion-color-success); }
+  &.cancelada  { background: var(--ion-color-medium); }
+}
+
+.item-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  padding: 0 8px;
+  font-size: 22px;
+}
+
+.purchase-label {
+  padding: 12px 0;
+
+  .purchase-name {
+    font-weight: 700;
+    font-size: 1.05em;
+    color: var(--ion-text-color);
+    margin-bottom: 4px;
+  }
+
+  .purchase-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78em;
+    color: var(--ion-color-medium);
+    margin-bottom: 6px;
+
+    .dot { margin: 0 2px; }
+  }
+
+  .purchase-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .status-badge {
+      font-size: 0.7em;
+      text-transform: capitalize;
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+
+    .total-amount {
+      font-size: 1em;
+      font-weight: 700;
+      color: var(--ion-text-color);
+    }
+  }
+}
+
+:host-context(.ion-palette-dark) {
+  .purchase-item { --background: var(--ion-card-background, #1e1e1e); }
+}

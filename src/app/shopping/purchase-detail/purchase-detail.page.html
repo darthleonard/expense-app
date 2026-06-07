@@ -1,0 +1,195 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/shopping"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ purchase?.name }}</ion-title>
+    <ion-buttons slot="end" *ngIf="isActive()">
+      <ion-button (click)="completePurchase()" fill="clear" color="success">
+        <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="cancelPurchase()" fill="clear" color="medium">
+        <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- Status banner for completed/cancelled -->
+  <div *ngIf="!isActive()" class="status-banner" [class]="purchase?.status">
+    <ion-icon [name]="purchase?.status === 'completada' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+    {{ purchase?.status | translate }}
+  </div>
+
+  <!-- Items list -->
+  <ion-list lines="none" class="items-list ion-padding-horizontal">
+    <ion-item-sliding *ngFor="let item of items" class="item-slide">
+      <ion-item class="purchase-item-row" [class.bought]="item.isBought">
+        <!-- Checkbox -->
+        <ion-checkbox
+          slot="start"
+          [checked]="item.isBought"
+          (ionChange)="toggleBought(item)"
+          [disabled]="!isActive()"
+          class="item-checkbox">
+        </ion-checkbox>
+
+        <!-- Product info -->
+        <ion-label class="item-label" [class.struck]="item.isBought">
+          <div class="item-name">{{ item.productNameSnap }}</div>
+          <div class="item-price-row">
+            <span>{{ item.quantity }} × ${{ item.unitPrice | number:'1.2-2' }}</span>
+            <span class="item-total">${{ item.totalPrice | number:'1.2-2' }}</span>
+          </div>
+
+          <!-- Notes (collapsed by default) -->
+          <div *ngIf="item.notes" class="note-section">
+            <ion-button
+              fill="clear"
+              size="small"
+              class="note-toggle"
+              (click)="toggleNote(item.id!)">
+              <ion-icon
+                [name]="isNoteExpanded(item.id!) ? 'chevron-up-outline' : 'document-text-outline'"
+                slot="start" size="small">
+              </ion-icon>
+              {{ (isNoteExpanded(item.id!) ? 'HIDE_NOTE' : 'SHOW_NOTE') | translate }}
+            </ion-button>
+            <div *ngIf="isNoteExpanded(item.id!)" class="note-text">
+              {{ item.notes }}
+            </div>
+          </div>
+        </ion-label>
+      </ion-item>
+
+      <!-- Swipe to delete -->
+      <ion-item-options side="end" *ngIf="isActive()">
+        <ion-item-option color="danger" (click)="deleteItem(item)">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- Empty state -->
+  <div *ngIf="items.length === 0" class="empty-items">
+    <ion-icon name="bag-add-outline"></ion-icon>
+    <p>{{ 'NO_ITEMS_YET' | translate }}</p>
+  </div>
+
+  <!-- FAB: add product -->
+  <ion-fab *ngIf="isActive()" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openAddModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
+
+<!-- Persistent footer summary -->
+<div class="purchase-footer" *ngIf="items.length > 0">
+  <div class="footer-stat">
+    <ion-icon name="cart-outline"></ion-icon>
+    <span><strong>{{ countBought }}</strong> / {{ countTotal }}</span>
+  </div>
+  <div class="footer-total">
+    <span>{{ 'TOTAL_SPENT' | translate }}</span>
+    <strong>${{ totalBought | number:'1.2-2' }}</strong>
+  </div>
+</div>
+
+<!-- Add Product Modal (bottom sheet) -->
+<ion-modal [isOpen]="isAddModalOpen" (didDismiss)="isAddModalOpen = false"
+           [breakpoints]="[0, 0.85]" [initialBreakpoint]="0.85">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ 'ADD_PRODUCT' | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="isAddModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+
+      <!-- Search bar -->
+      <ion-searchbar
+        [(ngModel)]="productSearchQuery"
+        (ionInput)="onSearchInput()"
+        [placeholder]="'SEARCH_PRODUCTS' | translate"
+        debounce="200">
+      </ion-searchbar>
+
+      <!-- Search results -->
+      <ion-list *ngIf="searchResults.length > 0 && !selectedProduct && !isCreatingNew" lines="full">
+        <ion-item button *ngFor="let p of searchResults" (click)="selectProduct(p)" detail="false">
+          <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>{{ p.name }}</h3>
+            <p>{{ p.category | translate }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+
+      <!-- Create new option -->
+      <ion-button
+        *ngIf="productSearchQuery.trim() && !selectedProduct && !isCreatingNew"
+        expand="block" fill="outline" (click)="startCreatingNew()" class="ion-margin-top">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        {{ 'CREATE_AND_ADD' | translate }} "{{ productSearchQuery }}"
+      </ion-button>
+
+      <!-- New product form -->
+      <ion-list *ngIf="isCreatingNew" lines="none">
+        <ion-item>
+          <ion-label position="stacked">{{ 'NAME' | translate }}</ion-label>
+          <ion-input [(ngModel)]="newProductName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
+          <ion-select [(ngModel)]="newProductCategory" interface="popover">
+            <ion-select-option value="gasto_fijo">{{ 'CAT_FIXED' | translate }}</ion-select-option>
+            <ion-select-option value="gasto_variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <!-- Item quantity / price (shown once product selected or being created) -->
+      <div *ngIf="selectedProduct || isCreatingNew" class="item-form">
+        <h4 class="selected-product-name">
+          <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+          {{ selectedProduct?.name || newProductName }}
+        </h4>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label position="stacked">{{ 'QUANTITY' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="newItemQty" min="0.01" step="1"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'UNIT_PRICE' | translate }}</ion-label>
+            <ion-input type="number" [(ngModel)]="newItemPrice" min="0"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'NOTES' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label>
+            <ion-input [(ngModel)]="newItemNote" [placeholder]="'ITEM_NOTE_HINT' | translate"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="modal-preview">
+          <span>{{ 'TOTAL_COST' | translate }}</span>
+          <strong>${{ (newItemQty * newItemPrice) | number:'1.2-2' }}</strong>
+        </div>
+
+        <ion-button
+          expand="block" (click)="addItemToCart()" class="ion-margin-top"
+          [disabled]="newItemPrice <= 0 || newItemQty <= 0">
+          <ion-icon name="cart-outline" slot="start"></ion-icon>
+          {{ 'ADD_TO_PURCHASE' | translate }}
+        </ion-button>
+      </div>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
