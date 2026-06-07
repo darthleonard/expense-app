@@ -10,6 +10,7 @@ import { AnalysisService, Insight } from '../core/services/analysis.service';
 export class AnalysisPage implements OnInit {
   insights: Insight[] = [];
   isLoading = true;
+  selectedCategory: 'all' | 'house' | 'vehicle' = 'all';
 
   constructor(private analysis: AnalysisService) { }
 
@@ -21,7 +22,18 @@ export class AnalysisPage implements OnInit {
     setTimeout(async () => {
       this.insights = await this.analysis.generateInsights();
       this.isLoading = false;
-    }, 1500);
+    }, 1200);
+  }
+
+  filteredInsights(): Insight[] {
+    if (this.selectedCategory === 'all') {
+      return this.insights;
+    }
+    return this.insights.filter(insight => insight.category === this.selectedCategory);
+  }
+
+  onCategoryChange(event: any) {
+    this.selectedCategory = event.detail.value;
   }
 
   getIconForType(type: string) {

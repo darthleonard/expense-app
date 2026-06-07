@@ -8,9 +8,24 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="header-section" style="margin-bottom: 20px;">
+  <div class="header-section" style="margin-bottom: 15px;">
     <h1>{{ 'ANALYSIS_TITLE' | translate }}</h1>
   </div>
+
+  <!-- Category Filters Segment -->
+  <ion-segment [(ngModel)]="selectedCategory" (ionChange)="onCategoryChange($event)" class="filters-segment" mode="ios" style="margin-bottom: 20px;">
+    <ion-segment-button value="all">
+      <ion-label>{{ 'ALL' | translate }}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="house">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>{{ 'HOUSES' | translate }}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="vehicle">
+      <ion-icon name="car-outline"></ion-icon>
+      <ion-label>{{ 'VEHICLES' | translate }}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
   <div *ngIf="isLoading" class="ion-text-center ion-padding ion-margin-top">
     <ion-spinner name="crescent"></ion-spinner>
@@ -18,15 +33,40 @@
   </div>
 
   <ng-container *ngIf="!isLoading">
-    <ion-card *ngFor="let insight of insights" style="margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-radius: 12px;">
-      <ion-item lines="none" style="--background: transparent; padding-top: 8px;">
-        <ion-icon [name]="getIconForType(insight.type)" [color]="getColorForType(insight.type)" slot="start" size="large"></ion-icon>
+    <ion-card *ngFor="let insight of filteredInsights()" [class]="'insight-card ' + insight.type" style="margin-bottom: 20px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+      <ion-item lines="none" style="--background: transparent; padding-top: 12px; padding-bottom: 8px;">
+        <div slot="start" [class]="'icon-wrapper ' + insight.type" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px;">
+          <ion-icon [name]="insight.icon || getIconForType(insight.type)" style="font-size: 22px;"></ion-icon>
+        </div>
         <ion-label>
-          <h2 style="font-weight: 600; font-size: 1.2em;">{{ insight.title | translate }}</h2>
+          <div style="font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--ion-color-step-500); margin-bottom: 2px;">
+            {{ (insight.category === 'house' ? 'HOUSES' : insight.category === 'vehicle' ? 'VEHICLES' : 'GENERAL') | translate }}
+          </div>
+          <h2 style="font-weight: 700; font-size: 1.15em; color: var(--ion-text-color);">
+            {{ insight.title | translate:insight.params }}
+          </h2>
         </ion-label>
+        <ion-badge *ngIf="insight.entityName" slot="end" color="light" style="font-size: 0.8em; font-weight: 600; padding: 6px 12px; border-radius: 8px;">
+          {{ insight.entityName }}
+        </ion-badge>
       </ion-item>
-      <ion-card-content style="font-size: 1.05em; line-height: 1.5; color: var(--ion-color-step-600, #666);">
-        {{ insight.description | translate }}
+      
+      <ion-card-content style="font-size: 1em; line-height: 1.5; color: var(--ion-color-step-600); padding-top: 4px;">
+        <p style="margin: 0 0 12px 0; font-weight: 500;">
+          {{ insight.description | translate:insight.params }}
+        </p>
+
+        <!-- Metrics Grid -->
+        <div *ngIf="insight.metrics && insight.metrics.length > 0" class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 12px; padding: 12px; border-radius: 12px; background: var(--metrics-bg, rgba(0,0,0,0.02));">
+          <div *ngFor="let metric of insight.metrics" class="metric-item" style="display: flex; flex-direction: column; align-items: flex-start;">
+            <span style="font-size: 0.7em; text-transform: uppercase; font-weight: 600; color: var(--ion-color-step-500); margin-bottom: 2px;">
+              {{ metric.label | translate }}
+            </span>
+            <span style="font-size: 0.95em; font-weight: 700; color: var(--ion-text-color);">
+              {{ metric.value }}
+            </span>
+          </div>
+        </div>
       </ion-card-content>
     </ion-card>
   </ng-container>

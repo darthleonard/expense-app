@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DatabaseService, Car, House } from '../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from '../core/services/settings.service';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -22,7 +23,11 @@ export class DashboardPage implements OnInit {
   selectedCarId: number | 'all' = 'all';
   selectedHouseId: number | 'all' = 'all';
 
-  constructor(private db: DatabaseService, private translate: TranslateService) {
+  constructor(
+    private db: DatabaseService,
+    private translate: TranslateService,
+    private settings: SettingsService
+  ) {
     this.translate.onLangChange.subscribe(() => {
       this.loadData();
     });
@@ -32,12 +37,35 @@ export class DashboardPage implements OnInit {
   }
 
   async ionViewWillEnter() {
+    await this.settings.init();
     this.vehicles = await this.db.cars.toArray();
     this.houses = await this.db.houses.toArray();
+
+    // Load persisted dashboard filters
+    const savedHouseId = await this.settings.getDashboardSelectedHouse();
+    const savedCarId = await this.settings.getDashboardSelectedCar();
+
+    // Validate if the selected house/car still exists in the database
+    if (savedHouseId !== 'all' && this.houses.some(h => h.id === savedHouseId)) {
+      this.selectedHouseId = savedHouseId;
+    } else {
+      this.selectedHouseId = 'all';
+      await this.settings.setDashboardSelectedHouse('all');
+    }
+
+    if (savedCarId !== 'all' && this.vehicles.some(c => c.id === savedCarId)) {
+      this.selectedCarId = savedCarId;
+    } else {
+      this.selectedCarId = 'all';
+      await this.settings.setDashboardSelectedCar('all');
+    }
+
     await this.loadData();
   }
 
   async onFilterChange() {
+    await this.settings.setDashboardSelectedHouse(this.selectedHouseId);
+    await this.settings.setDashboardSelectedCar(this.selectedCarId);
     await this.loadData();
   }
 

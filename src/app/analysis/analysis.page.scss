@@ -1,0 +1,92 @@
+.insight-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+
+  &.success {
+    --card-border-color: rgba(45, 211, 111, 0.15);
+    --icon-bg: rgba(45, 211, 111, 0.1);
+    --icon-color: var(--ion-color-success);
+    --metrics-bg: rgba(45, 211, 111, 0.03);
+    border: 1px solid var(--card-border-color);
+    
+    &::before {
+      background: var(--ion-color-success);
+    }
+  }
+
+  &.warning {
+    --card-border-color: rgba(255, 196, 9, 0.2);
+    --icon-bg: rgba(255, 196, 9, 0.1);
+    --icon-color: var(--ion-color-warning);
+    --metrics-bg: rgba(255, 196, 9, 0.03);
+    border: 1px solid var(--card-border-color);
+
+    &::before {
+      background: var(--ion-color-warning);
+    }
+  }
+
+  &.info {
+    --card-border-color: rgba(56, 128, 255, 0.15);
+    --icon-bg: rgba(56, 128, 255, 0.1);
+    --icon-color: var(--ion-color-primary);
+    --metrics-bg: rgba(56, 128, 255, 0.03);
+    border: 1px solid var(--card-border-color);
+
+    &::before {
+      background: var(--ion-color-primary);
+    }
+  }
+}
+
+.filters-segment {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  padding: 4px;
+  
+  // Light theme colors
+  --background: rgba(0, 0, 0, 0.05);
+  --color: var(--ion-color-step-600, #5f6368);
+  --color-checked: var(--ion-color-primary, #3880ff);
+  --background-checked: var(--ion-card-background, #ffffff);
+  
+  ion-segment-button {
+    --border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+:host-context(.ion-palette-dark) {
+  .filters-segment {
+    // Dark theme colors
+    --background: rgba(255, 255, 255, 0.08);
+    --color: var(--ion-color-step-400, #a0a0a0);
+    --color-checked: #ffffff;
+    --background-checked: var(--ion-card-background, #1e1e1e);
+  }
+}
+
+.icon-wrapper {
+  transition: transform 0.3s ease;
+  color: var(--icon-color);
+  background: var(--icon-bg);
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}

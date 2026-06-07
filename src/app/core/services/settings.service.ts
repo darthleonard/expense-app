@@ -108,6 +108,26 @@ export class SettingsService {
     }
   }
 
+  async getDashboardSelectedHouse(): Promise<number | 'all'> {
+    const id = await this._storage?.get('dashboard_selected_house');
+    if (id === undefined || id === null) return 'all';
+    return id === 'all' ? 'all' : parseInt(id, 10);
+  }
+
+  async setDashboardSelectedHouse(id: number | 'all') {
+    await this._storage?.set('dashboard_selected_house', id.toString());
+  }
+
+  async getDashboardSelectedCar(): Promise<number | 'all'> {
+    const id = await this._storage?.get('dashboard_selected_car');
+    if (id === undefined || id === null) return 'all';
+    return id === 'all' ? 'all' : parseInt(id, 10);
+  }
+
+  async setDashboardSelectedCar(id: number | 'all') {
+    await this._storage?.set('dashboard_selected_car', id.toString());
+  }
+
   async isFirstBoot(): Promise<boolean> {
     const booted = await this._storage?.get('first_boot_done');
     if (!booted) {
