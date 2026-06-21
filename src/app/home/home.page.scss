@@ -1,0 +1,52 @@
+.house-selector {
+    margin-bottom: 16px;
+}
+
+.house-selector-item {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.no-houses-section {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--ion-color-medium);
+}
+
+.no-houses-section ion-icon {
+    font-size: 64px;
+}
+
+.grouped-expenses-divider {
+    cursor: pointer;
+}
+
+.grouped-expenses-total {
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-right: 12px;
+}
+
+.grouped-expanded-title {
+    font-weight: 600;
+}
+
+.grouped-expanded-amount {
+    font-weight: 700;
+    font-size: 1.1em;
+}
+
+.grouped-expenses ion-item-sliding{
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.no-expenses-section {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--ion-color-medium);
+}
+
+.no-expenses-section ion-icon {
+    font-size: 64px;
+}

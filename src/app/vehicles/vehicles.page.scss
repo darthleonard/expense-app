@@ -1,0 +1,23 @@
+.header-section {
+    margin-bottom: 20px;
+}
+
+.vehicles-list {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.no-vehicles-section {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--ion-color-medium);
+}
+
+.no-vehicles-section ion-icon {
+    font-size: 48px;
+}
+
+span.required {
+    color: red;
+}

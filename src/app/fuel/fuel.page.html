@@ -10,8 +10,8 @@
 <ion-content [fullscreen]="true">
 
   <!-- Vehicle Selector -->
-  <div class="ion-padding-horizontal ion-padding-top" *ngIf="vehicles.length > 1" style="margin-bottom: 16px;">
-    <ion-item style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div class="ion-padding-horizontal ion-padding-top vehicle-selector" *ngIf="vehicles.length > 1">
+    <ion-item class="vehicle-selector-item">
       <ion-icon [name]="getCarIcon(selectedCarId)" slot="start" color="primary"></ion-icon>
       <ion-select [(ngModel)]="selectedCarId" (ionChange)="onCarChange($event)" interface="popover" placeholder="{{ 'SELECT_VEHICLE' | translate }}" style="width: 100%;">
         <ion-select-option *ngFor="let car of vehicles" [value]="car.id">{{ car.name }}</ion-select-option>
@@ -19,10 +19,10 @@
     </ion-item>
   </div>
 
-  <div *ngIf="vehicles.length === 0" class="ion-padding" style="text-align: center; margin-top: 40px;">
-    <ion-icon name="car-sport-outline" style="font-size: 64px; color: var(--ion-color-medium);"></ion-icon>
-    <h2 style="color: var(--ion-color-medium);">{{ 'NO_VEHICLES_MSG' | translate }}</h2>
-    <p style="color: var(--ion-color-medium);">{{ 'REGISTER_VEHICLE_PROMPT' | translate }}</p>
+  <div *ngIf="vehicles.length === 0" class="ion-padding no-vehicles-section">
+    <ion-icon name="car-sport-outline"></ion-icon>
+    <h2>{{ 'NO_VEHICLES_MSG' | translate }}</h2>
+    <p>{{ 'REGISTER_VEHICLE_PROMPT' | translate }}</p>
     <ion-button routerLink="/vehicles" color="primary" fill="outline" class="ion-margin-top">
       {{ 'GO_TO_VEHICLES' | translate }}
     </ion-button>
@@ -32,11 +32,11 @@
     <ion-item-sliding *ngFor="let rec of records">
       <ion-item button (click)="openModal(rec)">
         <ion-label>
-          <h2 style="font-weight: 600;">{{ formatDate(rec.date) }}</h2>
+          <h2 class="vehicle-item-title">{{ formatDate(rec.date) }}</h2>
           <p>{{ getDisplayDistance(rec.odometer) | number:'1.0-1' }} {{ isImperial ? 'mi' : 'km' }} - {{ getDisplayVolume(rec.liters) | number:'1.1-2' }} {{ isImperial ? 'gal' : 'L' }}</p>
           <p>${{ getDisplayUnitPrice(rec.unitPrice) | number:'1.2-2' }} / {{ isImperial ? 'gal' : 'L' }}</p>
         </ion-label>
-        <ion-note slot="end" color="primary" style="font-weight: 700; font-size: 1.1em;">
+        <ion-note slot="end" color="primary" class="vehicle-item-note">
           ${{ rec.totalPrice | number:'1.2-2' }}
         </ion-note>
       </ion-item>
@@ -50,6 +50,7 @@
     
     <ion-item *ngIf="!records.length && selectedCarId" lines="none" class="ion-margin-top">
       <ion-label class="ion-text-center">
+        <ion-icon name="car-sport-outline" class="no-fuel-records-section"></ion-icon>
         <p>{{ 'NO_RECORDS_FOUND' | translate }}</p>
       </ion-label>
     </ion-item>

@@ -10,8 +10,8 @@
 <ion-content [fullscreen]="true">
 
   <!-- House Selector -->
-  <div class="ion-padding-horizontal ion-padding-top" *ngIf="houses.length > 1" style="margin-bottom: 16px;">
-    <ion-item style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div class="ion-padding-horizontal ion-padding-top house-selector" *ngIf="houses.length > 1">
+    <ion-item class="house-selector-item">
       <ion-icon [name]="getHouseIcon(selectedHouseId)" slot="start" color="primary"></ion-icon>
       <ion-select [(ngModel)]="selectedHouseId" (ionChange)="onHouseChange($event)" interface="popover" placeholder="{{ 'SELECT_HOUSE' | translate }}" style="width: 100%;">
         <ion-select-option *ngFor="let house of houses" [value]="house.id">{{ house.name }}</ion-select-option>
@@ -19,10 +19,10 @@
     </ion-item>
   </div>
 
-  <div *ngIf="houses.length === 0" class="ion-padding" style="text-align: center; margin-top: 40px;">
-    <ion-icon name="home-outline" style="font-size: 64px; color: var(--ion-color-medium);"></ion-icon>
-    <h2 style="color: var(--ion-color-medium);">{{ 'NO_HOUSES_MSG' | translate }}</h2>
-    <p style="color: var(--ion-color-medium);">{{ 'REGISTER_HOUSE_PROMPT' | translate }}</p>
+  <div *ngIf="houses.length === 0" class="ion-padding no-houses-section">
+    <ion-icon name="home-outline"></ion-icon>
+    <h2>{{ 'NO_HOUSES_MSG' | translate }}</h2>
+    <p>{{ 'REGISTER_HOUSE_PROMPT' | translate }}</p>
     <ion-button routerLink="/houses" color="primary" fill="outline" class="ion-margin-top">
       {{ 'GO_TO_HOUSES' | translate }}
     </ion-button>
@@ -30,9 +30,9 @@
 
   <ion-list *ngIf="houses.length > 0">
     <ng-container *ngFor="let group of groupedExpenses">
-      <ion-item-divider sticky (click)="toggleGroup(group)" style="cursor: pointer;">
+      <ion-item-divider sticky (click)="toggleGroup(group)" class="grouped-expenses-divider">
         <ion-label>{{ group.month }}</ion-label>
-        <ion-note slot="end" color="primary" style="font-weight: 700; font-size: 1.1em; margin-right: 12px;">
+        <ion-note slot="end" color="primary" class="grouped-expenses-total">
           ${{ group.total | number:'1.2-2' }}
         </ion-note>
         <ion-icon [name]="group.expanded ? 'chevron-down' : 'chevron-forward'" slot="end" color="medium"></ion-icon>
@@ -42,11 +42,11 @@
         <ion-item-sliding *ngFor="let exp of group.expenses">
           <ion-item button (click)="openModal(exp)">
             <ion-label>
-              <h2 style="font-weight: 600;">{{ exp.type | titlecase | translate }}</h2>
+              <h2 class="grouped-expanded-title">{{ exp.type | titlecase | translate }}</h2>
               <p>{{ formatDate(exp.date) }}</p>
               <p *ngIf="exp.notes">{{ exp.notes }}</p>
             </ion-label>
-            <ion-note slot="end" color="primary" style="font-weight: 700; font-size: 1.1em;">
+            <ion-note slot="end" color="primary" class="grouped-expanded-amount">
               ${{ exp.amount | number:'1.2-2' }}
             </ion-note>
           </ion-item>
@@ -61,7 +61,8 @@
     </ng-container>
     
     <ion-item *ngIf="!groupedExpenses.length && selectedHouseId" lines="none" class="ion-margin-top">
-      <ion-label class="ion-text-center">
+      <ion-label class="ion-text-center no-expenses-section">
+        <ion-icon name="home-outline"></ion-icon>
         <p>{{ 'NO_EXPENSES_RECORDED_YET' | translate }}</p>
       </ion-label>
     </ion-item>

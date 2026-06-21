@@ -1,0 +1,28 @@
+.vehicle-selector {
+   margin-bottom: 16px;
+}
+
+.vehicle-selector-item {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.no-vehicles-section {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--ion-color-medium);
+}
+
+.no-fuel-records-section {
+    font-size: 64px;
+    color: var(--ion-color-medium);
+}
+
+.vehicle-item-title {
+   font-weight: 600;
+}
+
+.vehicle-item-note {
+   font-weight: 700;
+   font-size: 1.1em;
+}

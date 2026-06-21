@@ -8,11 +8,11 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="header-section" style="margin-bottom: 20px;">
+  <div class="header-section">
     <h1>{{ 'VEHICLES_CATALOG' | translate }}</h1>
   </div>
 
-  <ion-list style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+  <ion-list *ngIf="vehicles.length > 0" class="vehicles-list">
     <ion-item *ngFor="let vehicle of vehicles">
       <ion-icon [name]="vehicle.icon || 'car'" slot="start" color="primary"></ion-icon>
       <ion-label>
@@ -28,8 +28,8 @@
     </ion-item>
   </ion-list>
 
-  <div *ngIf="vehicles.length === 0" style="text-align: center; margin-top: 40px; color: var(--ion-color-medium);">
-    <ion-icon name="car-outline" style="font-size: 48px;"></ion-icon>
+  <div *ngIf="vehicles.length === 0" class="no-vehicles-section">
+    <ion-icon name="car-outline"></ion-icon>
     <p>{{ 'NO_VEHICLES_REGISTERED' | translate }}</p>
   </div>
 
@@ -51,7 +51,7 @@
       </ion-header>
       <ion-content class="ion-padding">
         <ion-item>
-          <ion-label position="stacked">{{ 'NAME' | translate }} <span style="color: red;">*</span></ion-label>
+          <ion-label position="stacked">{{ 'NAME' | translate }} <span class="required">*</span></ion-label>
           <ion-input [(ngModel)]="currentVehicle.name" placeholder="{{ 'EG_FAMILY_CAR' | translate }}"></ion-input>
         </ion-item>
 

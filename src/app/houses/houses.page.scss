@@ -1,0 +1,23 @@
+.houses-list-section {
+    margin-bottom: 20px;
+}
+
+.houses-list {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.no-houses-section {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--ion-color-medium);
+}
+
+.no-houses-section ion-icon {
+    font-size: 48px;
+}
+
+span.required {
+    color: red;
+}
