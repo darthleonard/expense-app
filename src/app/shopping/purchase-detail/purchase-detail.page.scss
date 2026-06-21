@@ -39,7 +39,9 @@
   border-radius: 14px;
   transition: opacity 0.2s ease;
 
-  &.bought { opacity: 0.55; }
+  &.bought {
+    /* No opacity reduction on bought items */
+  }
 }
 
 .item-checkbox {
@@ -68,8 +70,7 @@
   }
 
   &.struck .item-name {
-    text-decoration: line-through;
-    opacity: 0.6;
+    /* No strike-through or opacity reduction on bought item name */
   }
 }
 
@@ -187,4 +188,8 @@
     border-top-color: rgba(255,255,255,0.08);
   }
   .purchase-item-row { --background: var(--ion-card-background, #1e1e1e); }
+}
+
+ion-fab {
+  margin-bottom: 75px;
 }

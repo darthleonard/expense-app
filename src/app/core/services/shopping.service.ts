@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   DatabaseService,
   Purchase, PurchaseItem, ProductCatalog,
-  Establishment, PriceHistory, PurchaseType, PurchaseStatus
+  Establishment, PriceHistory, PurchaseStatus
 } from './database.service';
 
 @Injectable({ providedIn: 'root' })
@@ -17,16 +17,17 @@ export class ShoppingService {
   }
 
   getActiveEstablishments() {
-    return this.db.establishments.where('isActive').equals(1).sortBy('name');
+    return this.db.establishments.where('isActive').equals(1 as any).sortBy('name');
   }
 
   async saveEstablishment(est: Establishment): Promise<number> {
     const now = new Date().toISOString();
+    const estToSave = { ...est, name: est.name.trim().toLowerCase() };
     if (est.id) {
-      await this.db.establishments.update(est.id, { ...est, lastModDate: now });
+      await this.db.establishments.update(est.id, { ...estToSave, lastModDate: now });
       return est.id;
     }
-    return this.db.establishments.add({ ...est, creationDate: now, lastModDate: now });
+    return this.db.establishments.add({ ...estToSave, creationDate: now, lastModDate: now });
   }
 
   deleteEstablishment(id: number) {
@@ -40,7 +41,7 @@ export class ShoppingService {
   }
 
   getActiveProducts() {
-    return this.db.products.where('isActive').equals(1).sortBy('name');
+    return this.db.products.where('isActive').equals(1 as any).sortBy('name');
   }
 
   searchProducts(query: string) {
@@ -52,11 +53,23 @@ export class ShoppingService {
 
   async saveProduct(product: ProductCatalog): Promise<number> {
     const now = new Date().toISOString();
+    const normalizedName = product.name.trim().toLowerCase();
+    const existing = await this.db.products
+      .filter(p => p.name.trim().toLowerCase() === normalizedName)
+      .first();
+
+    if (existing) {
+      if (!product.id || existing.id !== product.id) {
+        throw new Error('PRODUCT_NAME_DUPLICATE');
+      }
+    }
+
+    const productToSave = { ...product, name: normalizedName };
     if (product.id) {
-      await this.db.products.update(product.id, { ...product, lastModDate: now });
+      await this.db.products.update(product.id, { ...productToSave, lastModDate: now });
       return product.id;
     }
-    return this.db.products.add({ ...product, creationDate: now, lastModDate: now });
+    return this.db.products.add({ ...productToSave, creationDate: now, lastModDate: now });
   }
 
   deleteProduct(id: number) {
@@ -75,11 +88,14 @@ export class ShoppingService {
 
   async savePurchase(purchase: Purchase): Promise<number> {
     const now = new Date().toISOString();
+    const purchaseToSave = { ...purchase, name: purchase.name.trim().toLowerCase() };
     if (purchase.id) {
-      await this.db.purchases.update(purchase.id, purchase);
+      const changes = { ...purchaseToSave };
+      delete changes.id;
+      await this.db.purchases.update(purchase.id, changes);
       return purchase.id;
     }
-    return this.db.purchases.add({ ...purchase, creationDate: now });
+    return this.db.purchases.add({ ...purchaseToSave, creationDate: now });
   }
 
   async deletePurchase(id: number) {
@@ -137,8 +153,7 @@ export class ShoppingService {
     if (!purchase) return;
 
     await this.db.purchases.update(purchaseId, {
-      status: 'completada' as PurchaseStatus,
-      purchaseDate: now
+      status: 'completada' as PurchaseStatus
     });
 
     // Inject bought items into price history
@@ -162,6 +177,19 @@ export class ShoppingService {
 
   async cancelPurchase(purchaseId: number) {
     await this.db.purchases.update(purchaseId, { status: 'cancelada' as PurchaseStatus });
+  }
+
+  async rollbackPurchase(purchaseId: number) {
+    const purchase = await this.db.purchases.get(purchaseId);
+    if (!purchase) return;
+
+    await this.db.purchases.update(purchaseId, {
+      status: 'activa' as PurchaseStatus,
+      purchaseDate: undefined
+    });
+
+    // Remove bought items from price history
+    await this.db.priceHistory.where('purchaseId').equals(purchaseId).delete();
   }
 
   // ─── Analytics helpers ──────────────────────────────────────────────────────

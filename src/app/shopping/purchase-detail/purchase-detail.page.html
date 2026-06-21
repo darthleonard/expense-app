@@ -3,13 +3,16 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/shopping"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ purchase?.name }}</ion-title>
-    <ion-buttons slot="end" *ngIf="isActive()">
-      <ion-button (click)="completePurchase()" fill="clear" color="success">
+    <ion-title>{{ purchase.name | titlecase }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="isActive() && hasChanges()" (click)="saveChanges()" fill="clear" color="primary" style="font-weight: bold;">
+        {{ 'SAVE' | translate }}
+      </ion-button>
+      <ion-button *ngIf="isActive()" (click)="completePurchase()" fill="clear" color="success">
         <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button (click)="cancelPurchase()" fill="clear" color="medium">
-        <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+      <ion-button *ngIf="!isActive()" (click)="rollbackPurchase()" fill="clear" color="warning">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -18,13 +21,13 @@
 <ion-content [fullscreen]="true">
 
   <!-- Status banner for completed/cancelled -->
-  <div *ngIf="!isActive()" class="status-banner" [class]="purchase?.status">
-    <ion-icon [name]="purchase?.status === 'completada' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-    {{ purchase?.status | translate }}
+  <div *ngIf="!isActive()" class="status-banner" [class]="purchase.status">
+    <ion-icon [name]="purchase.status === 'completada' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+    {{ purchase.status | translate }}
   </div>
 
   <!-- Items list -->
-  <ion-list lines="none" class="items-list ion-padding-horizontal">
+  <ion-list *ngIf="items.length > 0" lines="none" class="items-list ion-padding-horizontal">
     <ion-item-sliding *ngFor="let item of items" class="item-slide">
       <ion-item class="purchase-item-row" [class.bought]="item.isBought">
         <!-- Checkbox -->
@@ -32,13 +35,12 @@
           slot="start"
           [checked]="item.isBought"
           (ionChange)="toggleBought(item)"
-          [disabled]="!isActive()"
           class="item-checkbox">
         </ion-checkbox>
 
         <!-- Product info -->
         <ion-label class="item-label" [class.struck]="item.isBought">
-          <div class="item-name">{{ item.productNameSnap }}</div>
+          <div class="item-name">{{ item.productNameSnap | titlecase }}</div>
           <div class="item-price-row">
             <span>{{ item.quantity }} × ${{ item.unitPrice | number:'1.2-2' }}</span>
             <span class="item-total">${{ item.totalPrice | number:'1.2-2' }}</span>
@@ -64,8 +66,11 @@
         </ion-label>
       </ion-item>
 
-      <!-- Swipe to delete -->
+      <!-- Swipe options -->
       <ion-item-options side="end" *ngIf="isActive()">
+        <ion-item-option color="primary" (click)="openAddModal(item)">
+          <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+        </ion-item-option>
         <ion-item-option color="danger" (click)="deleteItem(item)">
           <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
         </ion-item-option>
@@ -106,7 +111,7 @@
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-title>{{ 'ADD_PRODUCT' | translate }}</ion-title>
+        <ion-title>{{ (editingItem ? 'EDIT_ITEM' : 'ADD_PRODUCT') | translate }}</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="isAddModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
         </ion-buttons>
@@ -127,7 +132,7 @@
         <ion-item button *ngFor="let p of searchResults" (click)="selectProduct(p)" detail="false">
           <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
           <ion-label>
-            <h3>{{ p.name }}</h3>
+            <h3>{{ p.name | titlecase }}</h3>
             <p>{{ p.category | translate }}</p>
           </ion-label>
         </ion-item>
@@ -160,7 +165,7 @@
       <div *ngIf="selectedProduct || isCreatingNew" class="item-form">
         <h4 class="selected-product-name">
           <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
-          {{ selectedProduct?.name || newProductName }}
+          {{ (selectedProduct?.name || newProductName) | titlecase }}
         </h4>
         <ion-list lines="none">
           <ion-item>
@@ -179,14 +184,14 @@
 
         <div class="modal-preview">
           <span>{{ 'TOTAL_COST' | translate }}</span>
-          <strong>${{ (newItemQty * newItemPrice) | number:'1.2-2' }}</strong>
+          <strong>${{ (newItemQty * (newItemPrice || 0)) | number:'1.2-2' }}</strong>
         </div>
 
         <ion-button
           expand="block" (click)="addItemToCart()" class="ion-margin-top"
-          [disabled]="newItemPrice <= 0 || newItemQty <= 0">
+          [disabled]="newItemQty <= 0">
           <ion-icon name="cart-outline" slot="start"></ion-icon>
-          {{ 'ADD_TO_PURCHASE' | translate }}
+          {{ (editingItem ? 'SAVE' : 'ADD_TO_PURCHASE') | translate }}
         </ion-button>
       </div>
 

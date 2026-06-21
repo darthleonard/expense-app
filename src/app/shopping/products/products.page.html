@@ -29,7 +29,7 @@
           <ion-icon name="pricetag-outline"></ion-icon>
         </div>
         <ion-label>
-          <div class="product-name" [class.inactive]="!p.isActive">{{ p.name }}</div>
+          <div class="product-name" [class.inactive]="!p.isActive">{{ p.name | titlecase }}</div>
           <div class="product-sub">
             <ion-badge [color]="getCategoryColor(p.category)" class="cat-badge">
               {{ p.category | translate }}
@@ -39,7 +39,7 @@
               {{ 'INACTIVE' | translate }}
             </ion-badge>
           </div>
-          <p *ngIf="p.description" class="product-desc">{{ p.description }}</p>
+          <p *ngIf="p.description" class="product-desc">{{ p.description | titlecase }}</p>
         </ion-label>
       </ion-item>
       <ion-item-options side="end">

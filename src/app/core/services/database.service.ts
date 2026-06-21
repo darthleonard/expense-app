@@ -73,13 +73,11 @@ export interface ProductCatalog {
   lastModDate: string;
 }
 
-export type PurchaseType   = 'individual' | 'planificada';
 export type PurchaseStatus = 'activa' | 'completada' | 'cancelada';
 
 export interface Purchase {
   id?: number;
   name: string;
-  type: PurchaseType;
   status: PurchaseStatus;
   creationDate: string;
   purchaseDate?: string;
@@ -156,6 +154,20 @@ export class DatabaseService extends Dexie {
       establishments: '++id, name, isActive, creationDate',
       products: '++id, name, category, code, isActive, creationDate',
       purchases: '++id, name, type, status, establishmentId, creationDate, purchaseDate',
+      purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
+      priceHistory: '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId'
+    });
+
+    // v3: removed 'type' index from purchases (purchase type feature removed)
+    this.version(3).stores({
+      cars: '++id, name',
+      houses: '++id, name',
+      expenses: '++id, houseId, type, amount, date',
+      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
+      incomeRecords: '++id, amount, period, date',
+      establishments: '++id, name, isActive, creationDate',
+      products: '++id, name, category, code, isActive, creationDate',
+      purchases: '++id, name, status, establishmentId, creationDate, purchaseDate',
       purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
       priceHistory: '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId'
     });

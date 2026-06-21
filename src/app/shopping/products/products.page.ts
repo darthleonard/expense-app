@@ -53,22 +53,35 @@ export class ProductsPage implements OnInit {
 
   async save() {
     if (!this.current.name?.trim()) return;
-    await this.shopping.saveProduct({
-      ...this.current,
-      name: this.current.name!.trim(),
-      category: this.current.category as ProductCategory || 'gasto_variable',
-      isActive: this.current.isActive ?? true,
-      creationDate: this.editingProduct?.creationDate || new Date().toISOString(),
-      lastModDate: new Date().toISOString()
-    });
-    this.isModalOpen = false;
-    await this.loadData();
+    try {
+      await this.shopping.saveProduct({
+        ...this.current,
+        name: this.current.name!.trim(),
+        category: this.current.category as ProductCategory || 'gasto_variable',
+        isActive: this.current.isActive ?? true,
+        creationDate: this.editingProduct?.creationDate || new Date().toISOString(),
+        lastModDate: new Date().toISOString()
+      });
+      this.isModalOpen = false;
+      await this.loadData();
+    } catch (err: any) {
+      if (err.message === 'PRODUCT_NAME_DUPLICATE') {
+        const alert = await this.alertCtrl.create({
+          header: await this.translate.get('DUPLICATE_PRODUCT').toPromise(),
+          message: await this.translate.get('PRODUCT_EXISTS_REUSE').toPromise(),
+          buttons: ['OK']
+        });
+        await alert.present();
+      } else {
+        throw err;
+      }
+    }
   }
 
   async confirmDelete(product: ProductCatalog) {
     const alert = await this.alertCtrl.create({
       header: await this.translate.get('DELETE').toPromise(),
-      message: product.name,
+      message: product.name.replace(/\b\w/g, c => c.toUpperCase()),
       buttons: [
         { text: await this.translate.get('CANCEL').toPromise(), role: 'cancel' },
         {

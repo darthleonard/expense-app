@@ -60,7 +60,7 @@ export class EstablishmentsPage implements OnInit {
   async confirmDelete(est: Establishment) {
     const alert = await this.alertCtrl.create({
       header: await this.translate.get('DELETE').toPromise(),
-      message: est.name,
+      message: est.name.replace(/\b\w/g, c => c.toUpperCase()),
       buttons: [
         { text: await this.translate.get('CANCEL').toPromise(), role: 'cancel' },
         {

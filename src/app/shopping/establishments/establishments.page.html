@@ -21,11 +21,11 @@
           <ion-icon name="storefront-outline"></ion-icon>
         </div>
         <ion-label>
-          <div class="est-name" [class.inactive]="!e.isActive">{{ e.name }}</div>
+          <div class="est-name" [class.inactive]="!e.isActive">{{ e.name | titlecase }}</div>
           <p *ngIf="e.address" class="est-addr">
-            <ion-icon name="location-outline" size="small"></ion-icon> {{ e.address }}
+            <ion-icon name="location-outline" size="small"></ion-icon> {{ e.address | titlecase }}
           </p>
-          <p *ngIf="e.description" class="est-desc">{{ e.description }}</p>
+          <p *ngIf="e.description" class="est-desc">{{ e.description | titlecase }}</p>
           <ion-badge *ngIf="!e.isActive" color="medium" style="margin-top:4px;">
             {{ 'INACTIVE' | translate }}
           </ion-badge>

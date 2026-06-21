@@ -155,5 +155,14 @@
   "completada": "Completed",
   "cancelada": "Cancelled",
   "gasto_fijo": "Fixed",
-  "gasto_variable": "Variable"
+  "gasto_variable": "Variable",
+  "REOPEN_PURCHASE": "Reopen Purchase",
+  "REOPEN_PURCHASE_CONFIRM": "Are you sure you want to reopen this purchase? It will be removed from the price history.",
+  "PURCHASE_REOPENED": "Purchase reopened!",
+  "CHANGES_SAVED": "Changes saved!",
+  "DUPLICATE_PRODUCT": "Duplicate Product",
+  "PRODUCT_EXISTS_REUSE": "A product with this name already exists. It will be reused.",
+  "ITEM_ALREADY_ADDED": "This item is already in the list.",
+  "EDIT_ITEM": "Edit Item",
+  "EDIT_PURCHASE": "Edit Purchase"
 }
