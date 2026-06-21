@@ -41,8 +41,9 @@ export class ShoppingService {
     return this.db.products.orderBy('name').toArray();
   }
 
-  getActiveProducts() {
-    return this.db.products.where('isActive').equals(1 as any).sortBy('name');
+  async getActiveProducts() {
+    const products = await this.getProducts();
+    return products.filter(p => p.isActive).sort((a, b) => a.name.localeCompare(b.name));
   }
 
   searchProducts(query: string) {

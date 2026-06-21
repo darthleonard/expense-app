@@ -130,19 +130,14 @@ export class PurchaseDetailPage implements OnInit {
       this.newItemQty = itemToEdit.quantity;
       this.newItemPrice = itemToEdit.unitPrice;
       this.newItemNote = itemToEdit.notes || '';
-      this.searchResults = [];
     } else {
       this.editingItem = null;
       this.newItemQty = 1;
       this.newItemPrice = 0;
       this.newItemNote = '';
-
-      // Load all active products (excluding ones already added)
-      const list = await this.shopping.getActiveProducts();
-      const existingIds = this.items.map(i => i.productId).filter(Boolean);
-      this.searchResults = list.filter(p => !existingIds.includes(p.id));
     }
 
+    this.searchResults = await this.shopping.getActiveProducts();
     this.isAddModalOpen = true;
   }
 
@@ -153,10 +148,7 @@ export class PurchaseDetailPage implements OnInit {
     } else {
       list = await this.shopping.searchProducts(this.productSearchQuery);
     }
-    const existingIds = this.items.map(i => i.productId).filter(Boolean);
-    this.searchResults = list.filter(
-      p => !existingIds.includes(p.id) || (this.editingItem && this.editingItem.productId === p.id)
-    );
+    this.searchResults = list;
     this.isCreatingNew = false;
     this.selectedProduct = null;
   }

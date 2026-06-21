@@ -106,8 +106,7 @@
 </div>
 
 <!-- Add Product Modal (bottom sheet) -->
-<ion-modal [isOpen]="isAddModalOpen" (didDismiss)="isAddModalOpen = false"
-           [breakpoints]="[0, 0.85]" [initialBreakpoint]="0.85">
+<ion-modal [isOpen]="isAddModalOpen" (didDismiss)="isAddModalOpen = false">
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -147,19 +146,27 @@
       </ion-button>
 
       <!-- New product form -->
-      <ion-list *ngIf="isCreatingNew" lines="none">
-        <ion-item>
-          <ion-label position="stacked">{{ 'NAME' | translate }}</ion-label>
-          <ion-input [(ngModel)]="newProductName"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
-          <ion-select [(ngModel)]="newProductCategory" interface="popover">
-            <ion-select-option value="gasto_fijo">{{ 'CAT_FIXED' | translate }}</ion-select-option>
-            <ion-select-option value="gasto_variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
-          </ion-select>
-        </ion-item>
-      </ion-list>
+      <ion-card *ngIf="isCreatingNew">
+        <ion-card-header>
+          <ion-card-title>{{ 'NEW_PRODUCT' | translate }}</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <ion-list lines="none">
+            <ion-item>
+              <ion-label position="stacked">{{ 'NAME' | translate }}</ion-label>
+              <ion-input [(ngModel)]="newProductName"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
+              <ion-select [(ngModel)]="newProductCategory" interface="popover">
+                <ion-select-option value="gasto_fijo">{{ 'CAT_FIXED' | translate }}</ion-select-option>
+                <ion-select-option value="gasto_variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
 
       <!-- Item quantity / price (shown once product selected or being created) -->
       <div *ngIf="selectedProduct || isCreatingNew" class="item-form">
