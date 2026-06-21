@@ -16,8 +16,9 @@ export class ShoppingService {
     return this.db.establishments.orderBy('name').toArray();
   }
 
-  getActiveEstablishments() {
-    return this.db.establishments.where('isActive').equals(1 as any).sortBy('name');
+  async getActiveEstablishments() {
+    const establishments = await this.getEstablishments();
+    return establishments.filter(e => e.isActive);
   }
 
   async saveEstablishment(est: Establishment): Promise<number> {
