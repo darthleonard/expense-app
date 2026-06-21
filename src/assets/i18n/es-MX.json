@@ -162,7 +162,7 @@
     "PURCHASE_REOPENED": "¡Compra reabierta!",
     "CHANGES_SAVED": "¡Cambios guardados!",
     "DUPLICATE_PRODUCT": "Producto Duplicado",
-    "PRODUCT_EXISTS_REUSE": "Ya existe un producto con este nombre. Se reutilizará.",
+    "PRODUCT_EXISTS_REUSE": "Ya existe un producto con este nombre.",
     "ITEM_ALREADY_ADDED": "Este artículo ya está en la lista.",
     "EDIT_ITEM": "Editar Artículo"
 }
