@@ -164,5 +164,7 @@
     "DUPLICATE_PRODUCT": "Producto Duplicado",
     "PRODUCT_EXISTS_REUSE": "Ya existe un producto con este nombre.",
     "ITEM_ALREADY_ADDED": "Este artículo ya está en la lista.",
-    "EDIT_ITEM": "Editar Artículo"
+    "EDIT_ITEM": "Editar Artículo",
+    "HOUSE_HAS_EXPENSES": "Esta casa tiene gastos registrados. Si la eliminas, los gastos asociados se eliminarán.",
+    "VEHICLE_HAS_FUEL_RECORDS": "Este vehículo tiene registros de combustible. Si lo eliminas, los registros de combustible asociados se eliminarán."
 }

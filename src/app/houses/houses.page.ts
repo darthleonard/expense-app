@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService, House } from '../core/services/database.service';
+import { AlertController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-houses',
@@ -13,7 +15,10 @@ export class HousesPage implements OnInit {
   editingHouse: House | null = null;
   currentHouse: House = this.getDefaultHouse();
 
-  constructor(private db: DatabaseService) { }
+  constructor(private db: DatabaseService,
+    private alertCtrl: AlertController,
+    private translate: TranslateService)
+    { }
 
   ngOnInit() {}
 
@@ -57,9 +62,35 @@ export class HousesPage implements OnInit {
   }
 
   async deleteHouse(house: House) {
-    if (house.id) {
-      await this.db.houses.delete(house.id);
-      await this.loadData();
+    if (!house.id) return;
+
+    const expenses = await this.db.expenses.where('houseId').equals(house.id).toArray();
+    if (expenses.length > 0) {
+      this.confirmDelete(house);
+      return;
     }
+
+    await this.db.houses.delete(house.id);
+    await this.loadData();
+  }
+
+  async confirmDelete(house: House) {
+    const alert = await this.alertCtrl.create({
+      header: this.translate.instant('DELETE'),
+      message: this.translate.instant('HOUSE_HAS_EXPENSES'),
+      buttons: [
+        { text: this.translate.instant('CANCEL'), role: 'cancel' },
+        {
+          text: this.translate.instant('DELETE'),
+          role: 'destructive',
+          handler: async () => {
+            await this.db.expenses.where('houseId').equals(house.id!).delete();
+            await this.db.houses.delete(house.id!);
+            await this.loadData();
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

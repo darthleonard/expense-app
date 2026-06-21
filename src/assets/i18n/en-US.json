@@ -164,5 +164,7 @@
   "PRODUCT_EXISTS_REUSE": "A product with this name already exists.",
   "ITEM_ALREADY_ADDED": "This item is already in the list.",
   "EDIT_ITEM": "Edit Item",
-  "EDIT_PURCHASE": "Edit Purchase"
+  "EDIT_PURCHASE": "Edit Purchase",
+  "HOUSE_HAS_EXPENSES": "This house has expenses recorded. If you delete it, the associated expenses will be deleted.",
+  "VEHICLE_HAS_FUEL_RECORDS": "This vehicle has fuel records. If you delete it, the associated fuel records will be deleted."
 }

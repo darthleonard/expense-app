@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService, Car } from '../core/services/database.service';
+import { AlertController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-vehicles',
@@ -13,7 +15,10 @@ export class VehiclesPage implements OnInit {
   editingVehicle: Car | null = null;
   currentVehicle: Car = this.getDefaultVehicle();
 
-  constructor(private db: DatabaseService) { }
+  constructor(private db: DatabaseService,
+    private alertCtrl: AlertController,
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {}
 
@@ -57,9 +62,35 @@ export class VehiclesPage implements OnInit {
   }
 
   async deleteVehicle(vehicle: Car) {
-    if (vehicle.id) {
-      await this.db.cars.delete(vehicle.id);
-      await this.loadData();
+    if (!vehicle.id) return;
+
+    const fuelRecords = await this.db.fuelRecords.where('carId').equals(vehicle.id).toArray();
+    if(fuelRecords.length > 0) {
+      this.confirmDelete(vehicle);
+      return;
     }
+    
+    await this.db.cars.delete(vehicle.id);
+    await this.loadData();
   }
+
+  async confirmDelete(vehicle: Car) {
+      const alert = await this.alertCtrl.create({
+        header: this.translate.instant('DELETE'),
+        message: this.translate.instant('VEHICLE_HAS_FUEL_RECORDS'),
+        buttons: [
+          { text: this.translate.instant('CANCEL'), role: 'cancel' },
+          {
+            text: this.translate.instant('DELETE'),
+            role: 'destructive',
+            handler: async () => {
+              await this.db.fuelRecords.where('carId').equals(vehicle.id!).delete();
+              await this.db.cars.delete(vehicle.id!);
+              await this.loadData();
+            }
+          }
+        ]
+      });
+      await alert.present();
+    }
 }
