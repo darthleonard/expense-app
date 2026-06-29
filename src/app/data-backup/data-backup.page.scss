@@ -1,0 +1,183 @@
+@use 'sass:color';
+
+// ─── Variables ────────────────────────────────────────────────────────────────
+$export-color: #6366f1;   // indigo
+$import-color: #10b981;   // emerald
+$warning-color: #f59e0b;  // amber
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+.backup-content {
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+.backup-container {
+  padding: 20px 16px 40px;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+.page-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 0 8px;
+  gap: 14px;
+}
+
+.hero-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #{$export-color}, #{$import-color});
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba($export-color, 0.35);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+.hero-icon {
+  font-size: 36px;
+  color: #fff;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  text-align: center;
+  color: var(--ion-text-color);
+}
+
+// ─── Cards ────────────────────────────────────────────────────────────────────
+.backup-card {
+  background: var(--ion-card-background, #fff);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  display: flex;
+  flex-direction: column;
+}
+
+// Top accent strip
+.export-card {
+  border-top: 4px solid $export-color;
+}
+.import-card {
+  border-top: 4px solid $import-color;
+}
+
+// ─── Card icon ────────────────────────────────────────────────────────────────
+.card-icon-wrap {
+  width: 100%;
+  padding: 22px 0 10px;
+  display: flex;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.export-icon {
+  color: $export-color;
+  background: linear-gradient(180deg, rgba($export-color, 0.06) 0%, transparent 100%);
+}
+
+.import-icon {
+  color: $import-color;
+  background: linear-gradient(180deg, rgba($import-color, 0.06) 0%, transparent 100%);
+}
+
+// ─── Card body ────────────────────────────────────────────────────────────────
+.card-body {
+  padding: 0 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
+
+.card-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ion-color-medium);
+}
+
+// ─── Warning banner ───────────────────────────────────────────────────────────
+.warning-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba($warning-color, 0.12);
+  border: 1px solid rgba($warning-color, 0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: color.adjust($warning-color, $lightness: -20%);
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: $warning-color;
+  }
+}
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+.action-btn {
+  --border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+  height: 48px;
+}
+
+.export-btn {
+  --background: #{$export-color};
+  --background-activated: #{color.adjust($export-color, $lightness: -8%)};
+  --box-shadow: 0 4px 14px rgba(#{$export-color}, 0.45);
+}
+
+.import-btn {
+  --color: #{$import-color};
+  --border-color: #{$import-color};
+
+  &:hover {
+    --background: rgba(#{$import-color}, 0.08);
+  }
+}
+
+// ─── Dark mode overrides ──────────────────────────────────────────────────────
+@media (prefers-color-scheme: dark) {
+  .backup-card {
+    background: var(--ion-card-background, #1e1e2e);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  .warning-banner {
+    color: color.adjust($warning-color, $lightness: 20%);
+  }
+}

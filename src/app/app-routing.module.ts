@@ -42,6 +42,10 @@ const routes: Routes = [
   },  {
     path: 'shopping',
     loadChildren: () => import('./shopping/shopping.module').then( m => m.ShoppingPageModule)
+  },
+  {
+    path: 'data-backup',
+    loadChildren: () => import('./data-backup/data-backup.module').then( m => m.DataBackupPageModule)
   }
 
 ];

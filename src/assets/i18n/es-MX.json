@@ -166,5 +166,16 @@
     "ITEM_ALREADY_ADDED": "Este artículo ya está en la lista.",
     "EDIT_ITEM": "Editar Artículo",
     "HOUSE_HAS_EXPENSES": "Esta casa tiene gastos registrados. Si la eliminas, los gastos asociados se eliminarán.",
-    "VEHICLE_HAS_FUEL_RECORDS": "Este vehículo tiene registros de combustible. Si lo eliminas, los registros de combustible asociados se eliminarán."
+    "VEHICLE_HAS_FUEL_RECORDS": "Este vehículo tiene registros de combustible. Si lo eliminas, los registros de combustible asociados se eliminarán.",
+    "DATA_BACKUP_TITLE": "Respaldo de Datos",
+    "EXPORT_TITLE": "Exportar Datos",
+    "EXPORT_DESC": "Guarda una copia de todos tus datos como archivo de respaldo ZIP. Compártelo por Google Drive, correo, WhatsApp o cualquier app disponible en tu dispositivo.",
+    "EXPORT_BUTTON": "Exportar CSV",
+    "IMPORT_TITLE": "Importar Datos",
+    "IMPORT_DESC": "Restaura tus datos desde un archivo de respaldo previamente exportado. Esto reemplazará todos los datos actuales con el respaldo.",
+    "IMPORT_BUTTON": "Importar CSV",
+    "IMPORT_WARNING": "Esto eliminará todos los datos actuales y los reemplazará con el respaldo. ¿Estás seguro?",
+    "EXPORT_SUCCESS": "¡Datos exportados correctamente!",
+    "IMPORT_SUCCESS": "¡Datos importados correctamente!",
+    "BACKUP_ERROR": "Ocurrió un error. Por favor intenta de nuevo."
 }

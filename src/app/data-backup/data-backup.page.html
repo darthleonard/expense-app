@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'DATA_BACKUP_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="backup-content">
+
+  <!-- Hidden native file picker -->
+  <input
+    #fileInput
+    type="file"
+    accept=".zip"
+    style="display:none"
+    (change)="onFileSelected($event)"
+  />
+
+  <div class="backup-container">
+
+    <!-- Page header -->
+    <div class="page-hero">
+      <div class="hero-icon-wrap">
+        <ion-icon name="cloud-upload" class="hero-icon"></ion-icon>
+      </div>
+      <h1 class="hero-title">{{ 'DATA_BACKUP_TITLE' | translate }}</h1>
+    </div>
+
+    <!-- Export card -->
+    <div class="backup-card export-card">
+      <div class="card-icon-wrap export-icon">
+        <ion-icon name="share-outline"></ion-icon>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">{{ 'EXPORT_TITLE' | translate }}</h2>
+        <p class="card-desc">{{ 'EXPORT_DESC' | translate }}</p>
+        <ion-button
+          id="btn-export"
+          expand="block"
+          class="action-btn export-btn"
+          [disabled]="isExporting"
+          (click)="onExport()"
+        >
+          <ion-spinner *ngIf="isExporting" name="crescent" slot="start"></ion-spinner>
+          <ion-icon *ngIf="!isExporting" name="arrow-up-circle-outline" slot="start"></ion-icon>
+          {{ 'EXPORT_BUTTON' | translate }}
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Import card -->
+    <div class="backup-card import-card">
+      <div class="card-icon-wrap import-icon">
+        <ion-icon name="download-outline"></ion-icon>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">{{ 'IMPORT_TITLE' | translate }}</h2>
+        <p class="card-desc">{{ 'IMPORT_DESC' | translate }}</p>
+
+        <div class="warning-banner">
+          <ion-icon name="warning-outline"></ion-icon>
+          <span>{{ 'IMPORT_WARNING' | translate }}</span>
+        </div>
+
+        <ion-button
+          id="btn-import"
+          expand="block"
+          class="action-btn import-btn"
+          fill="outline"
+          [disabled]="isImporting"
+          (click)="onImport()"
+        >
+          <ion-spinner *ngIf="isImporting" name="crescent" slot="start"></ion-spinner>
+          <ion-icon *ngIf="!isImporting" name="arrow-down-circle-outline" slot="start"></ion-icon>
+          {{ 'IMPORT_BUTTON' | translate }}
+        </ion-button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
