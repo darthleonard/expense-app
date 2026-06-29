@@ -4,7 +4,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
 import {
   DatabaseService, Purchase, PurchaseItem,
-  ProductCatalog, Establishment, ProductCategory
+  ProductCatalog, Establishment, ProductCategory, toLower
 } from '../../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -178,13 +178,13 @@ export class PurchaseDetailPage implements OnInit {
       if (!this.newProductName.trim()) return;
       try {
         productId = await this.shopping.saveProduct({
-          name: this.newProductName.trim(),
+          name: toLower(this.newProductName),
           category: this.newProductCategory,
           isActive: true,
           creationDate: new Date().toISOString(),
           lastModDate: new Date().toISOString()
         });
-        productName = this.newProductName.trim().toLowerCase();
+        productName = toLower(this.newProductName);
         categorySnap = this.newProductCategory;
       } catch (err: any) {
         if (err.message === 'PRODUCT_NAME_DUPLICATE') {
@@ -231,7 +231,7 @@ export class PurchaseDetailPage implements OnInit {
       this.editingItem.quantity = this.newItemQty;
       this.editingItem.unitPrice = price;
       this.editingItem.totalPrice = this.newItemQty * price;
-      this.editingItem.notes = this.newItemNote || undefined;
+      this.editingItem.notes = this.newItemNote ? toLower(this.newItemNote) : undefined;
     } else {
       const item: PurchaseItem = {
         purchaseId: this.purchase.id,
@@ -242,7 +242,7 @@ export class PurchaseDetailPage implements OnInit {
         unitPrice: price,
         totalPrice: this.newItemQty * price,
         isBought: false,
-        notes: this.newItemNote || undefined,
+        notes: this.newItemNote ? toLower(this.newItemNote) : undefined,
         addedDate: new Date().toISOString()
       };
       this.items.push(item);

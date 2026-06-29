@@ -14,7 +14,7 @@
     <ion-item class="house-selector-item">
       <ion-icon [name]="getHouseIcon(selectedHouseId)" slot="start" color="primary"></ion-icon>
       <ion-select [(ngModel)]="selectedHouseId" (ionChange)="onHouseChange($event)" interface="popover" placeholder="{{ 'SELECT_HOUSE' | translate }}" style="width: 100%;">
-        <ion-select-option *ngFor="let house of houses" [value]="house.id">{{ house.name }}</ion-select-option>
+        <ion-select-option *ngFor="let house of houses" [value]="house.id">{{ house.name | titlecase }}</ion-select-option>
       </ion-select>
     </ion-item>
   </div>
@@ -44,7 +44,7 @@
             <ion-label>
               <h2 class="grouped-expanded-title">{{ exp.type | titlecase | translate }}</h2>
               <p>{{ formatDate(exp.date) }}</p>
-              <p *ngIf="exp.notes">{{ exp.notes }}</p>
+              <p *ngIf="exp.notes">{{ exp.notes | titlecase }}</p>
             </ion-label>
             <ion-note slot="end" color="primary" class="grouped-expanded-amount">
               ${{ exp.amount | number:'1.2-2' }}

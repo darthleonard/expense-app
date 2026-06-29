@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService, House } from '../core/services/database.service';
+import { DatabaseService, House, toLower } from '../core/services/database.service';
 import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -50,11 +50,15 @@ export class HousesPage implements OnInit {
     
     if (this.editingHouse && this.editingHouse.id) {
       await this.db.houses.update(this.editingHouse.id, {
-        ...this.currentHouse
+        ...this.currentHouse,
+        name: toLower(this.currentHouse.name),
+        description: toLower(this.currentHouse.description)
       });
     } else {
       await this.db.houses.add({
-        ...this.currentHouse
+        ...this.currentHouse,
+        name: toLower(this.currentHouse.name),
+        description: toLower(this.currentHouse.description)
       });
     }
     this.isModalOpen = false;

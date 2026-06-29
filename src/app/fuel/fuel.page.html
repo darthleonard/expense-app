@@ -14,7 +14,7 @@
     <ion-item class="vehicle-selector-item">
       <ion-icon [name]="getCarIcon(selectedCarId)" slot="start" color="primary"></ion-icon>
       <ion-select [(ngModel)]="selectedCarId" (ionChange)="onCarChange($event)" interface="popover" placeholder="{{ 'SELECT_VEHICLE' | translate }}" style="width: 100%;">
-        <ion-select-option *ngFor="let car of vehicles" [value]="car.id">{{ car.name }}</ion-select-option>
+        <ion-select-option *ngFor="let car of vehicles" [value]="car.id">{{ car.name | titlecase }}</ion-select-option>
       </ion-select>
     </ion-item>
   </div>

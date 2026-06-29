@@ -113,6 +113,11 @@ export interface PriceHistory {
   notes?: string;
 }
 
+/** Normalizes a user-entered string for storage: trimmed + lowercase. */
+export function toLower(value: string | undefined | null): string {
+  return value?.trim().toLowerCase() ?? '';
+}
+
 // ─── Database ─────────────────────────────────────────────────────────────────
 
 @Injectable({

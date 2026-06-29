@@ -16,8 +16,8 @@
     <ion-item *ngFor="let vehicle of vehicles">
       <ion-icon [name]="vehicle.icon || 'car'" slot="start" color="primary"></ion-icon>
       <ion-label>
-        <h2>{{ vehicle.name }}</h2>
-        <p *ngIf="vehicle.description">{{ vehicle.description }}</p>
+        <h2>{{ vehicle.name | titlecase }}</h2>
+        <p *ngIf="vehicle.description">{{ vehicle.description | titlecase }}</p>
       </ion-label>
       <ion-button fill="clear" slot="end" (click)="openModal(vehicle)">
         <ion-icon name="create-outline" slot="icon-only"></ion-icon>

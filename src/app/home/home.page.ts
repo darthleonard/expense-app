@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService, ExpenseRecord, House } from '../core/services/database.service';
+import { DatabaseService, ExpenseRecord, House, toLower } from '../core/services/database.service';
 import { SettingsService } from '../core/services/settings.service';
 
 @Component({
@@ -122,6 +122,7 @@ export class HomePage implements OnInit {
     if (this.editingExpense && this.editingExpense.id) {
       await this.db.expenses.update(this.editingExpense.id, {
         ...this.currentExpense,
+        notes: toLower(this.currentExpense.notes),
         houseId: this.selectedHouseId,
         lastModDate: now,
         creationDate: this.editingExpense.creationDate || now
@@ -129,6 +130,7 @@ export class HomePage implements OnInit {
     } else {
       await this.db.expenses.add({
         ...this.currentExpense,
+        notes: toLower(this.currentExpense.notes),
         houseId: this.selectedHouseId,
         creationDate: now,
         lastModDate: now

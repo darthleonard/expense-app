@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService, Car } from '../core/services/database.service';
+import { DatabaseService, Car, toLower } from '../core/services/database.service';
 import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -50,11 +50,15 @@ export class VehiclesPage implements OnInit {
     
     if (this.editingVehicle && this.editingVehicle.id) {
       await this.db.cars.update(this.editingVehicle.id, {
-        ...this.currentVehicle
+        ...this.currentVehicle,
+        name: toLower(this.currentVehicle.name),
+        description: toLower(this.currentVehicle.description)
       });
     } else {
       await this.db.cars.add({
-        ...this.currentVehicle
+        ...this.currentVehicle,
+        name: toLower(this.currentVehicle.name),
+        description: toLower(this.currentVehicle.description)
       });
     }
     this.isModalOpen = false;

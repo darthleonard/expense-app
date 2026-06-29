@@ -16,8 +16,8 @@
     <ion-item *ngFor="let house of houses">
       <ion-icon [name]="house.icon || 'home'" slot="start" color="primary"></ion-icon>
       <ion-label>
-        <h2>{{ house.name }}</h2>
-        <p *ngIf="house.description">{{ house.description }}</p>
+        <h2>{{ house.name | titlecase }}</h2>
+        <p *ngIf="house.description">{{ house.description | titlecase }}</p>
       </ion-label>
       <ion-button fill="clear" slot="end" (click)="openModal(house)">
         <ion-icon name="create-outline" slot="icon-only"></ion-icon>

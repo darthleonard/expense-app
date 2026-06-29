@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   DatabaseService,
   Purchase, PurchaseItem, ProductCatalog,
-  Establishment, PriceHistory, PurchaseStatus
+  Establishment, PriceHistory, PurchaseStatus, toLower
 } from './database.service';
 
 @Injectable({ providedIn: 'root' })
@@ -23,7 +23,12 @@ export class ShoppingService {
 
   async saveEstablishment(est: Establishment): Promise<number> {
     const now = new Date().toISOString();
-    const estToSave = { ...est, name: est.name.trim().toLowerCase() };
+    const estToSave = {
+      ...est,
+      name: toLower(est.name),
+      description: toLower(est.description),
+      address: toLower(est.address)
+    };
     if (est.id) {
       await this.db.establishments.update(est.id, { ...estToSave, lastModDate: now });
       return est.id;
@@ -66,7 +71,11 @@ export class ShoppingService {
       }
     }
 
-    const productToSave = { ...product, name: normalizedName };
+    const productToSave = {
+      ...product,
+      name: normalizedName,
+      description: toLower(product.description)
+    };
     if (product.id) {
       await this.db.products.update(product.id, { ...productToSave, lastModDate: now });
       return product.id;
@@ -90,7 +99,12 @@ export class ShoppingService {
 
   async savePurchase(purchase: Purchase): Promise<number> {
     const now = new Date().toISOString();
-    const purchaseToSave = { ...purchase, name: purchase.name.trim().toLowerCase() };
+    const purchaseToSave = {
+      ...purchase,
+      name: toLower(purchase.name),
+      notes: toLower(purchase.notes),
+      establishmentNameSnap: toLower(purchase.establishmentNameSnap)
+    };
     if (purchase.id) {
       const changes = { ...purchaseToSave };
       delete changes.id;
