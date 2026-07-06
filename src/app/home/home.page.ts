@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DatabaseService, ExpenseRecord, House, toLower } from '../core/services/database.service';
 import { SettingsService } from '../core/services/settings.service';
+import { IonModal } from '@ionic/angular';
+import { HasChangesService } from '../core/services/has-changes.service';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +19,13 @@ export class HomePage implements OnInit {
   editingExpense: ExpenseRecord | null = null;
   currentExpense: ExpenseRecord = this.getDefaultExpense();
 
-  constructor(private db: DatabaseService, public settings: SettingsService) { }
+  @ViewChild(IonModal) modal!: IonModal;
+
+  constructor(
+    private db: DatabaseService, 
+    public settings: SettingsService,
+    private hasChangesService: HasChangesService
+  ) { }
 
   ngOnInit() {
   }
@@ -114,6 +122,20 @@ export class HomePage implements OnInit {
     this.isModalOpen = true;
   }
 
+  canDismiss = async (data?: any, role?: string) => {
+    if (role === 'save') return true;
+    
+    const isChanged = this.hasChangesService.hasChanges(
+      this.editingExpense || this.getDefaultExpense(),
+      this.currentExpense
+    );
+    
+    if (isChanged) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
+  };
+
   async saveExpense() {
     if (!this.selectedHouseId || this.currentExpense.amount <= 0 || !this.currentExpense.date) return;
     
@@ -136,7 +158,7 @@ export class HomePage implements OnInit {
         lastModDate: now
       });
     }
-    this.isModalOpen = false;
+    await this.modal.dismiss(null, 'save');
     await this.loadData();
   }
 

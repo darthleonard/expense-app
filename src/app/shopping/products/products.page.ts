@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonModal } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
 import { DatabaseService, ProductCatalog, ProductCategory } from '../../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
+import { HasChangesService } from '../../core/services/has-changes.service';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-products',
@@ -17,10 +19,13 @@ export class ProductsPage implements OnInit {
   current: Partial<ProductCatalog> = {};
   searchQuery = '';
 
+  @ViewChild(IonModal) modal!: IonModal;
+
   constructor(
     private shopping: ShoppingService,
     private alertCtrl: AlertController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hasChangesService: HasChangesService
   ) {}
 
   ngOnInit() {}
@@ -51,6 +56,20 @@ export class ProductsPage implements OnInit {
     this.isModalOpen = true;
   }
 
+  canDismiss = async (data?: any, role?: string) => {
+    if (role === 'save') return true;
+    
+    const isChanged = this.hasChangesService.hasChanges(
+      this.editingProduct || { category: 'gasto_variable', isActive: true },
+      this.current
+    );
+    
+    if (isChanged) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
+  };
+
   async save() {
     if (!this.current.name?.trim()) return;
     try {
@@ -62,7 +81,7 @@ export class ProductsPage implements OnInit {
         creationDate: this.editingProduct?.creationDate || new Date().toISOString(),
         lastModDate: new Date().toISOString()
       });
-      this.isModalOpen = false;
+      await this.modal.dismiss(null, 'save');
       await this.loadData();
     } catch (err: any) {
       if (err.message === 'PRODUCT_NAME_DUPLICATE') {

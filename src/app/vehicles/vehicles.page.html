@@ -39,13 +39,13 @@
     </ion-fab-button>
   </ion-fab>
 
-  <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
+  <ion-modal #modal [isOpen]="isModalOpen" [canDismiss]="canDismiss" (didDismiss)="isModalOpen = false">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-title>{{ (editingVehicle ? 'EDIT_VEHICLE' : 'NEW_VEHICLE') | translate }}</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="isModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
+            <ion-button (click)="modal.dismiss(null, 'cancel')">{{ 'CANCEL' | translate }}</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>

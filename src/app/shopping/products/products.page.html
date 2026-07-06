@@ -58,13 +58,13 @@
 </ion-content>
 
 <!-- Product Modal -->
-<ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false" [breakpoints]="[0, 0.85]" [initialBreakpoint]="0.85">
+<ion-modal #modal [isOpen]="isModalOpen" [canDismiss]="canDismiss" (didDismiss)="isModalOpen = false" [breakpoints]="[0, 0.85]" [initialBreakpoint]="0.85">
   <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-title>{{ (editingProduct ? 'EDIT_PRODUCT' : 'NEW_PRODUCT') | translate }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="isModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
+          <ion-button (click)="modal.dismiss(null, 'cancel')">{{ 'CANCEL' | translate }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>

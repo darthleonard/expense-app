@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ShoppingPage } from './shopping.page';
+import { UnsavedChangesGuard } from '../core/guards/unsaved-changes.guard';
 
 const routes: Routes = [
   {
@@ -25,7 +26,8 @@ const routes: Routes = [
   },
   {
     path: 'purchase-detail/:id',
-    loadChildren: () => import('./purchase-detail/purchase-detail.module').then(m => m.PurchaseDetailPageModule)
+    loadChildren: () => import('./purchase-detail/purchase-detail.module').then(m => m.PurchaseDetailPageModule),
+    canDeactivate: [UnsavedChangesGuard]
   },
   {
     path: 'establishments',

@@ -47,14 +47,14 @@
 </ion-content>
 
 <!-- Establishment Modal -->
-<ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false" [breakpoints]="[0, 0.80]" [initialBreakpoint]="0.80">
+  <ion-modal #modal [isOpen]="isModalOpen" [canDismiss]="canDismiss" (didDismiss)="isModalOpen = false" [breakpoints]="[0, 0.80]" [initialBreakpoint]="0.80">
   <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-title>{{ (editingEst ? 'EDIT_ESTABLISHMENT' : 'NEW_ESTABLISHMENT') | translate }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="isModalOpen = false">{{ 'CANCEL' | translate }}</ion-button>
-        </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button (click)="modal.dismiss(null, 'cancel')">{{ 'CANCEL' | translate }}</ion-button>
+          </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">

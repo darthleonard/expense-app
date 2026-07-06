@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DatabaseService, FuelRecord, Car } from '../core/services/database.service';
 import { SettingsService } from '../core/services/settings.service';
+import { IonModal } from '@ionic/angular';
+import { HasChangesService } from '../core/services/has-changes.service';
 
 @Component({
   selector: 'app-fuel',
@@ -18,7 +20,13 @@ export class FuelPage implements OnInit {
   editingRecord: FuelRecord | null = null;
   currentRecord: any = this.getDefaultRecord();
 
-  constructor(private db: DatabaseService, public settings: SettingsService) { }
+  @ViewChild(IonModal) modal!: IonModal;
+
+  constructor(
+    private db: DatabaseService, 
+    public settings: SettingsService,
+    private hasChangesService: HasChangesService
+  ) { }
 
   ngOnInit() {
   }
@@ -105,6 +113,20 @@ export class FuelPage implements OnInit {
     this.isModalOpen = true;
   }
 
+  canDismiss = async (data?: any, role?: string) => {
+    if (role === 'save') return true;
+    
+    const isChanged = this.hasChangesService.hasChanges(
+      this.editingRecord || this.getDefaultRecord(),
+      this.currentRecord
+    );
+    
+    if (isChanged) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
+  };
+
   async saveRecord() {
     if (!this.selectedCarId) return;
 
@@ -147,7 +169,7 @@ export class FuelPage implements OnInit {
       recToSave.creationDate = now;
       await this.db.fuelRecords.add(recToSave);
     }
-    this.isModalOpen = false;
+    await this.modal.dismiss(null, 'save');
     await this.loadData();
   }
 

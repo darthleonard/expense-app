@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonModal } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
 import { DatabaseService, Establishment } from '../../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
+import { HasChangesService } from '../../core/services/has-changes.service';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-establishments',
@@ -16,10 +18,13 @@ export class EstablishmentsPage implements OnInit {
   editingEst: Establishment | null = null;
   current: Partial<Establishment> = {};
 
+  @ViewChild(IonModal) modal!: IonModal;
+
   constructor(
     private shopping: ShoppingService,
     private alertCtrl: AlertController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hasChangesService: HasChangesService
   ) {}
 
   ngOnInit() {}
@@ -43,6 +48,20 @@ export class EstablishmentsPage implements OnInit {
     this.isModalOpen = true;
   }
 
+  canDismiss = async (data?: any, role?: string) => {
+    if (role === 'save') return true;
+    
+    const isChanged = this.hasChangesService.hasChanges(
+      this.editingEst || { isActive: true },
+      this.current
+    );
+    
+    if (isChanged) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
+  };
+
   async save() {
     if (!this.current.name?.trim()) return;
     await this.shopping.saveEstablishment({
@@ -53,7 +72,7 @@ export class EstablishmentsPage implements OnInit {
       creationDate: this.editingEst?.creationDate || new Date().toISOString(),
       lastModDate: new Date().toISOString()
     });
-    this.isModalOpen = false;
+    await this.modal.dismiss(null, 'save');
     await this.loadData();
   }
 

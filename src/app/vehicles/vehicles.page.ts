@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DatabaseService, Car, toLower } from '../core/services/database.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonModal } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { HasChangesService } from '../core/services/has-changes.service';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-vehicles',
@@ -15,9 +17,12 @@ export class VehiclesPage implements OnInit {
   editingVehicle: Car | null = null;
   currentVehicle: Car = this.getDefaultVehicle();
 
+  @ViewChild(IonModal) modal!: IonModal;
+  
   constructor(private db: DatabaseService,
     private alertCtrl: AlertController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hasChangesService: HasChangesService
   ) { }
 
   ngOnInit() {}
@@ -45,6 +50,20 @@ export class VehiclesPage implements OnInit {
     this.isModalOpen = true;
   }
 
+  canDismiss = async (data?: any, role?: string) => {
+    if (role === 'save') return true;
+    
+    const isChanged = this.hasChangesService.hasChanges(
+      this.editingVehicle || this.getDefaultVehicle(),
+      this.currentVehicle
+    );
+    
+    if (isChanged) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
+  };
+
   async saveVehicle() {
     if (!this.currentVehicle.name.trim()) return;
     
@@ -61,7 +80,7 @@ export class VehiclesPage implements OnInit {
         description: toLower(this.currentVehicle.description)
       });
     }
-    this.isModalOpen = false;
+    await this.modal.dismiss(null, 'save');
     await this.loadData();
   }
 

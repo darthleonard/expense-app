@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonModal } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
 import { DatabaseService, Purchase, Establishment } from '../../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
+import { HasChangesService } from '../../core/services/has-changes.service';
+import { ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-purchases',
@@ -20,12 +22,15 @@ export class PurchasesPage implements OnInit {
   editingPurchase: Purchase | null = null;
   newPurchase: Partial<Purchase> = {};
 
+  @ViewChild(IonModal) modal!: IonModal;
+
   constructor(
     private shopping: ShoppingService,
     private db: DatabaseService,
     private router: Router,
     private alertCtrl: AlertController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hasChangesService: HasChangesService
   ) {}
 
   ngOnInit() {}
@@ -59,9 +64,26 @@ export class PurchasesPage implements OnInit {
   }
 
   closeModal() {
-    this.isModalOpen = false;
-    this.editingPurchase = null;
+    this.modal.dismiss(null, 'cancel');
   }
+
+  canDismiss = async (data?: any, role?: string) => {
+    if (role === 'save') return true;
+    
+    const isChanged = this.hasChangesService.hasChanges(
+      this.editingPurchase || {
+        status: 'activa',
+        totalPriceCalculated: 0,
+        purchaseDate: new Date().toISOString().substring(0, 10)
+      },
+      this.newPurchase
+    );
+    
+    if (isChanged) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
+  };
 
   async savePurchase() {
     if (!this.newPurchase.name?.trim()) return;
@@ -76,7 +98,7 @@ export class PurchasesPage implements OnInit {
         purchaseDate: this.newPurchase.purchaseDate ? new Date(this.newPurchase.purchaseDate).toISOString() : undefined
       };
       await this.shopping.savePurchase(updated);
-      this.closeModal();
+      await this.modal.dismiss(null, 'save');
       await this.loadData();
     } else {
       const id = await this.shopping.savePurchase({
@@ -88,7 +110,7 @@ export class PurchasesPage implements OnInit {
         establishmentNameSnap: est?.name,
         totalPriceCalculated: 0
       });
-      this.closeModal();
+      await this.modal.dismiss(null, 'save');
       await this.loadData();
       this.router.navigate(['/shopping/purchase-detail', id]);
     }

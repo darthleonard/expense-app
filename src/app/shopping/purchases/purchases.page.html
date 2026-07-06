@@ -69,7 +69,7 @@
 </ion-content>
 
 <!-- New Purchase Modal -->
-<ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" [breakpoints]="[0, 0.75]" [initialBreakpoint]="0.75">
+<ion-modal #modal [isOpen]="isModalOpen" [canDismiss]="canDismiss" (didDismiss)="isModalOpen = false; editingPurchase = null" [breakpoints]="[0, 0.75]" [initialBreakpoint]="0.75">
   <ng-template>
     <ion-header>
       <ion-toolbar>

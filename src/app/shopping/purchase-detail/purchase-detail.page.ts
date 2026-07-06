@@ -6,6 +6,7 @@ import {
   DatabaseService, Purchase, PurchaseItem,
   ProductCatalog, Establishment, ProductCategory, toLower
 } from '../../core/services/database.service';
+import { HasChangesService } from '../../core/services/has-changes.service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -49,7 +50,8 @@ export class PurchaseDetailPage implements OnInit {
     private db: DatabaseService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hasChangesService: HasChangesService
   ) {}
 
   ngOnInit() {}
@@ -282,6 +284,13 @@ export class PurchaseDetailPage implements OnInit {
       }
     }
     return false;
+  }
+
+  async canDeactivate(): Promise<boolean> {
+    if (this.isActive() && this.hasChanges()) {
+      return await this.hasChangesService.confirmDiscard();
+    }
+    return true;
   }
 
   async saveChanges() {
