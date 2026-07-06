@@ -28,10 +28,64 @@
   </div>
 
   <div class="chart-container" style="position: relative; height: 350px; width: 100%; margin-bottom: 30px; background: var(--ion-background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px;">
+    <ion-button id="pie-filter-trigger" fill="clear" color="medium" size="small" style="position: absolute; top: 10px; right: 10px; z-index: 10; --padding-start: 4px; --padding-end: 4px; margin: 0;">
+      <ion-icon slot="icon-only" name="menu-outline" style="font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-popover trigger="pie-filter-trigger" triggerAction="click" dismissOnSelect="true">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <ion-item button (click)="setPieTimeRange('current_month')">
+              <ion-label>{{ 'CURRENT_MONTH' | translate }}</ion-label>
+              <ion-icon *ngIf="pieTimeRange === 'current_month'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setPieTimeRange('last_3_months')">
+              <ion-label>{{ 'LAST_3_MONTHS' | translate }}</ion-label>
+              <ion-icon *ngIf="pieTimeRange === 'last_3_months'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setPieTimeRange('last_6_months')">
+              <ion-label>{{ 'LAST_6_MONTHS' | translate }}</ion-label>
+              <ion-icon *ngIf="pieTimeRange === 'last_6_months'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setPieTimeRange('all_data')">
+              <ion-label>{{ 'ALL_DATA' | translate }}</ion-label>
+              <ion-icon *ngIf="pieTimeRange === 'all_data'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
     <canvas #pieCanvas></canvas>
   </div>
 
   <div class="chart-container" style="position: relative; height: 350px; width: 100%; margin-bottom: 30px; background: var(--ion-background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px;">
+    <ion-button id="line-filter-trigger" fill="clear" color="medium" size="small" style="position: absolute; top: 10px; right: 10px; z-index: 10; --padding-start: 4px; --padding-end: 4px; margin: 0;">
+      <ion-icon slot="icon-only" name="menu-outline" style="font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-popover trigger="line-filter-trigger" triggerAction="click" dismissOnSelect="true">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <ion-item button (click)="setLineTimeRange('current_month')">
+              <ion-label>{{ 'CURRENT_MONTH' | translate }}</ion-label>
+              <ion-icon *ngIf="lineTimeRange === 'current_month'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setLineTimeRange('last_3_months')">
+              <ion-label>{{ 'LAST_3_MONTHS' | translate }}</ion-label>
+              <ion-icon *ngIf="lineTimeRange === 'last_3_months'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setLineTimeRange('last_6_months')">
+              <ion-label>{{ 'LAST_6_MONTHS' | translate }}</ion-label>
+              <ion-icon *ngIf="lineTimeRange === 'last_6_months'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setLineTimeRange('all_data')">
+              <ion-label>{{ 'ALL_DATA' | translate }}</ion-label>
+              <ion-icon *ngIf="lineTimeRange === 'all_data'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
     <canvas #lineCanvas></canvas>
   </div>
 </ion-content>

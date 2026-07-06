@@ -128,6 +128,24 @@ export class SettingsService {
     await this._storage?.set('dashboard_selected_car', id.toString());
   }
 
+  async getDashboardPieTimeRange(): Promise<string> {
+    const range = await this._storage?.get('dashboard_pie_time_range');
+    return range || 'all_data';
+  }
+
+  async setDashboardPieTimeRange(range: string) {
+    await this._storage?.set('dashboard_pie_time_range', range);
+  }
+
+  async getDashboardLineTimeRange(): Promise<string> {
+    const range = await this._storage?.get('dashboard_line_time_range');
+    return range || 'last_6_months';
+  }
+
+  async setDashboardLineTimeRange(range: string) {
+    await this._storage?.set('dashboard_line_time_range', range);
+  }
+
   async isFirstBoot(): Promise<boolean> {
     const booted = await this._storage?.get('first_boot_done');
     if (!booted) {

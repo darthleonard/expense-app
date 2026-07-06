@@ -22,6 +22,8 @@ export class DashboardPage implements OnInit {
   houses: House[] = [];
   selectedCarId: number | 'all' = 'all';
   selectedHouseId: number | 'all' = 'all';
+  pieTimeRange: string = 'all_data';
+  lineTimeRange: string = 'last_6_months';
 
   constructor(
     private db: DatabaseService,
@@ -44,6 +46,8 @@ export class DashboardPage implements OnInit {
     // Load persisted dashboard filters
     const savedHouseId = await this.settings.getDashboardSelectedHouse();
     const savedCarId = await this.settings.getDashboardSelectedCar();
+    this.pieTimeRange = await this.settings.getDashboardPieTimeRange();
+    this.lineTimeRange = await this.settings.getDashboardLineTimeRange();
 
     // Validate if the selected house/car still exists in the database
     if (savedHouseId !== 'all' && this.houses.some(h => h.id === savedHouseId)) {
@@ -84,7 +88,8 @@ export class DashboardPage implements OnInit {
     fuel.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     let housing = 0, electricity = 0, water = 0, gas = 0, telecom = 0;
-    expenses.forEach(e => {
+    const filteredExpenses = this.filterByTimeRange(expenses, this.pieTimeRange);
+    filteredExpenses.forEach(e => {
       if (e.type === 'casa') housing += e.amount;
       else if (e.type === 'electricidad') electricity += e.amount;
       else if (e.type === 'agua') water += e.amount;
@@ -135,10 +140,8 @@ export class DashboardPage implements OnInit {
       return { ...f, diff };
     });
 
-    // Filter to last 6 months
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    const recentFuel = fuelWithDiff.filter(f => new Date(f.date) >= sixMonthsAgo);
+    // Filter by selected line chart time range
+    const recentFuel = this.filterByTimeRange(fuelWithDiff, this.lineTimeRange);
 
     const lineLabels = recentFuel.map(f => {
       const d = new Date(f.date);
@@ -218,5 +221,34 @@ export class DashboardPage implements OnInit {
         }
       }
     });
+  }
+
+  filterByTimeRange(records: any[], timeRange: string): any[] {
+    const now = new Date();
+    if (timeRange === 'current_month') {
+      const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      return records.filter(r => new Date(r.date) >= startOfCurrentMonth);
+    } else if (timeRange === 'last_3_months') {
+      const startOfThreeMonthsAgo = new Date();
+      startOfThreeMonthsAgo.setMonth(startOfThreeMonthsAgo.getMonth() - 3);
+      return records.filter(r => new Date(r.date) >= startOfThreeMonthsAgo);
+    } else if (timeRange === 'last_6_months') {
+      const startOfSixMonthsAgo = new Date();
+      startOfSixMonthsAgo.setMonth(startOfSixMonthsAgo.getMonth() - 6);
+      return records.filter(r => new Date(r.date) >= startOfSixMonthsAgo);
+    }
+    return records; // 'all_data'
+  }
+
+  async setPieTimeRange(range: string) {
+    this.pieTimeRange = range;
+    await this.settings.setDashboardPieTimeRange(range);
+    await this.loadData();
+  }
+
+  async setLineTimeRange(range: string) {
+    this.lineTimeRange = range;
+    await this.settings.setDashboardLineTimeRange(range);
+    await this.loadData();
   }
 }
