@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
+//import { SeedService } from './seed.service';
 
 // ─── Existing interfaces ──────────────────────────────────────────────────────
 
@@ -83,19 +84,19 @@ export interface Purchase {
   purchaseDate?: string;
   notes?: string;
   establishmentId?: number;
-  establishmentNameSnap?: string;   // historical snapshot
-  totalPriceCalculated: number;     // sum of bought items only
+  establishmentNameSnap?: string; // historical snapshot
+  totalPriceCalculated: number; // sum of bought items only
 }
 
 export interface PurchaseItem {
   id?: number;
   purchaseId: number;
   productId?: number;
-  productNameSnap: string;          // historical snapshot
-  categorySnap: ProductCategory;    // historical snapshot
+  productNameSnap: string; // historical snapshot
+  categorySnap: ProductCategory; // historical snapshot
   quantity: number;
   unitPrice: number;
-  totalPrice: number;               // quantity * unitPrice
+  totalPrice: number; // quantity * unitPrice
   isBought: boolean;
   notes?: string;
   addedDate: string;
@@ -121,7 +122,7 @@ export function toLower(value: string | undefined | null): string {
 // ─── Database ─────────────────────────────────────────────────────────────────
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DatabaseService extends Dexie {
   // v1 tables
@@ -146,7 +147,7 @@ export class DatabaseService extends Dexie {
       houses: '++id, name',
       expenses: '++id, houseId, type, amount, date',
       fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
-      incomeRecords: '++id, amount, period, date'
+      incomeRecords: '++id, amount, period, date',
     });
 
     this.version(2).stores({
@@ -158,9 +159,11 @@ export class DatabaseService extends Dexie {
       // Shopping module — compound indexes enable fast analytics queries
       establishments: '++id, name, isActive, creationDate',
       products: '++id, name, category, code, isActive, creationDate',
-      purchases: '++id, name, type, status, establishmentId, creationDate, purchaseDate',
+      purchases:
+        '++id, name, type, status, establishmentId, creationDate, purchaseDate',
       purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
-      priceHistory: '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId'
+      priceHistory:
+        '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
     });
 
     // v3: removed 'type' index from purchases (purchase type feature removed)
@@ -172,10 +175,19 @@ export class DatabaseService extends Dexie {
       incomeRecords: '++id, amount, period, date',
       establishments: '++id, name, isActive, creationDate',
       products: '++id, name, category, code, isActive, creationDate',
-      purchases: '++id, name, status, establishmentId, creationDate, purchaseDate',
+      purchases:
+        '++id, name, status, establishmentId, creationDate, purchaseDate',
       purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
-      priceHistory: '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId'
+      priceHistory:
+        '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
     });
+
+    //  void this.open()
+    //    .then(async () => {
+    //      await new SeedService().seedMockData(this);
+    //    })
+    //    .catch((error) =>
+    //      console.error('Failed to initialize mock database data', error),
+    //    );
   }
 }
-
