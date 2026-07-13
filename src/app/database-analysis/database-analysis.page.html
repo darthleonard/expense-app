@@ -1,0 +1,240 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'DATABASE_ANALYSIS_TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="runScan()" [disabled]="isLoading">
+        <ion-icon slot="icon-only" name="refresh"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section">
+    <h1>{{ 'DATABASE_ANALYSIS_TITLE' | translate }}</h1>
+    <p class="subtitle">Scan the database for orphan records, type mismatches, and data risks.</p>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="actions-bar ion-margin-bottom">
+    <ion-button (click)="runScan()" color="primary" [disabled]="isLoading" fill="solid" class="action-btn">
+      <ion-icon name="shield-checkmark" slot="start"></ion-icon>
+      {{ 'EXECUTE_ANALYSIS' | translate }}
+    </ion-button>
+    
+    <ion-button *ngIf="scanResults.length > 0" (click)="autofixAll()" color="success" fill="outline" class="action-btn">
+      <ion-icon name="build" slot="start"></ion-icon>
+      {{ 'AUTOFIX_ALL' | translate }}
+    </ion-button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="ion-text-center ion-padding spinner-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>{{ 'RUNNING_ANALYSIS' | translate }}</p>
+  </div>
+
+  <!-- Scan Results -->
+  <div *ngIf="!isLoading">
+    <!-- Clean Database Notice -->
+    <div *ngIf="scanResults.length === 0" class="no-issues-card ion-padding ion-text-center">
+      <ion-icon name="checkmark-done-circle" class="success-icon"></ion-icon>
+      <h2>No Issues Found</h2>
+      <p>{{ 'NO_ISSUES_FOUND' | translate }}</p>
+    </div>
+
+    <!-- Tables List -->
+    <div *ngIf="scanResults.length > 0">
+      <div *ngFor="let table of tables" class="table-card ion-margin-bottom">
+        <div class="table-header" (click)="toggleTable(table)">
+          <div class="table-title-group">
+            <ion-icon [name]="tableStates[table] ? 'chevron-down' : 'chevron-forward'" color="medium" class="collapser-icon"></ion-icon>
+            <span class="table-name">{{ table }}</span>
+          </div>
+
+          <div class="table-badge-group">
+            <!-- Table Status Indicator -->
+            <ion-badge *ngIf="getTableStatus(table) === 'good'" color="success" class="status-badge">
+              Good
+            </ion-badge>
+            <ion-badge *ngIf="getTableStatus(table) === 'warning'" color="warning" class="status-badge">
+              {{ getTableIssuesCount(table) }} Issues
+            </ion-badge>
+            <ion-badge *ngIf="getTableStatus(table) === 'error'" color="danger" class="status-badge">
+              {{ getTableIssuesCount(table) }} Risks
+            </ion-badge>
+          </div>
+        </div>
+
+        <!-- Table Issues Content -->
+        <div *ngIf="tableStates[table]" class="table-content animate-fade-in">
+          <!-- Table Header Actions -->
+          <div class="table-actions ion-padding-horizontal ion-padding-top" *ngIf="getTableIssuesCount(table) > 0">
+            <ion-button (click)="autofixTable(table)" size="small" fill="clear" color="success">
+              <ion-icon name="flash" slot="start"></ion-icon>
+              Autofix Table
+            </ion-button>
+          </div>
+
+          <!-- Issues List -->
+          <ion-list lines="full" *ngIf="getTableIssuesCount(table) > 0; else noTableIssues">
+            <ion-item button *ngFor="let issue of groupedIssues[table]" (click)="openDetail(issue)" class="issue-item">
+              <ion-icon name="alert-circle" slot="start" [color]="issue.issueType === 'orphan' ? 'danger' : 'warning'"></ion-icon>
+              <ion-label>
+                <h3>{{ issue.title }}</h3>
+                <p>Record ID: {{ issue.recordId }} • {{ issue.description }}</p>
+              </ion-label>
+              <ion-note slot="end" color="primary">Review</ion-note>
+            </ion-item>
+          </ion-list>
+
+          <ng-template #noTableIssues>
+            <div class="ion-padding ion-text-center clean-table-msg">
+              <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+              <p>No integrity risks detected in this table.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Issue Details Modal -->
+  <ion-modal [isOpen]="isDetailModalOpen" (didDismiss)="closeDetail()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Issue Details</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeDetail()">{{ 'CLOSE' | translate }}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding modal-content" *ngIf="selectedIssue">
+        <!-- Error Banner -->
+        <div class="issue-banner" [class.orphan-banner]="selectedIssue.issueType === 'orphan'">
+          <ion-icon name="warning" class="banner-icon"></ion-icon>
+          <h2>{{ selectedIssue.title }}</h2>
+          <p>{{ selectedIssue.description }}</p>
+        </div>
+
+        <!-- Details Info Grid -->
+        <div class="info-grid ion-margin-bottom">
+          <div class="info-row">
+            <span class="info-label">Table:</span>
+            <span class="info-value font-mono">{{ selectedIssue.table }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Record ID:</span>
+            <span class="info-value font-mono">{{ selectedIssue.recordId }}</span>
+          </div>
+          <div class="info-row" *ngIf="selectedIssue.field">
+            <span class="info-label">Affected Field:</span>
+            <span class="info-value font-mono">{{ selectedIssue.field }}</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="modal-actions ion-margin-bottom">
+          <ion-button *ngIf="selectedIssue.canAutofix" (click)="autofixSingle(selectedIssue)" color="success" expand="block" class="action-btn">
+            <ion-icon name="flash" slot="start"></ion-icon>
+            {{ 'AUTOFIX' | translate }}
+          </ion-button>
+          
+          <ion-button (click)="openEdit(selectedIssue)" color="primary" fill="outline" expand="block" class="action-btn">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            {{ 'EDIT_RECORD' | translate }}
+          </ion-button>
+          
+          <ion-button (click)="deleteRecord(selectedIssue)" color="danger" fill="clear" expand="block" class="action-btn">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            {{ 'DELETE_RECORD' | translate }}
+          </ion-button>
+        </div>
+
+        <!-- JSON View -->
+        <h3>{{ 'JSON_VIEW' | translate }}</h3>
+        <div class="json-viewer">
+          <pre><code>{{ selectedIssue.record | json }}</code></pre>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Edit Record Modal -->
+  <ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEdit()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ 'EDIT_RECORD' | translate }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeEdit()">{{ 'CANCEL' | translate }}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding modal-content" *ngIf="selectedIssue">
+        <form (ngSubmit)="saveEdit()">
+          <h2 class="font-mono ion-margin-bottom">Table: {{ selectedIssue.table }} (ID: {{ selectedIssue.recordId }})</h2>
+
+          <div class="editor-fields">
+            <div *ngFor="let field of editFields" class="editor-field-item">
+              <!-- Enum Selects -->
+              <ion-item *ngIf="isSelectField(field)">
+                <ion-label position="stacked">{{ field | uppercase }}</ion-label>
+                <ion-select [(ngModel)]="editRecord[field]" [name]="field" interface="popover" required>
+                  <ion-select-option *ngFor="let opt of getSelectOptions(field)" [value]="opt.value">
+                    {{ opt.label }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <!-- Date Picker -->
+              <ion-item *ngIf="isDateTimeField(field)" [id]="'trigger-date-' + field" button detail="false">
+                <ion-label position="stacked">{{ field | uppercase }}</ion-label>
+                <ion-datetime-button [datetime]="'datetime-' + field"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true" [trigger]="'trigger-date-' + field">
+                  <ng-template>
+                    <ion-datetime [id]="'datetime-' + field" presentation="date" [(ngModel)]="editRecord[field]" [name]="field" showDefaultButtons="true"></ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+
+              <!-- Booleans (Toggle) -->
+              <ion-item *ngIf="isBooleanField(field)" lines="none" class="toggle-item">
+                <ion-label>{{ field | uppercase }}</ion-label>
+                <ion-toggle [(ngModel)]="editRecord[field]" [name]="field" slot="end"></ion-toggle>
+              </ion-item>
+
+              <!-- Numeric Fields -->
+              <ion-item *ngIf="isNumberField(field) && !isSelectField(field) && !isDateTimeField(field) && !isBooleanField(field)">
+                <ion-label position="stacked">{{ field | uppercase }}</ion-label>
+                <ion-input type="number" [(ngModel)]="editRecord[field]" [name]="field"></ion-input>
+              </ion-item>
+
+              <!-- Textarea Fields -->
+              <ion-item *ngIf="isTextareaField(field)">
+                <ion-label position="stacked">{{ field | uppercase }}</ion-label>
+                <ion-textarea [(ngModel)]="editRecord[field]" [name]="field" rows="2"></ion-textarea>
+              </ion-item>
+
+              <!-- Default Text Input (For everything else) -->
+              <ion-item *ngIf="!isSelectField(field) && !isDateTimeField(field) && !isBooleanField(field) && !isNumberField(field) && !isTextareaField(field)">
+                <ion-label position="stacked">{{ field | uppercase }}</ion-label>
+                <ion-input type="text" [(ngModel)]="editRecord[field]" [name]="field"></ion-input>
+              </ion-item>
+            </div>
+          </div>
+
+          <ion-button expand="block" type="submit" class="ion-margin-top save-btn">
+            {{ 'SAVE' | translate }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

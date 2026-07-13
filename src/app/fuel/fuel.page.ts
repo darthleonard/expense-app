@@ -17,6 +17,7 @@ export class FuelPage implements OnInit {
   isImperial = false;
   
   isModalOpen = false;
+  isSaving = false;
   editingRecord: FuelRecord | null = null;
   currentRecord: any = this.getDefaultRecord();
 
@@ -70,25 +71,31 @@ export class FuelPage implements OnInit {
     await this.loadData();
   }
 
-  formatDate(isoString: string) {
-    const d = new Date(isoString);
-    return new Intl.DateTimeFormat(this.settings.currentLang, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(d);
+  formatDate(dateStr: string) {
+    const d = new Date(dateStr);
+    return new Intl.DateTimeFormat(this.settings.currentLang || 'es-MX', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(d);
   }
 
-  getDefaultRecord() {
-    // Build a local datetime string (no Z suffix) so the picker shows the correct local time
+  getDefaultRecord(): FuelRecord {
     const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const localDatetime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const localDateTime = now.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
     return {
-      odometer: null,
-      unitPrice: null,
-      totalPrice: null,
-      date: localDatetime
+      odometer: 0,
+      unitPrice: 0,
+      totalPrice: 0,
+      liters: 0,
+      date: localDateTime
     };
   }
 
   openModal(record?: FuelRecord) {
+    this.isSaving = false;
     if (record) {
       this.editingRecord = record;
       let displayLiters = record.liters;
@@ -114,7 +121,7 @@ export class FuelPage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingRecord || this.getDefaultRecord(),
@@ -130,6 +137,7 @@ export class FuelPage implements OnInit {
   async saveRecord() {
     if (!this.selectedCarId) return;
 
+    this.isSaving = true;
     let { odometer, unitPrice, totalPrice, liters, date } = this.currentRecord;
     
     if (unitPrice && liters && !totalPrice) {
@@ -162,15 +170,20 @@ export class FuelPage implements OnInit {
       lastModDate: now
     };
 
-    if (this.editingRecord && this.editingRecord.id) {
-      recToSave.creationDate = this.editingRecord.creationDate || now;
-      await this.db.fuelRecords.update(this.editingRecord.id, recToSave);
-    } else {
-      recToSave.creationDate = now;
-      await this.db.fuelRecords.add(recToSave);
+    try {
+      if (this.editingRecord && this.editingRecord.id) {
+        recToSave.creationDate = this.editingRecord.creationDate || now;
+        await this.db.fuelRecords.update(this.editingRecord.id, recToSave);
+      } else {
+        recToSave.creationDate = now;
+        await this.db.fuelRecords.add(recToSave);
+      }
+      await this.modal.dismiss(null, 'save');
+      await this.loadData();
+    } catch (err) {
+      this.isSaving = false;
+      console.error(err);
     }
-    await this.modal.dismiss(null, 'save');
-    await this.loadData();
   }
 
   async deleteRecord(rec: FuelRecord) {

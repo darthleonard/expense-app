@@ -62,16 +62,28 @@ export class CsvBackupService {
       const values = this.parseCsvLine(line);
       const obj: any = {};
       headers.forEach((h, i) => {
-        const v = values[i] ?? '';
-        // Auto-cast numeric strings (but not empty strings or date strings)
-        if (v !== '' && !isNaN(Number(v)) && !String(v).includes('-') && h !== 'id') {
-          obj[h] = Number(v);
+        let v = values[i] ?? '';
+        v = v.trim();
+        // Remove enclosing quotes if present
+        if (v.startsWith('"') && v.endsWith('"')) {
+          v = v.substring(1, v.length - 1).replace(/""/g, '"').trim();
+        }
+
+        const isIdField = h === 'id' || h.endsWith('Id');
+
+        if (v === '') {
+          obj[h] = undefined;
+        } else if (isIdField) {
+          const num = Number(v);
+          obj[h] = isNaN(num) ? v : num;
         } else if (v === 'true') {
           obj[h] = true;
         } else if (v === 'false') {
           obj[h] = false;
+        } else if (!isNaN(Number(v)) && !v.includes('-')) {
+          obj[h] = Number(v);
         } else {
-          obj[h] = v === '' ? undefined : v;
+          obj[h] = v;
         }
       });
       return obj;

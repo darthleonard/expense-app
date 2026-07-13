@@ -14,6 +14,7 @@ import { ViewChild } from '@angular/core';
 export class HousesPage implements OnInit {
   houses: House[] = [];
   isModalOpen = false;
+  isSaving = false;
   editingHouse: House | null = null;
   currentHouse: House = this.getDefaultHouse();
 
@@ -40,6 +41,7 @@ export class HousesPage implements OnInit {
   }
 
   openModal(house?: House) {
+    this.isSaving = false;
     if (house) {
       this.editingHouse = house;
       this.currentHouse = { ...house };
@@ -51,7 +53,7 @@ export class HousesPage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingHouse || this.getDefaultHouse(),
@@ -67,21 +69,27 @@ export class HousesPage implements OnInit {
   async saveHouse() {
     if (!this.currentHouse.name.trim()) return;
     
-    if (this.editingHouse && this.editingHouse.id) {
-      await this.db.houses.update(this.editingHouse.id, {
-        ...this.currentHouse,
-        name: toLower(this.currentHouse.name),
-        description: toLower(this.currentHouse.description)
-      });
-    } else {
-      await this.db.houses.add({
-        ...this.currentHouse,
-        name: toLower(this.currentHouse.name),
-        description: toLower(this.currentHouse.description)
-      });
+    this.isSaving = true;
+    try {
+      if (this.editingHouse && this.editingHouse.id) {
+        await this.db.houses.update(this.editingHouse.id, {
+          ...this.currentHouse,
+          name: toLower(this.currentHouse.name),
+          description: toLower(this.currentHouse.description)
+        });
+      } else {
+        await this.db.houses.add({
+          ...this.currentHouse,
+          name: toLower(this.currentHouse.name),
+          description: toLower(this.currentHouse.description)
+        });
+      }
+      await this.modal.dismiss(null, 'save');
+      await this.loadData();
+    } catch (err) {
+      this.isSaving = false;
+      console.error(err);
     }
-    await this.modal.dismiss(null, 'save');
-    await this.loadData();
   }
 
   async deleteHouse(house: House) {

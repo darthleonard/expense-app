@@ -19,6 +19,7 @@ export class PurchasesPage implements OnInit {
 
   // New/edit purchase modal
   isModalOpen = false;
+  isSaving = false;
   editingPurchase: Purchase | null = null;
   newPurchase: Partial<Purchase> = {};
 
@@ -45,6 +46,7 @@ export class PurchasesPage implements OnInit {
   }
 
   openNewPurchaseModal() {
+    this.isSaving = false;
     this.editingPurchase = null;
     this.newPurchase = {
       status: 'activa',
@@ -55,6 +57,7 @@ export class PurchasesPage implements OnInit {
   }
 
   openEditModal(purchase: Purchase) {
+    this.isSaving = false;
     this.editingPurchase = purchase;
     this.newPurchase = {
       ...purchase,
@@ -68,7 +71,7 @@ export class PurchasesPage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingPurchase || {
@@ -89,30 +92,36 @@ export class PurchasesPage implements OnInit {
     if (!this.newPurchase.name?.trim()) return;
     const est = this.establishments.find(e => e.id === this.newPurchase.establishmentId);
 
-    if (this.editingPurchase) {
-      const updated: Purchase = {
-        ...this.editingPurchase,
-        name: this.newPurchase.name!.trim(),
-        establishmentId: this.newPurchase.establishmentId,
-        establishmentNameSnap: est?.name || undefined,
-        purchaseDate: this.newPurchase.purchaseDate ? new Date(this.newPurchase.purchaseDate).toISOString() : undefined
-      };
-      await this.shopping.savePurchase(updated);
-      await this.modal.dismiss(null, 'save');
-      await this.loadData();
-    } else {
-      const id = await this.shopping.savePurchase({
-        name: this.newPurchase.name!.trim(),
-        status: 'activa',
-        creationDate: new Date().toISOString(),
-        purchaseDate: this.newPurchase.purchaseDate ? new Date(this.newPurchase.purchaseDate).toISOString() : new Date().toISOString(),
-        establishmentId: this.newPurchase.establishmentId,
-        establishmentNameSnap: est?.name,
-        totalPriceCalculated: 0
-      });
-      await this.modal.dismiss(null, 'save');
-      await this.loadData();
-      this.router.navigate(['/shopping/purchase-detail', id]);
+    this.isSaving = true;
+    try {
+      if (this.editingPurchase) {
+        const updated: Purchase = {
+          ...this.editingPurchase,
+          name: this.newPurchase.name!.trim(),
+          establishmentId: this.newPurchase.establishmentId,
+          establishmentNameSnap: est?.name || undefined,
+          purchaseDate: this.newPurchase.purchaseDate ? new Date(this.newPurchase.purchaseDate).toISOString() : undefined
+        };
+        await this.shopping.savePurchase(updated);
+        await this.modal.dismiss(null, 'save');
+        await this.loadData();
+      } else {
+        const id = await this.shopping.savePurchase({
+          name: this.newPurchase.name!.trim(),
+          status: 'activa',
+          creationDate: new Date().toISOString(),
+          purchaseDate: this.newPurchase.purchaseDate ? new Date(this.newPurchase.purchaseDate).toISOString() : new Date().toISOString(),
+          establishmentId: this.newPurchase.establishmentId,
+          establishmentNameSnap: est?.name,
+          totalPriceCalculated: 0
+        });
+        await this.modal.dismiss(null, 'save');
+        await this.loadData();
+        this.router.navigate(['/shopping/purchase-detail', id]);
+      }
+    } catch (err) {
+      this.isSaving = false;
+      console.error(err);
     }
   }
 

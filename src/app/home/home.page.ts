@@ -16,6 +16,7 @@ export class HomePage implements OnInit {
   selectedHouseId: number | null = null;
   
   isModalOpen = false;
+  isSaving = false;
   editingExpense: ExpenseRecord | null = null;
   currentExpense: ExpenseRecord = this.getDefaultExpense();
 
@@ -112,6 +113,7 @@ export class HomePage implements OnInit {
   }
 
   openModal(expense?: ExpenseRecord) {
+    this.isSaving = false;
     if (expense) {
       this.editingExpense = expense;
       this.currentExpense = { ...expense };
@@ -123,7 +125,7 @@ export class HomePage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingExpense || this.getDefaultExpense(),
@@ -139,27 +141,33 @@ export class HomePage implements OnInit {
   async saveExpense() {
     if (!this.selectedHouseId || this.currentExpense.amount <= 0 || !this.currentExpense.date) return;
     
+    this.isSaving = true;
     const now = new Date().toISOString();
 
-    if (this.editingExpense && this.editingExpense.id) {
-      await this.db.expenses.update(this.editingExpense.id, {
-        ...this.currentExpense,
-        notes: toLower(this.currentExpense.notes),
-        houseId: this.selectedHouseId,
-        lastModDate: now,
-        creationDate: this.editingExpense.creationDate || now
-      });
-    } else {
-      await this.db.expenses.add({
-        ...this.currentExpense,
-        notes: toLower(this.currentExpense.notes),
-        houseId: this.selectedHouseId,
-        creationDate: now,
-        lastModDate: now
-      });
+    try {
+      if (this.editingExpense && this.editingExpense.id) {
+        await this.db.expenses.update(this.editingExpense.id, {
+          ...this.currentExpense,
+          notes: toLower(this.currentExpense.notes),
+          houseId: this.selectedHouseId,
+          lastModDate: now,
+          creationDate: this.editingExpense.creationDate || now
+        });
+      } else {
+        await this.db.expenses.add({
+          ...this.currentExpense,
+          notes: toLower(this.currentExpense.notes),
+          houseId: this.selectedHouseId,
+          creationDate: now,
+          lastModDate: now
+        });
+      }
+      await this.modal.dismiss(null, 'save');
+      await this.loadData();
+    } catch (err) {
+      this.isSaving = false;
+      console.error(err);
     }
-    await this.modal.dismiss(null, 'save');
-    await this.loadData();
   }
 
   async deleteExpense(expense: ExpenseRecord) {

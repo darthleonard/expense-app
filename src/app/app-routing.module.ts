@@ -25,6 +25,10 @@ const routes: Routes = [
     loadChildren: () => import('./analysis/analysis.module').then( m => m.AnalysisPageModule)
   },
   {
+    path: 'database-analysis',
+    loadChildren: () => import('./database-analysis/database-analysis.module').then( m => m.DatabaseAnalysisPageModule)
+  },
+  {
     path: 'config',
     loadChildren: () => import('./config/config.module').then( m => m.ConfigPageModule)
   },
@@ -39,7 +43,8 @@ const routes: Routes = [
   {
     path: 'houses',
     loadChildren: () => import('./houses/houses.module').then( m => m.HousesPageModule)
-  },  {
+  },
+  {
     path: 'shopping',
     loadChildren: () => import('./shopping/shopping.module').then( m => m.ShoppingPageModule)
   },
@@ -47,7 +52,6 @@ const routes: Routes = [
     path: 'data-backup',
     loadChildren: () => import('./data-backup/data-backup.module').then( m => m.DataBackupPageModule)
   }
-
 ];
 
 @NgModule({

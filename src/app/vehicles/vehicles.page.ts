@@ -14,6 +14,7 @@ import { ViewChild } from '@angular/core';
 export class VehiclesPage implements OnInit {
   vehicles: Car[] = [];
   isModalOpen = false;
+  isSaving = false;
   editingVehicle: Car | null = null;
   currentVehicle: Car = this.getDefaultVehicle();
 
@@ -40,6 +41,7 @@ export class VehiclesPage implements OnInit {
   }
 
   openModal(vehicle?: Car) {
+    this.isSaving = false;
     if (vehicle) {
       this.editingVehicle = vehicle;
       this.currentVehicle = { ...vehicle };
@@ -51,7 +53,7 @@ export class VehiclesPage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingVehicle || this.getDefaultVehicle(),
@@ -67,21 +69,27 @@ export class VehiclesPage implements OnInit {
   async saveVehicle() {
     if (!this.currentVehicle.name.trim()) return;
     
-    if (this.editingVehicle && this.editingVehicle.id) {
-      await this.db.cars.update(this.editingVehicle.id, {
-        ...this.currentVehicle,
-        name: toLower(this.currentVehicle.name),
-        description: toLower(this.currentVehicle.description)
-      });
-    } else {
-      await this.db.cars.add({
-        ...this.currentVehicle,
-        name: toLower(this.currentVehicle.name),
-        description: toLower(this.currentVehicle.description)
-      });
+    this.isSaving = true;
+    try {
+      if (this.editingVehicle && this.editingVehicle.id) {
+        await this.db.cars.update(this.editingVehicle.id, {
+          ...this.currentVehicle,
+          name: toLower(this.currentVehicle.name),
+          description: toLower(this.currentVehicle.description)
+        });
+      } else {
+        await this.db.cars.add({
+          ...this.currentVehicle,
+          name: toLower(this.currentVehicle.name),
+          description: toLower(this.currentVehicle.description)
+        });
+      }
+      await this.modal.dismiss(null, 'save');
+      await this.loadData();
+    } catch (err) {
+      this.isSaving = false;
+      console.error(err);
     }
-    await this.modal.dismiss(null, 'save');
-    await this.loadData();
   }
 
   async deleteVehicle(vehicle: Car) {
