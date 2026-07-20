@@ -15,7 +15,7 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="header-section">
     <h1>{{ 'DATABASE_ANALYSIS_TITLE' | translate }}</h1>
-    <p class="subtitle">Scan the database for orphan records, type mismatches, and data risks.</p>
+    <p class="subtitle">{{ 'DATABASE_ANALYSIS_SUBTITLE' | translate }}</p>
   </div>
 
   <!-- Actions Bar -->
@@ -42,7 +42,7 @@
     <!-- Clean Database Notice -->
     <div *ngIf="scanResults.length === 0" class="no-issues-card ion-padding ion-text-center">
       <ion-icon name="checkmark-done-circle" class="success-icon"></ion-icon>
-      <h2>No Issues Found</h2>
+      <h2>{{ 'NO_ISSUES_FOUND_TITLE' | translate }}</h2>
       <p>{{ 'NO_ISSUES_FOUND' | translate }}</p>
     </div>
 
@@ -58,13 +58,13 @@
           <div class="table-badge-group">
             <!-- Table Status Indicator -->
             <ion-badge *ngIf="getTableStatus(table) === 'good'" color="success" class="status-badge">
-              Good
+              {{ 'STATUS_GOOD' | translate }}
             </ion-badge>
             <ion-badge *ngIf="getTableStatus(table) === 'warning'" color="warning" class="status-badge">
-              {{ getTableIssuesCount(table) }} Issues
+              {{ getTableIssuesCount(table) }} {{ 'ISSUES' | translate }}
             </ion-badge>
             <ion-badge *ngIf="getTableStatus(table) === 'error'" color="danger" class="status-badge">
-              {{ getTableIssuesCount(table) }} Risks
+              {{ getTableIssuesCount(table) }} {{ 'RISKS' | translate }}
             </ion-badge>
           </div>
         </div>
@@ -75,7 +75,7 @@
           <div class="table-actions ion-padding-horizontal ion-padding-top" *ngIf="getTableIssuesCount(table) > 0">
             <ion-button (click)="autofixTable(table)" size="small" fill="clear" color="success">
               <ion-icon name="flash" slot="start"></ion-icon>
-              Autofix Table
+              {{ 'AUTOFIX_TABLE' | translate }}
             </ion-button>
           </div>
 
@@ -85,16 +85,16 @@
               <ion-icon name="alert-circle" slot="start" [color]="issue.issueType === 'orphan' ? 'danger' : 'warning'"></ion-icon>
               <ion-label>
                 <h3>{{ issue.title }}</h3>
-                <p>Record ID: {{ issue.recordId }} • {{ issue.description }}</p>
+                <p>{{ 'RECORD_ID' | translate }}: {{ issue.recordId }} • {{ issue.description }}</p>
               </ion-label>
-              <ion-note slot="end" color="primary">Review</ion-note>
+              <ion-note slot="end" color="primary">{{ 'REVIEW' | translate }}</ion-note>
             </ion-item>
           </ion-list>
 
           <ng-template #noTableIssues>
             <div class="ion-padding ion-text-center clean-table-msg">
               <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
-              <p>No integrity risks detected in this table.</p>
+              <p>{{ 'NO_INTEGRITY_RISKS' | translate }}</p>
             </div>
           </ng-template>
         </div>
@@ -107,7 +107,7 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>Issue Details</ion-title>
+          <ion-title>{{ 'ISSUE_DETAILS' | translate }}</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeDetail()">{{ 'CLOSE' | translate }}</ion-button>
           </ion-buttons>
@@ -125,15 +125,15 @@
         <!-- Details Info Grid -->
         <div class="info-grid ion-margin-bottom">
           <div class="info-row">
-            <span class="info-label">Table:</span>
+            <span class="info-label">{{ 'TABLE' | translate }}:</span>
             <span class="info-value font-mono">{{ selectedIssue.table }}</span>
           </div>
           <div class="info-row">
-            <span class="info-label">Record ID:</span>
+            <span class="info-label">{{ 'RECORD_ID' | translate }}:</span>
             <span class="info-value font-mono">{{ selectedIssue.recordId }}</span>
           </div>
           <div class="info-row" *ngIf="selectedIssue.field">
-            <span class="info-label">Affected Field:</span>
+            <span class="info-label">{{ 'AFFECTED_FIELD' | translate }}:</span>
             <span class="info-value font-mono">{{ selectedIssue.field }}</span>
           </div>
         </div>
@@ -179,7 +179,7 @@
 
       <ion-content class="ion-padding modal-content" *ngIf="selectedIssue">
         <form (ngSubmit)="saveEdit()">
-          <h2 class="font-mono ion-margin-bottom">Table: {{ selectedIssue.table }} (ID: {{ selectedIssue.recordId }})</h2>
+          <h2 class="font-mono ion-margin-bottom">{{ 'TABLE_RECORD_EDIT_HEADER' | translate:{ table: selectedIssue.table, id: selectedIssue.recordId } }}</h2>
 
           <div class="editor-fields">
             <div *ngFor="let field of editFields" class="editor-field-item">

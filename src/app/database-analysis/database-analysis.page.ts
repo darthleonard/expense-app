@@ -62,7 +62,7 @@ export class DatabaseAnalysisPage implements OnInit {
       this.groupIssues();
     } catch (error) {
       console.error('Error during database integrity scan:', error);
-      this.showToast('Scan failed');
+      this.showToast(this.translate.instant('SCAN_FAILED'));
     } finally {
       this.isLoading = false;
     }
@@ -149,14 +149,14 @@ export class DatabaseAnalysisPage implements OnInit {
       await this.runScan();
     } catch (err) {
       console.error('Error saving record edit:', err);
-      this.showToast('Save failed');
+      this.showToast(this.translate.instant('SAVE_FAILED'));
     }
   }
 
   async deleteRecord(issue: IntegrityIssue) {
     const alert = await this.alertCtrl.create({
       header: this.translate.instant('DELETE'),
-      message: 'Are you sure you want to permanently delete this record? This cannot be undone.',
+      message: this.translate.instant('DELETE_RECORD_CONFIRM'),
       buttons: [
         { text: this.translate.instant('CANCEL'), role: 'cancel' },
         {
@@ -166,7 +166,7 @@ export class DatabaseAnalysisPage implements OnInit {
             const table = this.db.table(issue.table);
             await table.delete(issue.recordId);
             this.isDetailModalOpen = false;
-            this.showToast('Record deleted');
+            this.showToast(this.translate.instant('RECORD_DELETED'));
             await this.runScan();
           }
         }
@@ -179,11 +179,11 @@ export class DatabaseAnalysisPage implements OnInit {
     try {
       await this.integrityService.autofixIssue(issue);
       this.isDetailModalOpen = false;
-      this.showToast('Issue resolved');
+      this.showToast(this.translate.instant('ISSUE_RESOLVED'));
       await this.runScan();
     } catch (err) {
       console.error('Autofix error:', err);
-      this.showToast('Autofix failed');
+      this.showToast(this.translate.instant('AUTOFIX_FAILED'));
     }
   }
 
@@ -197,11 +197,11 @@ export class DatabaseAnalysisPage implements OnInit {
           count++;
         }
       }
-      this.showToast(`Resolved ${count} issues in ${tableName}`);
+      this.showToast(this.translate.instant('RESOLVED_ISSUES_IN_TABLE', { count, table: tableName }));
       await this.runScan();
     } catch (err) {
       console.error('Autofix table error:', err);
-      this.showToast('Failed to resolve some issues');
+      this.showToast(this.translate.instant('AUTOFIX_TABLE_FAILED'));
     }
   }
 
@@ -214,11 +214,11 @@ export class DatabaseAnalysisPage implements OnInit {
           count++;
         }
       }
-      this.showToast(`Resolved ${count} issues database-wide`);
+      this.showToast(this.translate.instant('RESOLVED_ISSUES_DATABASE_WIDE', { count }));
       await this.runScan();
     } catch (err) {
       console.error('Autofix all error:', err);
-      this.showToast('Autofix all completed with errors');
+      this.showToast(this.translate.instant('AUTOFIX_ALL_FAILED'));
     }
   }
 
@@ -231,31 +231,31 @@ export class DatabaseAnalysisPage implements OnInit {
   getSelectOptions(field: string): { label: string, value: string }[] {
     if (field === 'type') {
       return [
-        { label: 'Home Rent / Mortgage', value: 'casa' },
-        { label: 'Electricity', value: 'electricidad' },
-        { label: 'Water', value: 'agua' },
-        { label: 'Gas', value: 'gas' },
-        { label: 'Internet / Telecom', value: 'telecomunicaciones' }
+        { label: this.translate.instant('HOUSING_RENT_MORTGAGE'), value: 'casa' },
+        { label: this.translate.instant('ELECTRICITY'), value: 'electricidad' },
+        { label: this.translate.instant('WATER'), value: 'agua' },
+        { label: this.translate.instant('GAS_BILL'), value: 'gas' },
+        { label: this.translate.instant('TELECOMMUNICATIONS'), value: 'telecomunicaciones' }
       ];
     }
     if (field === 'period') {
       return [
-        { label: 'Monthly', value: 'mensual' },
-        { label: '14-Day Cycle', value: 'catorcenal' },
-        { label: 'Bi-Weekly', value: 'quincenal' }
+        { label: this.translate.instant('MONTHLY'), value: 'mensual' },
+        { label: this.translate.instant('FOURTEEN_DAY_CYCLE'), value: 'catorcenal' },
+        { label: this.translate.instant('BI_WEEKLY_SHORT'), value: 'quincenal' }
       ];
     }
     if (field === 'category') {
       return [
-        { label: 'Fixed Expense', value: 'gasto_fijo' },
-        { label: 'Variable Expense', value: 'gasto_variable' }
+        { label: this.translate.instant('CAT_FIXED'), value: 'gasto_fijo' },
+        { label: this.translate.instant('CAT_VARIABLE'), value: 'gasto_variable' }
       ];
     }
     if (field === 'status') {
       return [
-        { label: 'Active', value: 'activa' },
-        { label: 'Completed', value: 'completada' },
-        { label: 'Cancelled', value: 'cancelada' }
+        { label: this.translate.instant('activa'), value: 'activa' },
+        { label: this.translate.instant('completada'), value: 'completada' },
+        { label: this.translate.instant('cancelada'), value: 'cancelada' }
       ];
     }
     return [];
