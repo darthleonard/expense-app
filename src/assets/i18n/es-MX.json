@@ -229,5 +229,6 @@
   "NO_EXPENSES_YET": "No hay gastos individuales registrados aún.",
   "FIXED_TOTAL": "Total Fijo",
   "VARIABLE_TOTAL": "Total Variable",
-  "ALL_CATEGORIES": "Todas las Categorías"
+  "ALL_CATEGORIES": "Todas las Categorías",
+  "SEARCH_EXPENSES": "Buscar gastos..."
 }

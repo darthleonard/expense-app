@@ -229,5 +229,6 @@
   "NO_EXPENSES_YET": "No individual expenses registered yet.",
   "FIXED_TOTAL": "Fixed Total",
   "VARIABLE_TOTAL": "Variable Total",
-  "ALL_CATEGORIES": "All Categories"
+  "ALL_CATEGORIES": "All Categories",
+  "SEARCH_EXPENSES": "Search expenses..."
 }

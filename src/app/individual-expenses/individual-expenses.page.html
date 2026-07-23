@@ -49,7 +49,7 @@
 
   <!-- Search & Segment filter -->
   <div class="search-filter-section">
-    <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="onSearchInput()" placeholder="{{ 'SEARCH_PRODUCTS' | translate }}" class="custom-searchbar"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="onSearchInput()" placeholder="{{ 'SEARCH_EXPENSES' | translate }}" class="custom-searchbar"></ion-searchbar>
     <ion-segment [(ngModel)]="categoryFilter" (ionChange)="onFilterChange()" class="custom-segment">
       <ion-segment-button value="all">
         <ion-label>{{ 'ALL' | translate }}</ion-label>
