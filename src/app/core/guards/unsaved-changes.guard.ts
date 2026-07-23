@@ -10,7 +10,7 @@ export interface CanComponentDeactivate {
   providedIn: 'root'
 })
 export class UnsavedChangesGuard implements CanDeactivate<CanComponentDeactivate> {
-  canDeactivate(component: CanComponentDeactivate) {
-    return component.canDeactivate ? component.canDeactivate() : true;
+  canDeactivate(component: CanComponentDeactivate | null) {
+    return component && component.canDeactivate ? component.canDeactivate() : true;
   }
 }
