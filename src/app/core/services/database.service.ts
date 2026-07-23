@@ -114,6 +114,17 @@ export interface PriceHistory {
   notes?: string;
 }
 
+export interface IndividualExpense {
+  id?: number;
+  concept: string;
+  price: number;
+  category: ProductCategory;
+  date: string;
+  notes?: string;
+  creationDate?: string;
+  lastModDate?: string;
+}
+
 /** Normalizes a user-entered string for storage: trimmed + lowercase. */
 export function toLower(value: string | undefined | null): string {
   return value?.trim().toLowerCase() ?? '';
@@ -138,6 +149,7 @@ export class DatabaseService extends Dexie {
   purchases!: Table<Purchase, number>;
   purchaseItems!: Table<PurchaseItem, number>;
   priceHistory!: Table<PriceHistory, number>;
+  individualExpenses!: Table<IndividualExpense, number>;
 
   constructor() {
     super('ExpenseAppDB');
@@ -180,6 +192,22 @@ export class DatabaseService extends Dexie {
       purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
       priceHistory:
         '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
+    });
+
+    this.version(4).stores({
+      cars: '++id, name',
+      houses: '++id, name',
+      expenses: '++id, houseId, type, amount, date',
+      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
+      incomeRecords: '++id, amount, period, date',
+      establishments: '++id, name, isActive, creationDate',
+      products: '++id, name, category, code, isActive, creationDate',
+      purchases:
+        '++id, name, status, establishmentId, creationDate, purchaseDate',
+      purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
+      priceHistory:
+        '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
+      individualExpenses: '++id, concept, price, category, date, creationDate'
     });
 
     //  void this.open()

@@ -61,24 +61,43 @@ export class ComparisonPage implements ViewWillEnter {
   async calculateMonthlyExpenses() {
     const expenses = await this.db.expenses.toArray();
     const fuel = await this.db.fuelRecords.toArray();
+    const individual = await this.db.individualExpenses.toArray();
 
     const selectedDate = new Date(this.selectedMonthIso);
     let targetMonth = selectedDate.getMonth();
     let targetYear = selectedDate.getFullYear();
 
-    this.currentMonthFixed = expenses
+    const houseFixed = expenses
       .filter(e => {
         const { month, year } = this.getLocalMonthYear(e.date);
         return month === targetMonth && year === targetYear;
       })
       .reduce((sum, e) => sum + (e.amount || 0), 0);
 
-    this.currentMonthVariable = fuel
+    const individualFixed = individual
+      .filter(e => {
+        const { month, year } = this.getLocalMonthYear(e.date);
+        return month === targetMonth && year === targetYear && e.category === 'gasto_fijo';
+      })
+      .reduce((sum, e) => sum + (e.price || 0), 0);
+
+    this.currentMonthFixed = houseFixed + individualFixed;
+
+    const fuelVariable = fuel
       .filter(f => {
         const { month, year } = this.getLocalMonthYear(f.date);
         return month === targetMonth && year === targetYear;
       })
       .reduce((sum, f) => sum + (f.totalPrice || 0), 0);
+
+    const individualVariable = individual
+      .filter(e => {
+        const { month, year } = this.getLocalMonthYear(e.date);
+        return month === targetMonth && year === targetYear && e.category === 'gasto_variable';
+      })
+      .reduce((sum, e) => sum + (e.price || 0), 0);
+
+    this.currentMonthVariable = fuelVariable + individualVariable;
 
     this.cdr.detectChanges();
   }

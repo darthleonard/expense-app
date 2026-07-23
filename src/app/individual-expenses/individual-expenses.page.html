@@ -1,0 +1,157 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'INDIVIDUAL_EXPENSES_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="header-section">
+    <h1>{{ 'INDIVIDUAL_EXPENSES_TITLE' | translate }}</h1>
+  </div>
+
+  <!-- KPI summary cards -->
+  <div class="stats-container">
+    <ion-card class="stat-card total-card">
+      <ion-card-content>
+        <div class="stat-icon-wrapper">
+          <ion-icon name="wallet-outline"></ion-icon>
+        </div>
+        <div class="stat-values">
+          <p class="stat-label">{{ 'TOTAL_SPENT' | translate }}</p>
+          <h3 class="stat-value">${{ totalSpent | number:'1.2-2' }}</h3>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="stats-row">
+      <ion-card class="stat-card fixed-card">
+        <ion-card-content>
+          <div class="stat-values">
+            <p class="stat-label">{{ 'FIXED_TOTAL' | translate }}</p>
+            <h4 class="stat-value">${{ totalFixed | number:'1.2-2' }}</h4>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="stat-card variable-card">
+        <ion-card-content>
+          <div class="stat-values">
+            <p class="stat-label">{{ 'VARIABLE_TOTAL' | translate }}</p>
+            <h4 class="stat-value">${{ totalVariable | number:'1.2-2' }}</h4>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Search & Segment filter -->
+  <div class="search-filter-section">
+    <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="onSearchInput()" placeholder="{{ 'SEARCH_PRODUCTS' | translate }}" class="custom-searchbar"></ion-searchbar>
+    <ion-segment [(ngModel)]="categoryFilter" (ionChange)="onFilterChange()" class="custom-segment">
+      <ion-segment-button value="all">
+        <ion-label>{{ 'ALL' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="gasto_fijo">
+        <ion-label>{{ 'gasto_fijo' | translate }}</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="gasto_variable">
+        <ion-label>{{ 'gasto_variable' | translate }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Expenses List -->
+  <ion-list class="expense-list" lines="none">
+    <ion-item-sliding *ngFor="let exp of filteredExpenses" class="expense-sliding-item">
+      <ion-item button (click)="openModal(exp)" class="expense-item">
+        <div class="category-icon" [ngClass]="exp.category">
+          <ion-icon [name]="exp.category === 'gasto_fijo' ? 'calendar-outline' : 'sparkles-outline'"></ion-icon>
+        </div>
+        <ion-label class="expense-info">
+          <h2 class="expense-concept">{{ exp.concept }}</h2>
+          <p class="expense-date">{{ exp.date | date:'dd/MM/yyyy' }}</p>
+          <p *ngIf="exp.notes" class="expense-notes">{{ exp.notes }}</p>
+        </ion-label>
+        <ion-note slot="end" class="expense-price" [ngClass]="exp.category">
+          ${{ exp.price | number:'1.2-2' }}
+        </ion-note>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" class="delete-option" (click)="deleteExpense(exp)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <!-- Empty state -->
+    <div *ngIf="filteredExpenses.length === 0" class="empty-state">
+      <ion-icon name="receipt-outline" class="empty-icon"></ion-icon>
+      <h3>{{ 'NO_EXPENSES_YET' | translate }}</h3>
+    </div>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openModal()" class="custom-fab">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Modal Form -->
+  <ion-modal #modal [isOpen]="isModalOpen" [canDismiss]="canDismiss" (didDismiss)="isModalOpen = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ (editingExpense?.id ? 'EDIT_EXPENSE' : 'ADD_EXPENSE') | translate }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="modal.dismiss(null, 'cancel')">{{ 'CLOSE' | translate }}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding modal-content">
+        <form (ngSubmit)="saveExpense()" class="modal-form">
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'CONCEPT' | translate }}</ion-label>
+            <ion-input [(ngModel)]="currentExpense.concept" name="concept" required></ion-input>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'PRICE' | translate }} ($)</ion-label>
+            <ion-input type="number" step="0.01" [(ngModel)]="currentExpense.price" name="price" required></ion-input>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
+            <ion-select [(ngModel)]="currentExpense.category" name="category" required interface="popover">
+              <ion-select-option value="gasto_fijo">{{ 'gasto_fijo' | translate }}</ion-select-option>
+              <ion-select-option value="gasto_variable">{{ 'gasto_variable' | translate }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item id="open-expense-date" button detail="false" class="form-item date-item">
+            <ion-label position="stacked">{{ 'DATE' | translate }}</ion-label>
+            <ion-datetime-button datetime="expense-date"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true" trigger="open-expense-date">
+              <ng-template>
+                <ion-datetime id="expense-date" presentation="date" [(ngModel)]="currentExpense.date" name="date" [locale]="settings.currentLang" showDefaultButtons="true" doneText="{{ 'SAVE' | translate }}" cancelText="{{ 'CANCEL' | translate }}"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'NOTES' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label>
+            <ion-textarea [(ngModel)]="currentExpense.notes" name="notes"></ion-textarea>
+          </ion-item>
+
+          <ion-button expand="block" type="submit" class="ion-margin-top">
+            {{ 'SAVE' | translate }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

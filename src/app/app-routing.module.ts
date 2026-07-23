@@ -51,7 +51,11 @@ const routes: Routes = [
   {
     path: 'data-backup',
     loadChildren: () => import('./data-backup/data-backup.module').then( m => m.DataBackupPageModule)
+  },  {
+    path: 'individual-expenses',
+    loadChildren: () => import('./individual-expenses/individual-expenses.module').then( m => m.IndividualExpensesPageModule)
   }
+
 ];
 
 @NgModule({

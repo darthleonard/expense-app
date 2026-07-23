@@ -217,5 +217,17 @@
   "RESOLVED_ISSUES_DATABASE_WIDE": "Se resolvieron {{ count }} problemas en toda la base de datos",
   "AUTOFIX_ALL_FAILED": "La autocorrecion completa terminó con errores",
   "FOURTEEN_DAY_CYCLE": "Ciclo de 14 días",
-  "BI_WEEKLY_SHORT": "Quincenal"
+  "BI_WEEKLY_SHORT": "Quincenal",
+  "INDIVIDUAL_EXPENSES_TITLE": "Gastos Individuales",
+  "CONCEPT": "Concepto",
+  "PRICE": "Precio",
+  "NEW_EXPENSE": "Nuevo Gasto",
+  "DELETE_EXPENSE": "Eliminar Gasto",
+  "DELETE_EXPENSE_CONFIRM": "¿Estás seguro de que deseas eliminar este gasto?",
+  "CONCEPT_REQUIRED": "El concepto es obligatorio.",
+  "PRICE_REQUIRED": "El precio debe ser mayor a 0.",
+  "NO_EXPENSES_YET": "No hay gastos individuales registrados aún.",
+  "FIXED_TOTAL": "Total Fijo",
+  "VARIABLE_TOTAL": "Total Variable",
+  "ALL_CATEGORIES": "Todas las Categorías"
 }

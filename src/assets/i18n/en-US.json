@@ -217,5 +217,17 @@
   "RESOLVED_ISSUES_DATABASE_WIDE": "Resolved {{ count }} issues database-wide",
   "AUTOFIX_ALL_FAILED": "Autofix all completed with errors",
   "FOURTEEN_DAY_CYCLE": "14-Day Cycle",
-  "BI_WEEKLY_SHORT": "Bi-Weekly"
+  "BI_WEEKLY_SHORT": "Bi-Weekly",
+  "INDIVIDUAL_EXPENSES_TITLE": "Individual Expenses",
+  "CONCEPT": "Concept",
+  "PRICE": "Price",
+  "NEW_EXPENSE": "New Expense",
+  "DELETE_EXPENSE": "Delete Expense",
+  "DELETE_EXPENSE_CONFIRM": "Are you sure you want to delete this expense?",
+  "CONCEPT_REQUIRED": "Concept is required.",
+  "PRICE_REQUIRED": "Price must be greater than 0.",
+  "NO_EXPENSES_YET": "No individual expenses registered yet.",
+  "FIXED_TOTAL": "Fixed Total",
+  "VARIABLE_TOTAL": "Variable Total",
+  "ALL_CATEGORIES": "All Categories"
 }

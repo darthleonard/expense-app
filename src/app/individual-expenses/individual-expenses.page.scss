@@ -1,0 +1,319 @@
+:host {
+  --fixed-color: #2dd36f;
+  --variable-color: #3880ff;
+  --total-color: #7044ff;
+}
+
+.header-section {
+  padding: 24px 20px 8px 20px;
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+}
+
+/* KPI Summary Cards */
+.stats-container {
+  padding: 0 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  margin: 8px 0;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  ion-card-content {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+.total-card {
+  background: linear-gradient(135deg, var(--total-color) 0%, #4c25d8 100%);
+  color: white;
+
+  .stat-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+
+    ion-icon {
+      font-size: 24px;
+      color: white;
+    }
+  }
+
+  .stat-label {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    margin: 4px 0 0 0;
+    font-size: 26px;
+    font-weight: 800;
+  }
+}
+
+.stats-row {
+  display: flex;
+  gap: 12px;
+
+  .stat-card {
+    flex: 1;
+    margin: 0;
+
+    ion-card-content {
+      padding: 16px;
+    }
+  }
+}
+
+.fixed-card {
+  background: linear-gradient(135deg, #1d976c 0%, #2dd36f 100%);
+  color: white;
+
+  .stat-label {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    margin: 4px 0 0 0;
+    font-size: 18px;
+    font-weight: 800;
+  }
+}
+
+.variable-card {
+  background: linear-gradient(135deg, #0052d4 0%, #4364f7 100%, #6fb1fc 100%);
+  color: white;
+
+  .stat-label {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    margin: 4px 0 0 0;
+    font-size: 18px;
+    font-weight: 800;
+  }
+}
+
+/* Search & Filters */
+.search-filter-section {
+  padding: 0 16px;
+  margin-bottom: 16px;
+
+  .custom-searchbar {
+    padding: 0;
+    margin-bottom: 12px;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .custom-segment {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    padding: 3px;
+
+    ion-segment-button {
+      --border-radius: 10px;
+      --indicator-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+      font-weight: 600;
+      font-size: 13px;
+    }
+  }
+}
+
+/* Expense List */
+.expense-list {
+  background: transparent;
+  padding: 0 16px;
+}
+
+.expense-sliding-item {
+  margin-bottom: 10px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.expense-item {
+  --background: var(--ion-item-background, #ffffff);
+  --padding-start: 12px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+
+  .category-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    &.gasto_fijo {
+      background: rgba(45, 211, 111, 0.12);
+      color: var(--fixed-color);
+    }
+
+    &.gasto_variable {
+      background: rgba(56, 128, 255, 0.12);
+      color: var(--variable-color);
+    }
+  }
+
+  .expense-info {
+    margin: 8px 0;
+
+    .expense-concept {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ion-text-color, #1e1e24);
+      margin: 0 0 3px 0;
+      text-transform: capitalize;
+    }
+
+    .expense-date {
+      font-size: 12px;
+      color: var(--ion-color-medium, #8e8e93);
+      margin: 0;
+    }
+
+    .expense-notes {
+      font-size: 12px;
+      color: var(--ion-color-medium, #8e8e93);
+      margin: 4px 0 0 0;
+      font-style: italic;
+      text-transform: capitalize;
+    }
+  }
+
+  .expense-price {
+    font-size: 17px;
+    font-weight: 800;
+
+    &.gasto_fijo {
+      color: #1d976c;
+    }
+
+    &.gasto_variable {
+      color: var(--variable-color);
+    }
+  }
+}
+
+.delete-option {
+  --background: var(--ion-color-danger, #eb445a);
+  font-weight: 600;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--ion-color-medium, #8e8e93);
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+/* FAB Styling */
+.custom-fab {
+  --background: var(--total-color);
+  --background-hover: #5d36db;
+  --box-shadow: 0 8px 24px rgba(112, 68, 255, 0.4);
+}
+
+/* Modal Form Styles */
+
+.modal-content {
+  --background: var(--ion-background-color, #ffffff);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-item {
+  --background: rgba(0, 0, 0, 0.02);
+  --border-radius: 10px;
+  margin-bottom: 4px;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+
+  ion-label[position="stacked"] {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ion-color-medium, #8e8e93);
+    margin-bottom: 6px;
+  }
+
+  ion-input, ion-textarea, ion-select {
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    font-size: 16px;
+  }
+}
+
+.date-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  
+  ion-datetime-button {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+
