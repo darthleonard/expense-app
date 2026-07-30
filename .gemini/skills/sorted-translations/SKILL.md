@@ -1,31 +1,29 @@
 ---
 name: sorted-translations
-description: Documents the mandatory pattern for keeping translation keys in alphabetical order.
+description: Enforces alphabetical sorting of i18n JSON keys. Auto-sorts new entries, prevents merge conflicts.
 ---
 
 # Alphabetically Sorted Translations
 
-This application enforces a strict pattern for all localization/translation files (e.g., `en-US.json`, `es-MX.json`):
+**Strict Rule:** All keys in translation files (`*.json` inside `i18n/` or `assets/i18n/`) must be stored in **strict alphabetical order**.
 
-**Translation keys must always be stored in alphabetical order.**
-
-## Why?
-1. **Maintainability**: Sorting keys alphabetically makes it much easier for developers and translators to find specific entries, especially as the application grows.
-2. **Merge Conflicts**: Alphabetical sorting significantly reduces the likelihood of git merge conflicts when multiple developers add new translations simultaneously.
-
-## How to enforce this pattern:
-Whenever you add or modify a translation key in the JSON files, make sure to insert it in its correct alphabetical position based on the key name.
-
-If you are adding multiple keys or performing a large refactor, you can use a quick Node.js script to sort the entire file automatically:
+## Execution Guidelines
+1.  **Insertion:** When adding new keys, insert them immediately in their correct alphabetical position.
+2.  **Refactoring:** If a file is unsorted, execute the following Node.js script to normalize it automatically before saving. Do not manually reorder large files.
 
 ```javascript
 const fs = require('fs');
-const data = JSON.parse(fs.readFileSync('path/to/lang.json', 'utf8'));
+const path = require('path');
+
+// Target file (adjust path as needed)
+const filePath = 'src/assets/i18n/en-US.json'; 
+const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const sorted = {};
-Object.keys(data).sort().forEach(key => {
+
+// Sort keys alphabetically using localeCompare for proper character handling
+Object.keys(data).sort((a, b) => a.localeCompare(b)).forEach(key => {
   sorted[key] = data[key];
 });
-fs.writeFileSync('path/to/lang.json', JSON.stringify(sorted, null, 2) + '\n');
-```
 
-*Always respect this ordering convention when working with the `i18n` directory.*
+fs.writeFileSync(filePath, JSON.stringify(sorted, null, 2) + '\n');
+console.log('Translation keys sorted successfully.');   
