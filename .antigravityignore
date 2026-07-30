@@ -1,0 +1,53 @@
+# --- Dependencias y Paquetes ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# --- Salida de Compilación (Angular & Ionic) ---
+dist/
+www/
+out-tsc/
+.angular/
+.sass-cache/
+coverage/
+.nx/
+
+# --- Específico de Android (Ignorar completamente) ---
+# Dado que solo apuntas a Android, ignora iOS y otras plataformas
+platforms/
+plugins/
+android/
+ios/
+
+# --- Archivos de Configuración de Build y Gradle ---
+.gradle/
+build/
+**/build/
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# --- Archivos de IDE y Sistema ---
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Archivos Minificados y Generados (Alto costo de tokens, bajo valor) ---
+**/*.min.js
+**/*.min.css
+**/*.bundle.js
+**/*.ngfactory.js
+**/*.ngstyle.js   
