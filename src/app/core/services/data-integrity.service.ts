@@ -139,7 +139,7 @@ export class DataIntegrityService {
     }
 
     // 3. EXPENSES
-    const validExpenseTypes = new Set(['casa', 'electricidad', 'agua', 'gas', 'telecomunicaciones']);
+    const validExpenseTypes = new Set(['housing', 'electricity', 'water', 'gas_bill', 'telecom']);
     for (const exp of expenses) {
       checkId('expenses', exp);
       
@@ -337,7 +337,7 @@ export class DataIntegrityService {
     }
 
     // 5. INCOME RECORDS
-    const validIncomePeriods = new Set(['mensual', 'catorcenal', 'quincenal']);
+    const validIncomePeriods = new Set(['monthly', 'biweekly', 'semimonthly']);
     for (const inc of incomeRecords) {
       checkId('incomeRecords', inc);
 
@@ -403,7 +403,7 @@ export class DataIntegrityService {
     }
 
     // 7. PRODUCTS
-    const validProductCats = new Set(['gasto_fijo', 'gasto_variable']);
+    const validProductCats = new Set(['fixed', 'variable']);
     for (const prod of products) {
       checkId('products', prod);
       if (!prod.name?.trim()) {
@@ -436,7 +436,7 @@ export class DataIntegrityService {
     }
 
     // 8. PURCHASES
-    const validPurchaseStatuses = new Set(['activa', 'completada', 'cancelada']);
+    const validPurchaseStatuses = new Set(['active', 'completed', 'canceled']);
     for (const purch of purchases) {
       checkId('purchases', purch);
 
@@ -760,7 +760,7 @@ export class DataIntegrityService {
         } else {
           const newPurchaseId = await this.db.purchases.add({
             name: 'compra recuperada',
-            status: 'completada',
+            status: 'completed',
             creationDate: new Date().toISOString(),
             totalPriceCalculated: 0
           });
@@ -787,10 +787,10 @@ export class DataIntegrityService {
 
     // 6. Invalid enum values
     else if (issue.issueType === 'invalid_enum' && issue.field) {
-      if (issue.field === 'type') record.type = 'casa';
-      else if (issue.field === 'period') record.period = 'mensual';
-      else if (issue.field === 'category') record.category = 'gasto_variable';
-      else if (issue.field === 'status') record.status = 'activa';
+      if (issue.field === 'type') record.type = 'housing';
+      else if (issue.field === 'period') record.period = 'monthly';
+      else if (issue.field === 'category') record.category = 'variable';
+      else if (issue.field === 'status') record.status = 'active';
     }
 
     // 7. Empty name fields

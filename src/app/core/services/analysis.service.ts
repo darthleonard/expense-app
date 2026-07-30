@@ -60,7 +60,7 @@ export class AnalysisService {
           if (e.date) {
             monthsSet.add(e.date.substring(0, 7)); // "YYYY-MM"
           }
-          if (e.type === 'casa') {
+          if (e.type === 'housing') {
             casa += e.amount;
           } else {
             others += e.amount;

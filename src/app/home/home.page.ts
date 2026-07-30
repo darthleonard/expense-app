@@ -105,7 +105,7 @@ export class HomePage implements OnInit {
     const now = new Date();
     const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     return {
-      type: 'casa',
+      type: 'housing',
       amount: 0,
       date: localDate,
       notes: ''
@@ -179,11 +179,11 @@ export class HomePage implements OnInit {
 
   getIconForType(type: string) {
     switch (type) {
-      case 'casa': return 'home';
-      case 'electricidad': return 'flash';
-      case 'agua': return 'water';
-      case 'gas': return 'flame';
-      case 'telecomunicaciones': return 'wifi';
+      case 'housing': return 'home';
+      case 'electricity': return 'flash';
+      case 'water': return 'water';
+      case 'gas_bill': return 'flame';
+      case 'telecom': return 'wifi';
       default: return 'cash';
     }
   }

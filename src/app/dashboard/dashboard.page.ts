@@ -90,11 +90,11 @@ export class DashboardPage implements OnInit {
     let housing = 0, electricity = 0, water = 0, gas = 0, telecom = 0;
     const filteredExpenses = this.filterByTimeRange(expenses, this.pieTimeRange);
     filteredExpenses.forEach(e => {
-      if (e.type === 'casa') housing += e.amount;
-      else if (e.type === 'electricidad') electricity += e.amount;
-      else if (e.type === 'agua') water += e.amount;
-      else if (e.type === 'gas') gas += e.amount;
-      else if (e.type === 'telecomunicaciones') telecom += e.amount;
+      if (e.type === 'housing') housing += e.amount;
+      else if (e.type === 'electricity') electricity += e.amount;
+      else if (e.type === 'water') water += e.amount;
+      else if (e.type === 'gas_bill') gas += e.amount;
+      else if (e.type === 'telecom') telecom += e.amount;
     });
 
     const pieData = [housing, electricity, water, gas, telecom];

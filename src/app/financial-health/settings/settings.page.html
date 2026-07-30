@@ -27,20 +27,20 @@
     <ion-item>
       <ion-icon name="calendar-outline" slot="start"></ion-icon>
       <ion-select [(ngModel)]="period" interface="popover" placeholder="Period">
-        <ion-select-option value="mensual">{{ 'MONTHLY' | translate }}</ion-select-option>
-        <ion-select-option value="catorcenal">{{ 'BI_WEEKLY' | translate }}</ion-select-option>
+        <ion-select-option value="monthly">{{ 'MONTHLY' | translate }}</ion-select-option>
+        <ion-select-option value="biweekly">{{ 'BI_WEEKLY' | translate }}</ion-select-option>
       </ion-select>
     </ion-item>
   </ion-list>
 
   <ion-button expand="block" (click)="confirmSave()" [disabled]="!amount || amount <= 0">
     <ion-icon name="save-outline" slot="end"></ion-icon>
-    Guardar
+    {{ 'SAVE' | translate }}
   </ion-button>
 
   <ion-list *ngIf="history.length > 0" class="ion-margin-top">
     <ion-list-header>
-      <ion-label>Historial</ion-label>
+      <ion-label>{{ 'HISTORY' | translate }}</ion-label>
     </ion-list-header>
 
     <ion-item *ngFor="let record of history">

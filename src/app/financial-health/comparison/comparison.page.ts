@@ -77,7 +77,7 @@ export class ComparisonPage implements ViewWillEnter {
     const individualFixed = individual
       .filter(e => {
         const { month, year } = this.getLocalMonthYear(e.date);
-        return month === targetMonth && year === targetYear && e.category === 'gasto_fijo';
+        return month === targetMonth && year === targetYear && e.category === 'fixed';
       })
       .reduce((sum, e) => sum + (e.price || 0), 0);
 
@@ -93,7 +93,7 @@ export class ComparisonPage implements ViewWillEnter {
     const individualVariable = individual
       .filter(e => {
         const { month, year } = this.getLocalMonthYear(e.date);
-        return month === targetMonth && year === targetYear && e.category === 'gasto_variable';
+        return month === targetMonth && year === targetYear && e.category === 'variable';
       })
       .reduce((sum, e) => sum + (e.price || 0), 0);
 

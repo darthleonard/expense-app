@@ -17,7 +17,7 @@ export interface FinancialHealthValues {
 export class FinancialHealthService {
   constructor(private db: DatabaseService) {}
 
-  async saveIncome(amount: number, period: 'mensual' | 'catorcenal' | 'quincenal'): Promise<void> {
+  async saveIncome(amount: number, period: 'monthly' | 'biweekly' | 'semimonthly'): Promise<void> {
     const record: IncomeRecord = {
       amount,
       period,
@@ -43,8 +43,8 @@ export class FinancialHealthService {
     await this.db.incomeRecords.clear();
   }
 
-  calculateValues(baseAmount: number, period: 'mensual' | 'catorcenal' | 'quincenal'): FinancialHealthValues {
-    const monthlyIncome = (period === 'catorcenal' || period === 'quincenal') ? baseAmount * 2 : baseAmount;
+  calculateValues(baseAmount: number, period: 'monthly' | 'biweekly' | 'semimonthly'): FinancialHealthValues {
+    const monthlyIncome = (period === 'biweekly' || period === 'semimonthly') ? baseAmount * 2 : baseAmount;
     
     return {
       monthlyIncome,

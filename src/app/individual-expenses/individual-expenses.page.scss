@@ -186,12 +186,12 @@
       font-size: 20px;
     }
 
-    &.gasto_fijo {
+    &.fixed {
       background: rgba(45, 211, 111, 0.12);
       color: var(--fixed-color);
     }
 
-    &.gasto_variable {
+    &.variable {
       background: rgba(56, 128, 255, 0.12);
       color: var(--variable-color);
     }
@@ -227,11 +227,11 @@
     font-size: 17px;
     font-weight: 800;
 
-    &.gasto_fijo {
+    &.fixed {
       color: #1d976c;
     }
 
-    &.gasto_variable {
+    &.variable {
       color: var(--variable-color);
     }
   }

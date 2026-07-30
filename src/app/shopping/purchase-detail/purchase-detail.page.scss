@@ -8,12 +8,12 @@
   text-transform: capitalize;
   ion-icon { font-size: 20px; }
 
-  &.completada {
+  &.completed {
     background: rgba(45, 211, 111, 0.12);
     color: var(--ion-color-success);
     border-bottom: 2px solid var(--ion-color-success);
   }
-  &.cancelada {
+  &.canceled {
     background: rgba(146, 148, 156, 0.12);
     color: var(--ion-color-medium);
     border-bottom: 2px solid var(--ion-color-medium);

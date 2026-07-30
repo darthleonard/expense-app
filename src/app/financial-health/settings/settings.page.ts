@@ -11,10 +11,10 @@ import { AlertController, NavController } from '@ionic/angular';
 })
 export class SettingsPage implements OnInit {
   amount: number | null = null;
-  period: 'mensual' | 'catorcenal' | 'quincenal' = 'mensual';
+  period: 'monthly' | 'biweekly' | 'semimonthly' = 'monthly';
   history: IncomeRecord[] = [];
   originalAmount: number | null = null;
-  originalPeriod: string = 'mensual';
+  originalPeriod: string = 'monthly';
 
   constructor(
     private financialHealth: FinancialHealthService,

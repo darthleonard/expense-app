@@ -169,7 +169,7 @@ export class ShoppingService {
     if (!purchase) return;
 
     await this.db.purchases.update(purchaseId, {
-      status: 'completada' as PurchaseStatus
+      status: 'completed' as PurchaseStatus
     });
 
     // Inject bought items into price history
@@ -192,7 +192,7 @@ export class ShoppingService {
   }
 
   async cancelPurchase(purchaseId: number) {
-    await this.db.purchases.update(purchaseId, { status: 'cancelada' as PurchaseStatus });
+    await this.db.purchases.update(purchaseId, { status: 'cancelled' as PurchaseStatus });
   }
 
   async rollbackPurchase(purchaseId: number) {
@@ -200,7 +200,7 @@ export class ShoppingService {
     if (!purchase) return;
 
     await this.db.purchases.update(purchaseId, {
-      status: 'activa' as PurchaseStatus,
+      status: 'active' as PurchaseStatus,
       purchaseDate: undefined
     });
 

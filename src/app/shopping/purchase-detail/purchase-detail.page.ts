@@ -4,7 +4,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
 import {
   DatabaseService, Purchase, PurchaseItem,
-  ProductCatalog, Establishment, ProductCategory, toLower
+  ProductCatalog, Establishment, ExpenseCategory, toLower
 } from '../../core/services/database.service';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -16,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: false
 })
 export class PurchaseDetailPage implements OnInit {
-  purchase: Purchase = { name: '', status: 'activa', creationDate: '', totalPriceCalculated: 0 };
+  purchase: Purchase = { name: '', status: 'active', creationDate: '', totalPriceCalculated: 0 };
   items: PurchaseItem[] = [];
   originalItems: PurchaseItem[] = [];
   deletedItemIds: number[] = [];
@@ -37,7 +37,7 @@ export class PurchaseDetailPage implements OnInit {
   newItemNote  = '';
   isCreatingNew = false;
   newProductName = '';
-  newProductCategory: ProductCategory = 'gasto_variable';
+  newProductCategory: ExpenseCategory = 'variable';
   editingItem: PurchaseItem | null = null;
 
   // Expanded notes set
@@ -165,7 +165,7 @@ export class PurchaseDetailPage implements OnInit {
     this.isCreatingNew = true;
     this.selectedProduct = null;
     this.newProductName = this.productSearchQuery;
-    this.newProductCategory = 'gasto_variable';
+    this.newProductCategory = 'variable';
     this.newItemPrice = 0;
   }
 
@@ -174,7 +174,7 @@ export class PurchaseDetailPage implements OnInit {
 
     let productId: number | undefined;
     let productName = '';
-    let categorySnap: ProductCategory = 'gasto_variable';
+    let categorySnap: ExpenseCategory = 'variable';
 
     if (this.isCreatingNew) {
       if (!this.newProductName.trim()) return;
@@ -333,7 +333,7 @@ export class PurchaseDetailPage implements OnInit {
           text: await this.translate.get('CONFIRM').toPromise(),
           handler: async () => {
             await this.shopping.completePurchase(this.purchase.id!);
-            this.purchase.status = 'completada';
+            this.purchase.status = 'completed';
             this.showToast('PURCHASE_COMPLETED');
           }
         }
@@ -352,7 +352,7 @@ export class PurchaseDetailPage implements OnInit {
           text: await this.translate.get('CONFIRM').toPromise(),
           handler: async () => {
             await this.shopping.rollbackPurchase(this.purchase.id!);
-            this.purchase.status = 'activa';
+            this.purchase.status = 'active';
             await this.loadItems();
             this.showToast('PURCHASE_REOPENED');
           }
@@ -368,5 +368,5 @@ export class PurchaseDetailPage implements OnInit {
     await toast.present();
   }
 
-  isActive() { return this.purchase?.status === 'activa'; }
+  isActive() { return this.purchase?.status === 'active'; }
 }

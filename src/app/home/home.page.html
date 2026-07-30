@@ -42,7 +42,7 @@
         <ion-item-sliding *ngFor="let exp of group.expenses">
           <ion-item button (click)="openModal(exp)">
             <ion-label>
-              <h2 class="grouped-expanded-title">{{ exp.type | titlecase | translate }}</h2>
+              <h2 class="grouped-expanded-title">{{ exp.type | translate | titlecase }}</h2>
               <p>{{ formatDate(exp.date) }}</p>
               <p *ngIf="exp.notes">{{ exp.notes | titlecase }}</p>
             </ion-label>
@@ -89,11 +89,11 @@
           <ion-item>
             <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
             <ion-select [(ngModel)]="currentExpense.type" name="type" required>
-              <ion-select-option value="casa">{{ 'HOUSING_RENT_MORTGAGE' | translate }}</ion-select-option>
-              <ion-select-option value="electricidad">{{ 'ELECTRICITY' | translate }}</ion-select-option>
-              <ion-select-option value="agua">{{ 'WATER' | translate }}</ion-select-option>
-              <ion-select-option value="gas">{{ 'GAS_BILL' | translate }}</ion-select-option>
-              <ion-select-option value="telecomunicaciones">{{ 'TELECOMMUNICATIONS' | translate }}</ion-select-option>
+              <ion-select-option value="housing">{{ 'HOUSING_RENT_MORTGAGE' | translate }}</ion-select-option>
+              <ion-select-option value="electricity">{{ 'ELECTRICITY' | translate }}</ion-select-option>
+              <ion-select-option value="water">{{ 'WATER' | translate }}</ion-select-option>
+              <ion-select-option value="gas_bill">{{ 'GAS_BILL' | translate }}</ion-select-option>
+              <ion-select-option value="telecom">{{ 'TELECOMMUNICATIONS' | translate }}</ion-select-option>
             </ion-select>
           </ion-item>
           

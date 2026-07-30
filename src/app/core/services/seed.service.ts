@@ -36,9 +36,9 @@ export class SeedService {
     ];
 
     const incomeRecords: IncomeRecord[] = [
-      { amount: 3200000, period: 'mensual', date: '2026-06-01' },
-      { amount: 1600000, period: 'quincenal', date: '2026-06-15' },
-      { amount: 1500000, period: 'catorcenal', date: '2026-06-20' },
+      { amount: 3200000, period: 'monthly', date: '2026-06-01' },
+      { amount: 1600000, period: 'semimonthly', date: '2026-06-15' },
+      { amount: 1500000, period: 'biweekly', date: '2026-06-20' },
     ];
 
     const establishments: Establishment[] = [
@@ -72,7 +72,7 @@ export class SeedService {
       {
         name: 'arroz',
         description: 'arroz integral',
-        category: 'gasto_fijo',
+        category: 'fixed',
         subCategory: 'alimentos',
         code: 'AR-001',
         isActive: true,
@@ -82,7 +82,7 @@ export class SeedService {
       {
         name: 'leche',
         description: 'leche entera',
-        category: 'gasto_variable',
+        category: 'variable',
         subCategory: 'lacteos',
         code: 'LE-002',
         isActive: true,
@@ -92,7 +92,7 @@ export class SeedService {
       {
         name: 'papel higiénico',
         description: 'rollos dobles',
-        category: 'gasto_fijo',
+        category: 'fixed',
         subCategory: 'higiene',
         code: 'PH-003',
         isActive: true,
@@ -102,7 +102,7 @@ export class SeedService {
       {
         name: 'detergente',
         description: 'detergente líquido',
-        category: 'gasto_variable',
+        category: 'variable',
         subCategory: 'limpieza',
         code: 'DE-004',
         isActive: true,
@@ -112,7 +112,7 @@ export class SeedService {
       {
         name: 'shampoo',
         description: 'shampoo anticaspa',
-        category: 'gasto_fijo',
+        category: 'fixed',
         subCategory: 'belleza',
         code: 'SH-005',
         isActive: true,
@@ -139,7 +139,7 @@ export class SeedService {
         return [
           {
             houseId: houseIds[0],
-            type: 'casa',
+            type: 'housing',
             amount: 9000,
             date,
             notes: 'mantenimiento mensual',
@@ -148,7 +148,7 @@ export class SeedService {
           },
           {
             houseId: houseIds[0],
-            type: 'electricidad',
+            type: 'electricity',
             amount: electricityAmount,
             date,
             notes: 'consumo de luz',
@@ -157,7 +157,7 @@ export class SeedService {
           },
           {
             houseId: houseIds[0],
-            type: 'agua',
+            type: 'water',
             amount: waterAmount,
             date,
             notes: 'servicio de agua',
@@ -166,7 +166,7 @@ export class SeedService {
           },
           {
             houseId: houseIds[0],
-            type: 'gas',
+            type: 'gas_bill',
             amount: gasAmount,
             date,
             notes: 'gas domiciliario',
@@ -175,7 +175,7 @@ export class SeedService {
           },
           {
             houseId: houseIds[0],
-            type: 'telecomunicaciones',
+            type: 'telecom',
             amount: 950,
             date,
             notes: 'internet y telefonía',
@@ -227,7 +227,7 @@ export class SeedService {
     const purchasesData: Purchase[] = [
       {
         name: 'compra semanal',
-        status: 'activa',
+        status: 'active',
         creationDate: now,
         purchaseDate: '2026-06-18',
         notes: 'mercado semanal',
@@ -237,7 +237,7 @@ export class SeedService {
       },
       {
         name: 'compras de hogar',
-        status: 'completada',
+        status: 'completed',
         creationDate: now,
         purchaseDate: '2026-06-20',
         notes: 'productos para limpieza',
@@ -256,7 +256,7 @@ export class SeedService {
         purchaseId: purchaseIds[0],
         productId: productIds[0],
         productNameSnap: 'arroz',
-        categorySnap: 'gasto_fijo',
+        categorySnap: 'fixed',
         quantity: 2,
         unitPrice: 2200,
         totalPrice: 4400,
@@ -268,7 +268,7 @@ export class SeedService {
         purchaseId: purchaseIds[0],
         productId: productIds[1],
         productNameSnap: 'leche',
-        categorySnap: 'gasto_variable',
+        categorySnap: 'variable',
         quantity: 3,
         unitPrice: 3200,
         totalPrice: 9600,
@@ -280,7 +280,7 @@ export class SeedService {
         purchaseId: purchaseIds[1],
         productId: productIds[3],
         productNameSnap: 'detergente',
-        categorySnap: 'gasto_variable',
+        categorySnap: 'variable',
         quantity: 1,
         unitPrice: 18500,
         totalPrice: 18500,
@@ -292,7 +292,7 @@ export class SeedService {
         purchaseId: purchaseIds[1],
         productId: productIds[4],
         productNameSnap: 'shampoo',
-        categorySnap: 'gasto_fijo',
+        categorySnap: 'fixed',
         quantity: 2,
         unitPrice: 9500,
         totalPrice: 19000,

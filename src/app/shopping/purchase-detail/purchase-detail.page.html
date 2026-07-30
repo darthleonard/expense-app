@@ -22,7 +22,7 @@
 
   <!-- Status banner for completed/cancelled -->
   <div *ngIf="!isActive()" class="status-banner" [class]="purchase.status">
-    <ion-icon [name]="purchase.status === 'completada' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+    <ion-icon [name]="purchase.status === 'completed' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
     {{ purchase.status | translate }}
   </div>
 
@@ -160,8 +160,8 @@
             <ion-item>
               <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
               <ion-select [(ngModel)]="newProductCategory" interface="popover">
-                <ion-select-option value="gasto_fijo">{{ 'CAT_FIXED' | translate }}</ion-select-option>
-                <ion-select-option value="gasto_variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
+                <ion-select-option value="fixed">{{ 'CAT_FIXED' | translate }}</ion-select-option>
+                <ion-select-option value="variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
               </ion-select>
             </ion-item>
           </ion-list>

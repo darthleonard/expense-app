@@ -35,8 +35,8 @@
   font-size: 20px;
   margin: 0 10px;
 
-  &.gasto_fijo     { background: rgba(var(--ion-color-tertiary-rgb), 0.12); color: var(--ion-color-tertiary); }
-  &.gasto_variable { background: rgba(var(--ion-color-warning-rgb),  0.12); color: var(--ion-color-warning);  }
+  &.fixed    { background: rgba(var(--ion-color-tertiary-rgb), 0.12); color: var(--ion-color-tertiary); }
+  &.variable { background: rgba(var(--ion-color-warning-rgb),  0.12); color: var(--ion-color-warning);  }
 }
 
 .product-name {

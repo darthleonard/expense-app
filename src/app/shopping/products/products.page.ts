@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
-import { DatabaseService, ProductCatalog, ProductCategory } from '../../core/services/database.service';
+import { DatabaseService, ProductCatalog, ExpenseCategory } from '../../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { ViewChild } from '@angular/core';
@@ -51,7 +51,7 @@ export class ProductsPage implements OnInit {
       this.current = { ...product };
     } else {
       this.editingProduct = null;
-      this.current = { category: 'gasto_variable', isActive: true };
+      this.current = { category: 'variable', isActive: true };
     }
     this.isModalOpen = true;
   }
@@ -60,7 +60,7 @@ export class ProductsPage implements OnInit {
     if (role === 'save') return true;
     
     const isChanged = this.hasChangesService.hasChanges(
-      this.editingProduct || { category: 'gasto_variable', isActive: true },
+      this.editingProduct || { category: 'variable', isActive: true },
       this.current
     );
     
@@ -76,7 +76,7 @@ export class ProductsPage implements OnInit {
       await this.shopping.saveProduct({
         ...this.current,
         name: this.current.name!.trim(),
-        category: this.current.category as ProductCategory || 'gasto_variable',
+        category: this.current.category as ExpenseCategory || 'variable',
         isActive: this.current.isActive ?? true,
         creationDate: this.editingProduct?.creationDate || new Date().toISOString(),
         lastModDate: new Date().toISOString()
@@ -117,6 +117,6 @@ export class ProductsPage implements OnInit {
   }
 
   getCategoryColor(cat: string) {
-    return cat === 'gasto_fijo' ? 'tertiary' : 'warning';
+    return cat === 'fixed' ? 'tertiary' : 'warning';
   }
 }

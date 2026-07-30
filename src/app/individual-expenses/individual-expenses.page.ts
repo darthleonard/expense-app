@@ -20,7 +20,7 @@ export class IndividualExpensesPage implements OnInit {
   currentExpense: IndividualExpense = this.getDefaultExpense();
 
   searchQuery = '';
-  categoryFilter: 'all' | 'gasto_fijo' | 'gasto_variable' = 'all';
+  categoryFilter: 'all' | 'fixed' | 'variable' = 'all';
 
   // KPI metrics
   totalSpent = 0;
@@ -74,15 +74,15 @@ export class IndividualExpensesPage implements OnInit {
 
     // KPI summary metrics (overall totals)
     this.totalSpent = this.expenses.reduce((sum, e) => sum + e.price, 0);
-    this.totalFixed = this.expenses.filter(e => e.category === 'gasto_fijo').reduce((sum, e) => sum + e.price, 0);
-    this.totalVariable = this.expenses.filter(e => e.category === 'gasto_variable').reduce((sum, e) => sum + e.price, 0);
+    this.totalFixed = this.expenses.filter(e => e.category === 'fixed').reduce((sum, e) => sum + e.price, 0);
+    this.totalVariable = this.expenses.filter(e => e.category === 'variable').reduce((sum, e) => sum + e.price, 0);
   }
 
   getDefaultExpense(): IndividualExpense {
     return {
       concept: '',
       price: 0,
-      category: 'gasto_variable',
+      category: 'variable',
       date: new Date().toISOString(),
       notes: ''
     };

@@ -47,9 +47,9 @@
   border-radius: 16px 0 0 16px;
   flex-shrink: 0;
 
-  &.activa     { background: var(--ion-color-primary); }
-  &.completada { background: var(--ion-color-success); }
-  &.cancelada  { background: var(--ion-color-medium); }
+  &.active      { background: var(--ion-color-primary); }
+  &.completed   { background: var(--ion-color-success); }
+  &.canceled    { background: var(--ion-color-medium); }
 }
 
 .item-icon-wrap {

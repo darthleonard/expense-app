@@ -29,8 +29,8 @@
     <ion-item>
       <ion-icon name="calendar-outline" slot="start"></ion-icon>
       <ion-select [(ngModel)]="period" (ionChange)="calculate()" interface="popover" placeholder="Period">
-        <ion-select-option value="mensual">{{ 'MONTHLY' | translate }}</ion-select-option>
-        <ion-select-option value="catorcenal">{{ 'BI_WEEKLY' | translate }}</ion-select-option>
+        <ion-select-option value="monthly">{{ 'MONTHLY' | translate }}</ion-select-option>
+        <ion-select-option value="biweekly">{{ 'BI_WEEKLY' | translate }}</ion-select-option>
       </ion-select>
     </ion-item>
   </ion-list>

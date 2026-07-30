@@ -54,11 +54,11 @@
       <ion-segment-button value="all">
         <ion-label>{{ 'ALL' | translate }}</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="gasto_fijo">
-        <ion-label>{{ 'gasto_fijo' | translate }}</ion-label>
+      <ion-segment-button value="fixed">
+        <ion-label>{{ 'CAT_FIXED' | translate }}</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="gasto_variable">
-        <ion-label>{{ 'gasto_variable' | translate }}</ion-label>
+      <ion-segment-button value="variable">
+        <ion-label>{{ 'CAT_VARIABLE' | translate }}</ion-label>
       </ion-segment-button>
     </ion-segment>
   </div>
@@ -68,7 +68,7 @@
     <ion-item-sliding *ngFor="let exp of filteredExpenses" class="expense-sliding-item">
       <ion-item button (click)="openModal(exp)" class="expense-item">
         <div class="category-icon" [ngClass]="exp.category">
-          <ion-icon [name]="exp.category === 'gasto_fijo' ? 'calendar-outline' : 'sparkles-outline'"></ion-icon>
+          <ion-icon [name]="exp.category === 'fixed' ? 'calendar-outline' : 'sparkles-outline'"></ion-icon>
         </div>
         <ion-label class="expense-info">
           <h2 class="expense-concept">{{ exp.concept }}</h2>
@@ -127,8 +127,8 @@
           <ion-item class="form-item">
             <ion-label position="stacked">{{ 'CATEGORY' | translate }}</ion-label>
             <ion-select [(ngModel)]="currentExpense.category" name="category" required interface="popover">
-              <ion-select-option value="gasto_fijo">{{ 'gasto_fijo' | translate }}</ion-select-option>
-              <ion-select-option value="gasto_variable">{{ 'gasto_variable' | translate }}</ion-select-option>
+              <ion-select-option value="fixed">{{ 'CAT_FIXED' | translate }}</ion-select-option>
+              <ion-select-option value="variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
             </ion-select>
           </ion-item>
 

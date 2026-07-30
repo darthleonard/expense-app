@@ -49,7 +49,7 @@ export class PurchasesPage implements OnInit {
     this.isSaving = false;
     this.editingPurchase = null;
     this.newPurchase = {
-      status: 'activa',
+      status: 'active',
       totalPriceCalculated: 0,
       purchaseDate: new Date().toISOString().substring(0, 10)
     };
@@ -75,7 +75,7 @@ export class PurchasesPage implements OnInit {
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingPurchase || {
-        status: 'activa',
+        status: 'active',
         totalPriceCalculated: 0,
         purchaseDate: new Date().toISOString().substring(0, 10)
       },
@@ -108,7 +108,7 @@ export class PurchasesPage implements OnInit {
       } else {
         const id = await this.shopping.savePurchase({
           name: this.newPurchase.name!.trim(),
-          status: 'activa',
+          status: 'active',
           creationDate: new Date().toISOString(),
           purchaseDate: this.newPurchase.purchaseDate ? new Date(this.newPurchase.purchaseDate).toISOString() : new Date().toISOString(),
           establishmentId: this.newPurchase.establishmentId,
@@ -149,8 +149,8 @@ export class PurchasesPage implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    if (status === 'completada') return 'success';
-    if (status === 'cancelada') return 'medium';
+    if (status === 'completed') return 'success';
+    if (status === 'canceled') return 'medium';
     return 'primary';
   }
 }

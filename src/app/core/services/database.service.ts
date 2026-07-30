@@ -21,7 +21,7 @@ export interface House {
 export interface ExpenseRecord {
   id?: number;
   houseId?: number;
-  type: 'casa' | 'electricidad' | 'agua' | 'gas' | 'telecomunicaciones';
+  type: 'housing' | 'electricity' | 'water' | 'gas_bill' | 'telecom';
   amount: number;
   date: string;
   notes?: string;
@@ -44,7 +44,7 @@ export interface FuelRecord {
 export interface IncomeRecord {
   id?: number;
   amount: number;
-  period: 'mensual' | 'catorcenal' | 'quincenal';
+  period: 'monthly' | 'biweekly' | 'semimonthly';
   date: string;
 }
 
@@ -60,13 +60,13 @@ export interface Establishment {
   lastModDate: string;
 }
 
-export type ProductCategory = 'gasto_fijo' | 'gasto_variable';
+export type ExpenseCategory = 'fixed' | 'variable';
 
 export interface ProductCatalog {
   id?: number;
   name: string;
   description?: string;
-  category: ProductCategory;
+  category: ExpenseCategory;
   subCategory?: string;
   code?: string;
   isActive: boolean;
@@ -74,7 +74,7 @@ export interface ProductCatalog {
   lastModDate: string;
 }
 
-export type PurchaseStatus = 'activa' | 'completada' | 'cancelada';
+export type PurchaseStatus = 'active' | 'completed' | 'canceled';
 
 export interface Purchase {
   id?: number;
@@ -93,7 +93,7 @@ export interface PurchaseItem {
   purchaseId: number;
   productId?: number;
   productNameSnap: string; // historical snapshot
-  categorySnap: ProductCategory; // historical snapshot
+  categorySnap: ExpenseCategory; // historical snapshot
   quantity: number;
   unitPrice: number;
   totalPrice: number; // quantity * unitPrice
@@ -118,7 +118,7 @@ export interface IndividualExpense {
   id?: number;
   concept: string;
   price: number;
-  category: ProductCategory;
+  category: ExpenseCategory;
   date: string;
   notes?: string;
   creationDate?: string;
@@ -209,6 +209,85 @@ export class DatabaseService extends Dexie {
         '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
       individualExpenses: '++id, concept, price, category, date, creationDate'
     });
+
+    // v5: migrate Spanish enum values to English equivalents
+    this.version(5)
+      .stores({
+        cars: '++id, name',
+        houses: '++id, name',
+        expenses: '++id, houseId, type, amount, date',
+        fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
+        incomeRecords: '++id, amount, period, date',
+        establishments: '++id, name, isActive, creationDate',
+        products: '++id, name, category, code, isActive, creationDate',
+        purchases:
+          '++id, name, status, establishmentId, creationDate, purchaseDate',
+        purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
+        priceHistory:
+          '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
+        individualExpenses: '++id, concept, price, category, date, creationDate'
+      })
+      .upgrade(async tx => {
+        // ExpenseRecord.type — Spanish → English
+        const expenseTypeMap: Record<string, string> = {
+          casa: 'housing',
+          electricidad: 'electricity',
+          agua: 'water',
+          gas: 'gas_bill',
+          telecomunicaciones: 'telecom',
+        };
+        await tx.table('expenses').toCollection().modify(row => {
+          if (row.type && expenseTypeMap[row.type]) {
+            row.type = expenseTypeMap[row.type];
+          }
+        });
+
+        // IncomeRecord.period — Spanish → English
+        const periodMap: Record<string, string> = {
+          mensual: 'monthly',
+          catorcenal: 'biweekly',
+          quincenal: 'semimonthly',
+        };
+        await tx.table('incomeRecords').toCollection().modify(row => {
+          if (row.period && periodMap[row.period]) {
+            row.period = periodMap[row.period];
+          }
+        });
+
+        // ExpenseCategory — Spanish → English (products, purchaseItems, individualExpenses)
+        const categoryMap: Record<string, string> = {
+          gasto_fijo: 'fixed',
+          gasto_variable: 'variable',
+        };
+        await tx.table('products').toCollection().modify(row => {
+          if (row.category && categoryMap[row.category]) {
+            row.category = categoryMap[row.category];
+          }
+        });
+        await tx.table('purchaseItems').toCollection().modify(row => {
+          if (row.categorySnap && categoryMap[row.categorySnap]) {
+            row.categorySnap = categoryMap[row.categorySnap];
+          }
+        });
+        await tx.table('individualExpenses').toCollection().modify(row => {
+          if (row.category && categoryMap[row.category]) {
+            row.category = categoryMap[row.category];
+          }
+        });
+
+        // PurchaseStatus — Spanish → English
+        const statusMap: Record<string, string> = {
+          activa: 'active',
+          completada: 'completed',
+          cancelada: 'canceled',
+          cancelled: 'canceled',
+        };
+        await tx.table('purchases').toCollection().modify(row => {
+          if (row.status && statusMap[row.status]) {
+            row.status = statusMap[row.status];
+          }
+        });
+      });
 
     //  void this.open()
     //    .then(async () => {

@@ -10,7 +10,7 @@ import { AlertController, NavController } from '@ionic/angular';
 })
 export class ProjectionsPage {
   amount: number | null = null;
-  period: 'mensual' | 'catorcenal' | 'quincenal' = 'mensual';
+  period: 'monthly' | 'biweekly' | 'semimonthly' = 'monthly';
   values: FinancialHealthValues | null = null;
   showValues: boolean = true;
 
@@ -33,7 +33,7 @@ export class ProjectionsPage {
   }
 
   hasUnsavedChanges(): boolean {
-    return this.amount !== null || this.period !== 'mensual';
+    return this.amount !== null || this.period !== 'monthly';
   }
 
   async checkUnsavedAndLeave() {

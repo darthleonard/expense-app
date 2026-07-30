@@ -231,31 +231,31 @@ export class DatabaseAnalysisPage implements OnInit {
   getSelectOptions(field: string): { label: string, value: string }[] {
     if (field === 'type') {
       return [
-        { label: this.translate.instant('HOUSING_RENT_MORTGAGE'), value: 'casa' },
-        { label: this.translate.instant('ELECTRICITY'), value: 'electricidad' },
-        { label: this.translate.instant('WATER'), value: 'agua' },
-        { label: this.translate.instant('GAS_BILL'), value: 'gas' },
-        { label: this.translate.instant('TELECOMMUNICATIONS'), value: 'telecomunicaciones' }
+        { label: this.translate.instant('HOUSING_RENT_MORTGAGE'), value: 'housing' },
+        { label: this.translate.instant('ELECTRICITY'), value: 'electricity' },
+        { label: this.translate.instant('WATER'), value: 'water' },
+        { label: this.translate.instant('GAS_BILL'), value: 'gas_bill' },
+        { label: this.translate.instant('TELECOMMUNICATIONS'), value: 'telecom' }
       ];
     }
     if (field === 'period') {
       return [
-        { label: this.translate.instant('MONTHLY'), value: 'mensual' },
-        { label: this.translate.instant('FOURTEEN_DAY_CYCLE'), value: 'catorcenal' },
-        { label: this.translate.instant('BI_WEEKLY_SHORT'), value: 'quincenal' }
+        { label: this.translate.instant('MONTHLY'), value: 'monthly' },
+        { label: this.translate.instant('FOURTEEN_DAY_CYCLE'), value: 'biweekly' },
+        { label: this.translate.instant('BI_WEEKLY_SHORT'), value: 'semimonthly' }
       ];
     }
     if (field === 'category') {
       return [
-        { label: this.translate.instant('CAT_FIXED'), value: 'gasto_fijo' },
-        { label: this.translate.instant('CAT_VARIABLE'), value: 'gasto_variable' }
+        { label: this.translate.instant('CAT_FIXED'), value: 'fixed' },
+        { label: this.translate.instant('CAT_VARIABLE'), value: 'variable' }
       ];
     }
     if (field === 'status') {
       return [
-        { label: this.translate.instant('activa'), value: 'activa' },
-        { label: this.translate.instant('completada'), value: 'completada' },
-        { label: this.translate.instant('cancelada'), value: 'cancelada' }
+        { label: this.translate.instant('ACTIVE'), value: 'active' },
+        { label: this.translate.instant('COMPLETED'), value: 'completed' },
+        { label: this.translate.instant('CANCELED'), value: 'canceled' }
       ];
     }
     return [];
