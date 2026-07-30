@@ -5,17 +5,16 @@
     </ion-buttons>
     <ion-title>{{ 'SHOPPING_TITLE' | translate }}</ion-title>
   </ion-toolbar>
-  <ion-toolbar>
-    <ion-searchbar
-      [(ngModel)]="searchQuery"
-      (ionInput)="onSearch()"
-      [placeholder]="'SEARCH_PRODUCTS' | translate"
-      debounce="200">
-    </ion-searchbar>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
+
+  <ion-searchbar
+    [(ngModel)]="searchQuery"
+    (ionInput)="onSearch()"
+    [placeholder]="'SEARCH_PRODUCTS' | translate"
+    debounce="200">
+  </ion-searchbar>
 
   <div *ngIf="products.length === 0" class="empty-state">
     <ion-icon name="pricetag-outline"></ion-icon>

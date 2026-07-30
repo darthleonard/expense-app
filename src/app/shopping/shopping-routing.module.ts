@@ -17,6 +17,10 @@ const routes: Routes = [
         loadChildren: () => import('./products/products.module').then(m => m.ProductsPageModule)
       },
       {
+        path: 'establishments',
+        loadChildren: () => import('./establishments/establishments.module').then(m => m.EstablishmentsPageModule)
+      },
+      {
         path: '',
         redirectTo: 'purchases',
         pathMatch: 'full'
@@ -26,10 +30,6 @@ const routes: Routes = [
   {
     path: 'purchase-detail/:id',
     loadChildren: () => import('./purchase-detail/purchase-detail.module').then(m => m.PurchaseDetailPageModule)
-  },
-  {
-    path: 'establishments',
-    loadChildren: () => import('./establishments/establishments.module').then(m => m.EstablishmentsPageModule)
   }
 ];
 

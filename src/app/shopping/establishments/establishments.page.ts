@@ -15,6 +15,7 @@ import { ViewChild } from '@angular/core';
 export class EstablishmentsPage implements OnInit {
   establishments: Establishment[] = [];
   isModalOpen = false;
+  isSaving = false;
   editingEst: Establishment | null = null;
   current: Partial<Establishment> = {};
 
@@ -38,6 +39,7 @@ export class EstablishmentsPage implements OnInit {
   }
 
   openModal(est?: Establishment) {
+    this.isSaving = false;
     if (est) {
       this.editingEst = est;
       this.current = { ...est };
@@ -49,7 +51,7 @@ export class EstablishmentsPage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingEst || { isActive: true },
@@ -64,6 +66,7 @@ export class EstablishmentsPage implements OnInit {
 
   async save() {
     if (!this.current.name?.trim()) return;
+    this.isSaving = true;
     await this.shopping.saveEstablishment({
       name: this.current.name!.trim(),
       description: this.current.description,
@@ -73,6 +76,8 @@ export class EstablishmentsPage implements OnInit {
       lastModDate: new Date().toISOString()
     });
     await this.modal.dismiss(null, 'save');
+    this.editingEst = null;
+    this.current = {};
     await this.loadData();
   }
 

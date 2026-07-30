@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
-import { DatabaseService, ProductCatalog, ExpenseCategory } from '../../core/services/database.service';
+import { ProductCatalog, ExpenseCategory } from '../../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { ViewChild } from '@angular/core';
@@ -15,6 +15,7 @@ import { ViewChild } from '@angular/core';
 export class ProductsPage implements OnInit {
   products: ProductCatalog[] = [];
   isModalOpen = false;
+  isSaving = false;
   editingProduct: ProductCatalog | null = null;
   current: Partial<ProductCatalog> = {};
   searchQuery = '';
@@ -46,6 +47,7 @@ export class ProductsPage implements OnInit {
   }
 
   openModal(product?: ProductCatalog) {
+    this.isSaving = false;
     if (product) {
       this.editingProduct = product;
       this.current = { ...product };
@@ -57,7 +59,7 @@ export class ProductsPage implements OnInit {
   }
 
   canDismiss = async (data?: any, role?: string) => {
-    if (role === 'save') return true;
+    if (role === 'save' || this.isSaving) return true;
     
     const isChanged = this.hasChangesService.hasChanges(
       this.editingProduct || { category: 'variable', isActive: true },
@@ -72,6 +74,7 @@ export class ProductsPage implements OnInit {
 
   async save() {
     if (!this.current.name?.trim()) return;
+    this.isSaving = true;
     try {
       await this.shopping.saveProduct({
         ...this.current,
@@ -82,6 +85,8 @@ export class ProductsPage implements OnInit {
         lastModDate: new Date().toISOString()
       });
       await this.modal.dismiss(null, 'save');
+      this.editingProduct = null;
+      this.current = {};
       await this.loadData();
     } catch (err: any) {
       if (err.message === 'PRODUCT_NAME_DUPLICATE') {
