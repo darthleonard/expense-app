@@ -45,6 +45,11 @@ export class PurchasesPage implements OnInit {
     this.establishments = await this.shopping.getActiveEstablishments();
   }
 
+  async handleRefresh(event: any) {
+    await this.loadData();
+    event.target.complete();
+  }
+
   openNewPurchaseModal() {
     this.isSaving = false;
     this.editingPurchase = null;
