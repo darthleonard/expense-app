@@ -95,13 +95,11 @@ export class PurchaseDetailPage implements OnInit {
       .reduce((s, i) => s + i.totalPrice, 0);
   }
 
-  // ─── Toggle bought ──────────────────────────────────────────────────────────
   toggleBought(item: PurchaseItem) {
     item.isBought = !item.isBought;
     this.recalcTotals();
   }
 
-  // ─── Notes expand/collapse ──────────────────────────────────────────────────
   toggleNote(id: number) {
     if (this.expandedNotes.has(id)) {
       this.expandedNotes.delete(id);
@@ -112,7 +110,6 @@ export class PurchaseDetailPage implements OnInit {
 
   isNoteExpanded(id: number) { return this.expandedNotes.has(id); }
 
-  // ─── Product search ─────────────────────────────────────────────────────────
   async openAddModal(itemToEdit?: PurchaseItem) {
     this.productSearchQuery = '';
     this.selectedProduct = null;
@@ -254,7 +251,6 @@ export class PurchaseDetailPage implements OnInit {
     this.recalcTotals();
   }
 
-  // ─── Delete item ────────────────────────────────────────────────────────────
   async deleteItem(item: PurchaseItem) {
     if (item.id) {
       this.deletedItemIds.push(item.id);
@@ -263,7 +259,6 @@ export class PurchaseDetailPage implements OnInit {
     this.recalcTotals();
   }
 
-  // ─── Has changes validation & Save changes ──────────────────────────────────
   hasChanges(): boolean {
     if (!this.purchase) return false;
     if (this.deletedItemIds.length > 0) return true;
@@ -322,7 +317,6 @@ export class PurchaseDetailPage implements OnInit {
     this.showToast('CHANGES_SAVED');
   }
 
-  // ─── Complete / Rollback purchase ───────────────────────────────────────────
   async completePurchase() {
     const alert = await this.alertCtrl.create({
       header: await this.translate.get('COMPLETE_PURCHASE').toPromise(),
