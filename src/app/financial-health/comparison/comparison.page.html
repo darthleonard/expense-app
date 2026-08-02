@@ -39,10 +39,10 @@
 
     <ion-list lines="none">
       <ion-list-header>
-        <ion-label color="danger">{{ 'FIXED_EXPENSES' | translate }}</ion-label>
+        <ion-label color="primary" class="bold">{{ 'FIXED_EXPENSES' | translate }}</ion-label>
       </ion-list-header>
       <ion-item>
-        <ion-icon name="home-outline" slot="start"></ion-icon>
+        <ion-icon name="card-outline" slot="start"></ion-icon>
         <ion-label>
           <h2>{{ 'CURRENT' | translate }}: 
              <span [ngStyle]="{'color': currentMonthFixed > values.fixedExpensesBudget ? 'var(--ion-color-danger)' : 'var(--ion-color-success)'}">
@@ -54,10 +54,10 @@
       </ion-item>
 
       <ion-list-header>
-        <ion-label color="warning">{{ 'VARIABLE_EXPENSES' | translate }}</ion-label>
+        <ion-label color="secondary" class="bold">{{ 'VARIABLE_EXPENSES' | translate }}</ion-label>
       </ion-list-header>
       <ion-item>
-        <ion-icon name="car-outline" slot="start"></ion-icon>
+        <ion-icon name="fast-food-outline" slot="start"></ion-icon>
         <ion-label>
           <h2>{{ 'CURRENT' | translate }}: 
              <span [ngStyle]="{'color': currentMonthVariable > values.variableExpensesBudget ? 'var(--ion-color-danger)' : 'var(--ion-color-success)'}">

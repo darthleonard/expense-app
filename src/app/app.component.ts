@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
     { title: 'FUEL_TITLE', url: '/fuel', icon: 'car' },
     { title: 'INDIVIDUAL_EXPENSES_TITLE', url: '/individual-expenses', icon: 'cash' },
     { title: 'ANALYSIS_TITLE', url: '/analysis', icon: 'analytics' },
-    { title: 'FINANCIAL_HEALTH', url: '/financial-health', icon: 'heart' },
+    { title: 'FINANCIAL_HEALTH', url: '/financial-health', icon: 'fitness' },
     { title: 'DATABASE_ANALYSIS_TITLE', url: '/database-analysis', icon: 'shield-checkmark' },
     { title: 'DATA_BACKUP_TITLE', url: '/data-backup', icon: 'cloud-upload' },
     { title: 'CONFIG_TITLE', url: '/config', icon: 'settings' },
