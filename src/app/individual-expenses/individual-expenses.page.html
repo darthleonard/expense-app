@@ -9,7 +9,12 @@
 
 <ion-content [fullscreen]="true">
   <div class="header-section">
-    <h1>{{ 'INDIVIDUAL_EXPENSES_TITLE' | translate }}</h1>
+    <ion-datetime-button datetime="datetime"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="datetime" presentation="month-year" [value]="selectedMonthIso" (ionChange)="onMonthChange($event)"></ion-datetime>
+      </ng-template>
+    </ion-modal>
   </div>
 
   <!-- KPI summary cards -->

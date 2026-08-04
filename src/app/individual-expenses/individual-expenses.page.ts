@@ -12,6 +12,7 @@ import { SettingsService } from '../core/services/settings.service';
   standalone: false
 })
 export class IndividualExpensesPage implements OnInit {
+  selectedMonthIso: string = new Date().toISOString();
   expenses: IndividualExpense[] = [];
   filteredExpenses: IndividualExpense[] = [];
   isModalOpen = false;
@@ -45,7 +46,18 @@ export class IndividualExpensesPage implements OnInit {
   }
 
   async loadData() {
-    const data = await this.db.individualExpenses.toArray();
+    const selectedDate = new Date(this.selectedMonthIso);
+    const targetMonth = selectedDate.getMonth();
+    const targetYear = selectedDate.getFullYear();
+    
+    const startDate = `${targetYear}-${String(targetMonth).padStart(2, '0')}-01`;
+    const nextMonth = new Date(targetYear, targetMonth, 1); 
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const endDate = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}-01`;
+
+    const data = await this.db.individualExpenses
+      .where('date').between(startDate, endDate, true, false)
+      .toArray();
     // Sort by date descending, then creation date descending
     this.expenses = data.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
@@ -58,8 +70,13 @@ export class IndividualExpensesPage implements OnInit {
     this.applyFilter();
   }
 
+  onMonthChange(event: any) {
+    this.selectedMonthIso = event.detail.value;
+    this.loadData();
+  }
+
   applyFilter() {
-    let list = this.expenses;
+    let list = this.expenses.filter(e => new Date(e.date).getFullYear() === new Date(this.selectedMonthIso).getFullYear() && new Date(e.date).getMonth() === new Date(this.selectedMonthIso).getMonth());
 
     if (this.categoryFilter !== 'all') {
       list = list.filter(e => e.category === this.categoryFilter);
@@ -73,9 +90,9 @@ export class IndividualExpensesPage implements OnInit {
     this.filteredExpenses = list;
 
     // KPI summary metrics (overall totals)
-    this.totalSpent = this.expenses.reduce((sum, e) => sum + e.price, 0);
-    this.totalFixed = this.expenses.filter(e => e.category === 'fixed').reduce((sum, e) => sum + e.price, 0);
-    this.totalVariable = this.expenses.filter(e => e.category === 'variable').reduce((sum, e) => sum + e.price, 0);
+    this.totalSpent = list.reduce((sum, e) => sum + e.price, 0);
+    this.totalFixed = list.filter(e => e.category === 'fixed').reduce((sum, e) => sum + e.price, 0);
+    this.totalVariable = list.filter(e => e.category === 'variable').reduce((sum, e) => sum + e.price, 0);
   }
 
   getDefaultExpense(): IndividualExpense {
