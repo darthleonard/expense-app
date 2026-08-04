@@ -52,8 +52,8 @@ export class AnalysisService {
         }
 
         // Calculate house expense vs others
-        let casa = 0;
-        let others = 0;
+        let housePayment = 0;
+        let services = 0;
         const monthsSet = new Set<string>();
 
         houseExpenses.forEach(e => {
@@ -61,24 +61,24 @@ export class AnalysisService {
             monthsSet.add(e.date.substring(0, 7)); // "YYYY-MM"
           }
           if (e.type === 'housing') {
-            casa += e.amount;
+            housePayment += e.amount;
           } else {
-            others += e.amount;
+            services += e.amount;
           }
         });
 
         const numMonths = monthsSet.size || 1;
-        const avgCasa = casa / numMonths;
-        const avgOthers = others / numMonths;
-        const totalAvg = avgCasa + avgOthers;
+        const avgHouse = housePayment / numMonths;
+        const avgServices = services / numMonths;
+        const totalAvg = avgHouse + avgServices;
 
         const metrics = [
-          { label: 'HOUSING_RENT_MORTGAGE', value: `$${avgCasa.toFixed(2)}` },
-          { label: 'UTILITIES', value: `$${avgOthers.toFixed(2)}` },
+          { label: 'HOUSING_RENT_MORTGAGE', value: `$${avgHouse.toFixed(2)}` },
+          { label: 'UTILITIES', value: `$${avgServices.toFixed(2)}` },
           { label: 'TOTAL_AVERAGE', value: `$${totalAvg.toFixed(2)}` }
         ];
 
-        if (casa > 0 && others > casa) {
+        if (housePayment > 0 && services > housePayment) {
           insights.push({
             title: 'HIGH_UTILITY_EXPENSES_TITLE',
             description: 'HIGH_UTILITY_EXPENSES_DESC',
@@ -89,7 +89,7 @@ export class AnalysisService {
             entityName: house.name,
             metrics
           });
-        } else if (casa > 0) {
+        } else if (housePayment > 0) {
           insights.push({
             title: 'GOOD_BALANCE_TITLE',
             description: 'GOOD_BALANCE_DESC',

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
-//import { SeedService } from './seed.service';
 
 // ─── Existing interfaces ──────────────────────────────────────────────────────
 
@@ -288,13 +287,5 @@ export class DatabaseService extends Dexie {
           }
         });
       });
-
-    //  void this.open()
-    //    .then(async () => {
-    //      await new SeedService().seedMockData(this);
-    //    })
-    //    .catch((error) =>
-    //      console.error('Failed to initialize mock database data', error),
-    //    );
   }
 }
