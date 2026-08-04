@@ -4,8 +4,6 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { strFromU8, strToU8, zip, unzip, Zippable } from 'fflate';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface ExportBundle {
   expenses: any[];
   fuelRecords: any[];
@@ -17,9 +15,8 @@ interface ExportBundle {
   purchases: any[];
   purchaseItems: any[];
   priceHistory: any[];
+  individualExpenses: any[];
 }
-
-// ─── Service ──────────────────────────────────────────────────────────────────
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +27,7 @@ export class CsvBackupService {
     private db: DatabaseService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
-  ) {}
-
-  // ── CSV helpers ─────────────────────────────────────────────────────────────
+  ) { }
 
   private toCsv(rows: any[]): string {
     if (!rows.length) return '';
@@ -114,8 +109,6 @@ export class CsvBackupService {
     return result;
   }
 
-  // ── Export ──────────────────────────────────────────────────────────────────
-
   async exportAll(): Promise<void> {
     try {
       const bundle: ExportBundle = {
@@ -128,7 +121,8 @@ export class CsvBackupService {
         products:      await this.db.products.toArray(),
         purchases:     await this.db.purchases.toArray(),
         purchaseItems: await this.db.purchaseItems.toArray(),
-        priceHistory:  await this.db.priceHistory.toArray()
+        priceHistory:  await this.db.priceHistory.toArray(),
+        individualExpenses: await this.db.individualExpenses.toArray()
       };
 
       const files: Zippable = {};
@@ -191,8 +185,6 @@ export class CsvBackupService {
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
 
-  // ── Import ──────────────────────────────────────────────────────────────────
-
   async importAll(file: File | Blob): Promise<void> {
     const buffer = await file.arrayBuffer();
     const uint8 = new Uint8Array(buffer);
@@ -216,7 +208,8 @@ export class CsvBackupService {
     const tables = [
       this.db.expenses, this.db.fuelRecords, this.db.cars, this.db.houses,
       this.db.incomeRecords, this.db.establishments, this.db.products,
-      this.db.purchases, this.db.purchaseItems, this.db.priceHistory
+      this.db.purchases, this.db.purchaseItems, this.db.priceHistory,
+      this.db.individualExpenses
     ];
 
     await this.db.transaction('rw', tables, async () => {
@@ -230,6 +223,7 @@ export class CsvBackupService {
       await this.db.purchases.clear();
       await this.db.purchaseItems.clear();
       await this.db.priceHistory.clear();
+      await this.db.individualExpenses.clear();
 
       const expenses       = getTable('expenses');
       const fuelRecords    = getTable('fuelRecords');
@@ -241,6 +235,7 @@ export class CsvBackupService {
       const purchases      = getTable('purchases');
       const purchaseItems  = getTable('purchaseItems');
       const priceHistory   = getTable('priceHistory');
+      const individualExpenses = getTable('individualExpenses');
 
       if (expenses.length)       await this.db.expenses.bulkAdd(expenses);
       if (fuelRecords.length)    await this.db.fuelRecords.bulkAdd(fuelRecords);
@@ -252,10 +247,9 @@ export class CsvBackupService {
       if (purchases.length)      await this.db.purchases.bulkAdd(purchases);
       if (purchaseItems.length)  await this.db.purchaseItems.bulkAdd(purchaseItems);
       if (priceHistory.length)   await this.db.priceHistory.bulkAdd(priceHistory);
+      if (individualExpenses.length) await this.db.individualExpenses.bulkAdd(individualExpenses);
     });
   }
-
-  // ── Utilities ────────────────────────────────────────────────────────────────
 
   private dateStamp(): string {
     const d = new Date();
