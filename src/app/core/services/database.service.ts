@@ -135,14 +135,11 @@ export function toLower(value: string | undefined | null): string {
   providedIn: 'root',
 })
 export class DatabaseService extends Dexie {
-  // v1 tables
   expenses!: Table<ExpenseRecord, number>;
   fuelRecords!: Table<FuelRecord, number>;
   cars!: Table<Car, number>;
   houses!: Table<House, number>;
   incomeRecords!: Table<IncomeRecord, number>;
-
-  // v2 tables — shopping module
   establishments!: Table<Establishment, number>;
   products!: Table<ProductCatalog, number>;
   purchases!: Table<Purchase, number>;
@@ -152,65 +149,8 @@ export class DatabaseService extends Dexie {
 
   constructor() {
     super('ExpenseAppDB');
-
-    this.version(1).stores({
-      cars: '++id, name',
-      houses: '++id, name',
-      expenses: '++id, houseId, type, amount, date',
-      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
-      incomeRecords: '++id, amount, period, date',
-    });
-
-    this.version(2).stores({
-      cars: '++id, name',
-      houses: '++id, name',
-      expenses: '++id, houseId, type, amount, date',
-      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
-      incomeRecords: '++id, amount, period, date',
-      // Shopping module — compound indexes enable fast analytics queries
-      establishments: '++id, name, isActive, creationDate',
-      products: '++id, name, category, code, isActive, creationDate',
-      purchases:
-        '++id, name, type, status, establishmentId, creationDate, purchaseDate',
-      purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
-      priceHistory:
-        '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
-    });
-
-    // v3: removed 'type' index from purchases (purchase type feature removed)
-    this.version(3).stores({
-      cars: '++id, name',
-      houses: '++id, name',
-      expenses: '++id, houseId, type, amount, date',
-      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
-      incomeRecords: '++id, amount, period, date',
-      establishments: '++id, name, isActive, creationDate',
-      products: '++id, name, category, code, isActive, creationDate',
-      purchases:
-        '++id, name, status, establishmentId, creationDate, purchaseDate',
-      purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
-      priceHistory:
-        '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
-    });
-
-    this.version(4).stores({
-      cars: '++id, name',
-      houses: '++id, name',
-      expenses: '++id, houseId, type, amount, date',
-      fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
-      incomeRecords: '++id, amount, period, date',
-      establishments: '++id, name, isActive, creationDate',
-      products: '++id, name, category, code, isActive, creationDate',
-      purchases:
-        '++id, name, status, establishmentId, creationDate, purchaseDate',
-      purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
-      priceHistory:
-        '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
-      individualExpenses: '++id, concept, price, category, date, creationDate'
-    });
-
-    // v5: migrate Spanish enum values to English equivalents
-    this.version(5)
+    
+    this.version(1)
       .stores({
         cars: '++id, name',
         houses: '++id, name',
@@ -225,67 +165,6 @@ export class DatabaseService extends Dexie {
         priceHistory:
           '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
         individualExpenses: '++id, concept, price, category, date, creationDate'
-      })
-      .upgrade(async tx => {
-        // ExpenseRecord.type — Spanish → English
-        const expenseTypeMap: Record<string, string> = {
-          casa: 'housing',
-          electricidad: 'electricity',
-          agua: 'water',
-          gas: 'gas_bill',
-          telecomunicaciones: 'telecom',
-        };
-        await tx.table('expenses').toCollection().modify(row => {
-          if (row.type && expenseTypeMap[row.type]) {
-            row.type = expenseTypeMap[row.type];
-          }
-        });
-
-        // IncomeRecord.period — Spanish → English
-        const periodMap: Record<string, string> = {
-          mensual: 'monthly',
-          catorcenal: 'biweekly',
-          quincenal: 'semimonthly',
-        };
-        await tx.table('incomeRecords').toCollection().modify(row => {
-          if (row.period && periodMap[row.period]) {
-            row.period = periodMap[row.period];
-          }
-        });
-
-        // ExpenseCategory — Spanish → English (products, purchaseItems, individualExpenses)
-        const categoryMap: Record<string, string> = {
-          gasto_fijo: 'fixed',
-          gasto_variable: 'variable',
-        };
-        await tx.table('products').toCollection().modify(row => {
-          if (row.category && categoryMap[row.category]) {
-            row.category = categoryMap[row.category];
-          }
-        });
-        await tx.table('purchaseItems').toCollection().modify(row => {
-          if (row.categorySnap && categoryMap[row.categorySnap]) {
-            row.categorySnap = categoryMap[row.categorySnap];
-          }
-        });
-        await tx.table('individualExpenses').toCollection().modify(row => {
-          if (row.category && categoryMap[row.category]) {
-            row.category = categoryMap[row.category];
-          }
-        });
-
-        // PurchaseStatus — Spanish → English
-        const statusMap: Record<string, string> = {
-          activa: 'active',
-          completada: 'completed',
-          cancelada: 'canceled',
-          cancelled: 'canceled',
-        };
-        await tx.table('purchases').toCollection().modify(row => {
-          if (row.status && statusMap[row.status]) {
-            row.status = statusMap[row.status];
-          }
-        });
       });
   }
 }
