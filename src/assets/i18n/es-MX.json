@@ -222,6 +222,7 @@
   "TABLE_RECORD_EDIT_HEADER": "Tabla: {{ table }} (ID: {{ id }})",
   "SCAN_FAILED": "Error al escanear",
   "SAVE_FAILED": "Error al guardar",
+  "DELETE_RECORD": "Eliminar Registro",
   "DELETE_RECORD_CONFIRM": "¿Estás seguro de que deseas eliminar permanentemente este registro? Esto no se puede deshacer.",
   "RECORD_DELETED": "Registro eliminado",
   "ISSUE_RESOLVED": "Problema resuelto",

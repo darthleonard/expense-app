@@ -221,6 +221,7 @@
   "TABLE_RECORD_EDIT_HEADER": "Table: {{ table }} (ID: {{ id }})",
   "SCAN_FAILED": "Scan failed",
   "SAVE_FAILED": "Save failed",
+  "DELETE_RECORD": "Delete Record",
   "DELETE_RECORD_CONFIRM": "Are you sure you want to permanently delete this record? This cannot be undone.",
   "RECORD_DELETED": "Record deleted",
   "ISSUE_RESOLVED": "Issue resolved",
