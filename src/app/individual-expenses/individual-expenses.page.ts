@@ -173,7 +173,7 @@ export class IndividualExpensesPage implements OnInit {
         await this.db.individualExpenses.add(payload);
       }
 
-      await this.modal.dismiss(null, 'save');
+      this.isModalOpen = false
       await this.loadData();
     } catch (err) {
       this.isSaving = false;
