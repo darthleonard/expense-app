@@ -52,7 +52,7 @@
         <div class="table-header" (click)="toggleTable(table)">
           <div class="table-title-group">
             <ion-icon [name]="tableStates[table] ? 'chevron-down' : 'chevron-forward'" color="medium" class="collapser-icon"></ion-icon>
-            <span class="table-name">{{ table }}</span>
+            <span class="table-name">{{ 'TABLE_' + table | translate }}</span>
           </div>
 
           <div class="table-badge-group">
@@ -126,7 +126,7 @@
         <div class="info-grid ion-margin-bottom">
           <div class="info-row">
             <span class="info-label">{{ 'TABLE' | translate }}:</span>
-            <span class="info-value font-mono">{{ selectedIssue.table }}</span>
+            <span class="info-value font-mono">{{ 'TABLE_' + selectedIssue.table | translate }}</span>
           </div>
           <div class="info-row">
             <span class="info-label">{{ 'RECORD_ID' | translate }}:</span>
@@ -179,7 +179,7 @@
 
       <ion-content class="ion-padding modal-content" *ngIf="selectedIssue">
         <form (ngSubmit)="saveEdit()">
-          <h2 class="font-mono ion-margin-bottom">{{ 'TABLE_RECORD_EDIT_HEADER' | translate:{ table: selectedIssue.table, id: selectedIssue.recordId } }}</h2>
+          <h2 class="font-mono ion-margin-bottom">{{ 'TABLE_RECORD_EDIT_HEADER' | translate:{ table: ('TABLE_' + selectedIssue.table | translate), id: selectedIssue.recordId } }}</h2>
 
           <div class="editor-fields">
             <div *ngFor="let field of editFields" class="editor-field-item">

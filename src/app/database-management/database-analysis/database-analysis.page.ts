@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { DataIntegrityService, IntegrityIssue } from '../core/services/data-integrity.service';
-import { DatabaseService } from '../core/services/database.service';
+import { DataIntegrityService, IntegrityIssue } from '../../core/services/data-integrity.service';
+import { DatabaseService } from '../../core/services/database.service';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -197,7 +197,8 @@ export class DatabaseAnalysisPage implements OnInit {
           count++;
         }
       }
-      this.showToast(this.translate.instant('RESOLVED_ISSUES_IN_TABLE', { count, table: tableName }));
+      const translatedTableName = this.translate.instant('TABLE_' + tableName);
+      this.showToast(this.translate.instant('RESOLVED_ISSUES_IN_TABLE', { count, table: translatedTableName }));
       await this.runScan();
     } catch (err) {
       console.error('Autofix table error:', err);

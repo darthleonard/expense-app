@@ -25,8 +25,18 @@ const routes: Routes = [
     loadChildren: () => import('./analysis/analysis.module').then( m => m.AnalysisPageModule)
   },
   {
+    path: 'database-management',
+    loadChildren: () => import('./database-management/database-management.module').then( m => m.DatabaseManagementPageModule)
+  },
+  {
     path: 'database-analysis',
-    loadChildren: () => import('./database-analysis/database-analysis.module').then( m => m.DatabaseAnalysisPageModule)
+    redirectTo: 'database-management/database-analysis',
+    pathMatch: 'full'
+  },
+  {
+    path: 'data-backup',
+    redirectTo: 'database-management/data-backup',
+    pathMatch: 'full'
   },
   {
     path: 'config',
@@ -49,13 +59,9 @@ const routes: Routes = [
     loadChildren: () => import('./shopping/shopping.module').then( m => m.ShoppingPageModule)
   },
   {
-    path: 'data-backup',
-    loadChildren: () => import('./data-backup/data-backup.module').then( m => m.DataBackupPageModule)
-  },  {
     path: 'individual-expenses',
     loadChildren: () => import('./individual-expenses/individual-expenses.module').then( m => m.IndividualExpensesPageModule)
   }
-
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { CsvBackupService } from '../core/services/csv-backup.service';
+import { CsvBackupService } from '../../core/services/csv-backup.service';
 
 @Component({
   selector: 'app-data-backup',

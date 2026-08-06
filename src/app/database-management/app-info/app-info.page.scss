@@ -1,0 +1,136 @@
+.info-content {
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+.info-container {
+  padding: 20px 16px 40px;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 8px;
+  gap: 12px;
+}
+
+.hero-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+}
+
+.hero-icon {
+  font-size: 38px;
+  color: #fff;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
+
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.metric-card {
+  background: var(--ion-card-background, #fff);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border-left: 5px solid #3b82f6;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.app-card {
+  border-left-color: #3b82f6;
+  .card-icon-wrap {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+  }
+}
+
+.db-card {
+  border-left-color: #8b5cf6;
+  .card-icon-wrap {
+    color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.1);
+  }
+}
+
+.size-card {
+  border-left-color: #10b981;
+  .card-icon-wrap {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+  }
+}
+
+.card-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.metric-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ion-text-color);
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--ion-text-color);
+}
+
+.font-mono {
+  font-family: var(--ion-font-family-monospace, monospace);
+  font-size: 0.95rem;
+}
+
+.badge-count {
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+}

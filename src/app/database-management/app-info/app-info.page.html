@@ -1,0 +1,67 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'APP_INFO_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding info-content">
+  <div class="info-container">
+
+    <!-- Hero section -->
+    <div class="page-hero">
+      <div class="hero-icon-wrap">
+        <ion-icon name="information-circle" class="hero-icon"></ion-icon>
+      </div>
+      <h1 class="hero-title">{{ 'APP_INFO_TITLE' | translate }}</h1>
+    </div>
+
+    <!-- Summary cards grid -->
+    <div class="metrics-grid">
+      <div class="metric-card app-card">
+        <div class="card-icon-wrap">
+          <ion-icon name="apps-outline"></ion-icon>
+        </div>
+        <div class="metric-details">
+          <span class="metric-label">{{ 'APP_VERSION' | translate }}</span>
+          <span class="metric-value">v{{ appVersion }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card db-card">
+        <div class="card-icon-wrap">
+          <ion-icon name="layers-outline"></ion-icon>
+        </div>
+        <div class="metric-details">
+          <span class="metric-label">{{ 'DATABASE_VERSION' | translate }}</span>
+          <span class="metric-value">v{{ dbVersion }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card size-card">
+        <div class="card-icon-wrap">
+          <ion-icon name="file-tray-full-outline"></ion-icon>
+        </div>
+        <div class="metric-details">
+          <span class="metric-label">{{ 'DATABASE_SIZE' | translate }}</span>
+          <span class="metric-value">{{ dbSizeFormatted }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details list section -->
+    <div class="tables-section" *ngIf="tableCounts.length > 0">
+      <h2 class="section-title">{{ 'DATABASE_ANALYSIS_TITLE' | translate }}</h2>
+      <ion-list style="border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+        <ion-item *ngFor="let item of tableCounts">
+          <ion-icon name="server-outline" slot="start" color="primary"></ion-icon>
+          <ion-label class="font-mono">{{ 'TABLE_' + item.name | translate }}</ion-label>
+          <ion-badge slot="end" color="secondary" class="badge-count">{{ item.count }} records</ion-badge>
+        </ion-item>
+      </ion-list>
+    </div>
+
+  </div>
+</ion-content>
