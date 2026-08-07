@@ -8,7 +8,7 @@ import { DatabaseService } from '../../core/services/database.service';
   standalone: false
 })
 export class AppInfoPage implements OnInit {
-  appVersion = '0.0.1';
+  appVersion = '1.0.0';
   dbVersion = 1;
   dbSizeFormatted = 'Loading...';
   tableCounts: { name: string; count: number }[] = [];
