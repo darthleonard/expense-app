@@ -16,6 +16,7 @@ export class ComparisonPage implements ViewWillEnter {
 
   currentMonthFixed: number = 0;
   currentMonthVariable: number = 0;
+  suggestedPeaceFund: number = 0;
   selectedMonthIso: string = new Date().toISOString();
 
   constructor(
@@ -34,6 +35,7 @@ export class ComparisonPage implements ViewWillEnter {
     if (record) {
       this.hasIncome = true;
       this.values = this.financialHealth.calculateValues(record.amount, record.period);
+      this.suggestedPeaceFund = this.values.fixedExpensesBudget * 3;
       await this.calculateMonthlyExpenses();
     } else {
       this.hasIncome = false;

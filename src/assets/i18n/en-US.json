@@ -156,6 +156,8 @@
   "OFFICE": "Office",
   "OPTIONAL": "Optional",
   "PEACE_FUND": "Peace Fund (10%)",
+  "PEACE_FUND_LABEL": "Peace Fund",
+  "PEACE_FUND_DESC": "Amount you should have saved as a peace fund",
   "PERSONAL_PROJECTS": "Personal Projects (10%)",
   "PLEASE_CONFIGURE_INCOME": "Please configure your base income in settings to start.",
   "PRODUCTS_TITLE": "Products",

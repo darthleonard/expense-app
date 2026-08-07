@@ -157,6 +157,8 @@
   "OFFICE": "Oficina",
   "OPTIONAL": "Opcional",
   "PEACE_FUND": "Fondo de Paz (10%)",
+  "PEACE_FUND_LABEL": "Fondo de Paz",
+  "PEACE_FUND_DESC": "Cantidad que deberias tener ahorrada como fondo de paz",
   "PERSONAL_PROJECTS": "Proyectos Personales (10%)",
   "PLEASE_CONFIGURE_INCOME": "Por favor, configura tu ingreso base en los ajustes para comenzar.",
   "PRODUCTS_TITLE": "Productos",
