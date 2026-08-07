@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
     { title: 'FINANCIAL_HEALTH', url: '/financial-health', icon: 'fitness' },
     { title: 'DATABASE_MANAGEMENT_TITLE', url: '/database-management', icon: 'server' },
     { title: 'CONFIG_TITLE', url: '/config', icon: 'settings' },
+    { title: 'ABOUT_TITLE', url: '/about', icon: 'information-circle' },
   ];
 
   constructor(

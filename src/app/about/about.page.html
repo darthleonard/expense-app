@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'ABOUT_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="about-content">
+  <div class="about-container">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <div class="hero-icon-wrap">
+        <ion-icon name="wallet-outline" class="hero-icon"></ion-icon>
+      </div>
+      <h1 class="hero-title">Spendly</h1>
+      <p class="hero-subtitle">{{ 'ABOUT_SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- Info -->
+    <div class="about-card">
+      <div class="about-card-header">
+        <div class="about-icon-wrap accent-blue">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </div>
+        <span class="about-card-title">{{ 'ABOUT_INFO_TITLE' | translate }}</span>
+      </div>
+      <p class="about-card-body">{{ 'ABOUT_INFO_DESC' | translate }}</p>
+    </div>
+
+    <!-- Your data -->
+    <div class="about-card">
+      <div class="about-card-header">
+        <div class="about-icon-wrap accent-purple">
+          <ion-icon name="phone-portrait-outline"></ion-icon>
+        </div>
+        <span class="about-card-title">{{ 'ABOUT_DATA_TITLE' | translate }}</span>
+      </div>
+      <div class="about-feature-row">
+        <ion-icon name="checkmark-circle" class="feature-check"></ion-icon>
+        <p class="about-card-body">{{ 'ABOUT_DATA_LOCAL' | translate }}</p>
+      </div>
+    </div>
+
+    <!-- Backups -->
+    <div class="about-card">
+      <div class="about-card-header">
+        <div class="about-icon-wrap accent-teal">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+        </div>
+        <span class="about-card-title">{{ 'ABOUT_BACKUPS_TITLE' | translate }}</span>
+      </div>
+      <div class="about-feature-row">
+        <ion-icon name="checkmark-circle" class="feature-check"></ion-icon>
+        <p class="about-card-body">{{ 'ABOUT_BACKUPS_DESC' | translate }}</p>
+      </div>
+    </div>
+
+    <!-- Privacy -->
+    <div class="about-card">
+      <div class="about-card-header">
+        <div class="about-icon-wrap accent-green">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <span class="about-card-title">{{ 'ABOUT_PRIVACY_TITLE' | translate }}</span>
+      </div>
+      <div class="about-feature-row">
+        <ion-icon name="checkmark-circle" class="feature-check"></ion-icon>
+        <p class="about-card-body">{{ 'ABOUT_PRIVACY_DESC' | translate }}</p>
+      </div>
+      <button class="privacy-btn" (click)="openPrivacyPolicy()">
+        <ion-icon name="document-text-outline"></ion-icon>
+        {{ 'ABOUT_PRIVACY_POLICY' | translate }}
+      </button>
+    </div>
+
+    <!-- Open source -->
+    <div class="about-card">
+      <div class="about-card-header">
+        <div class="about-icon-wrap accent-gray">
+          <ion-icon name="logo-github"></ion-icon>
+        </div>
+        <span class="about-card-title">{{ 'ABOUT_OPENSOURCE_TITLE' | translate }}</span>
+      </div>
+      <p class="about-card-body">{{ 'ABOUT_OPENSOURCE_DESC' | translate }}</p>
+    </div>
+
+  </div>
+</ion-content>
