@@ -85,6 +85,7 @@ export interface Purchase {
   establishmentId?: number;
   establishmentNameSnap?: string; // historical snapshot
   totalPriceCalculated: number; // sum of bought items only
+  isPlanned?: boolean; // true = planned list (items default isBought=false), false/undefined = buying now (isBought=true)
 }
 
 export interface PurchaseItem {

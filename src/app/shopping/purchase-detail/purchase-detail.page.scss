@@ -6,7 +6,9 @@
   font-weight: 700;
   font-size: 0.95em;
   text-transform: capitalize;
-  ion-icon { font-size: 20px; }
+  ion-icon {
+    font-size: 20px;
+  }
 
   &.completed {
     background: rgba(45, 211, 111, 0.12);
@@ -30,7 +32,7 @@
   margin-bottom: 10px;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .purchase-item-row {
@@ -106,8 +108,13 @@
   padding: 60px 20px;
   color: var(--ion-color-medium);
   opacity: 0.5;
-  ion-icon { font-size: 64px; margin-bottom: 16px; }
-  p { font-size: 0.95em; }
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  p {
+    font-size: 0.95em;
+  }
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
@@ -123,9 +130,9 @@
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  background: rgba(var(--ion-background-color-rgb, 255,255,255), 0.82);
-  border-top: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  background: rgba(var(--ion-background-color-rgb, 255, 255, 255), 0.82);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
 
   .footer-stat {
     display: flex;
@@ -133,7 +140,10 @@
     gap: 6px;
     color: var(--ion-text-color);
     font-size: 0.95em;
-    ion-icon { font-size: 20px; color: var(--ion-color-primary); }
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
   }
 
   .footer-total {
@@ -162,7 +172,9 @@
     font-weight: 700;
     color: var(--ion-text-color);
     margin: 0 0 12px 0;
-    ion-icon { font-size: 20px; }
+    ion-icon {
+      font-size: 20px;
+    }
   }
 
   .modal-preview {
@@ -185,10 +197,19 @@
 
 :host-context(.ion-palette-dark) {
   .purchase-footer {
-    background: rgba(18,18,18, 0.88);
-    border-top-color: rgba(255,255,255,0.08);
+    background: rgba(18, 18, 18, 0.88);
+    border-top-color: rgba(255, 255, 255, 0.08);
   }
-  .purchase-item-row { --background: var(--ion-card-background, #1e1e1e); }
+  .purchase-item-row {
+    --background: var(--ion-card-background, #1e1e1e);
+  }
+}
+
+.options-list-header {
+  color: var(--ion-color-medium);
+  font-weight: bold;
+  background-color: var(--ion-color-light-tint);
+  border-bottom: 1px solid var(--ion-color-light-shade);
 }
 
 ion-fab {

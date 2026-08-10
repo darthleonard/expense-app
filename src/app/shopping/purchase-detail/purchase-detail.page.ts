@@ -3,38 +3,69 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
 import {
-  DatabaseService, Purchase, PurchaseItem,
-  ProductCatalog, Establishment, ExpenseCategory, toLower
+  DatabaseService,
+  Purchase,
+  PurchaseItem,
+  ProductCatalog,
+  Establishment,
+  ExpenseCategory,
+  toLower,
 } from '../../core/services/database.service';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { TranslateService } from '@ngx-translate/core';
+
+type PurchaseItemSort =
+  | 'added'
+  | 'name'
+  | 'unitPrice'
+  | 'totalPrice'
+  | 'quantity'
+  | 'category';
+
+type PurchaseSortDirection = 'asc' | 'desc';
 
 @Component({
   selector: 'app-purchase-detail',
   templateUrl: './purchase-detail.page.html',
   styleUrls: ['./purchase-detail.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class PurchaseDetailPage implements OnInit {
-  purchase: Purchase = { name: '', status: 'active', creationDate: '', totalPriceCalculated: 0 };
+  purchase: Purchase = {
+    name: '',
+    status: 'active',
+    creationDate: '',
+    totalPriceCalculated: 0,
+  };
   items: PurchaseItem[] = [];
   originalItems: PurchaseItem[] = [];
   deletedItemIds: number[] = [];
   establishments: Establishment[] = [];
+  sortBy: PurchaseItemSort = 'added';
+  sortDirection: PurchaseSortDirection = 'asc';
+
+  readonly sortOptions: Array<{ value: PurchaseItemSort; label: string }> = [
+    { value: 'added', label: 'SORT_ADDED' },
+    { value: 'name', label: 'SORT_NAME' },
+    { value: 'unitPrice', label: 'SORT_UNIT_PRICE' },
+    { value: 'totalPrice', label: 'SORT_TOTAL_PRICE' },
+    { value: 'quantity', label: 'SORT_QUANTITY' },
+    { value: 'category', label: 'SORT_CATEGORY' },
+  ];
 
   // Computed totals
-  totalBought   = 0;
-  countBought   = 0;
-  countTotal    = 0;
+  totalBought = 0;
+  countBought = 0;
+  countTotal = 0;
 
   // Product search modal
-  isAddModalOpen     = false;
+  isAddModalOpen = false;
   productSearchQuery = '';
   searchResults: ProductCatalog[] = [];
   selectedProduct: ProductCatalog | null = null;
-  newItemQty   = 1;
+  newItemQty = 1;
   newItemPrice = 0;
-  newItemNote  = '';
+  newItemNote = '';
   isCreatingNew = false;
   newProductName = '';
   newProductCategory: ExpenseCategory = 'variable';
@@ -80,19 +111,65 @@ export class PurchaseDetailPage implements OnInit {
   async loadItems() {
     if (!this.purchase?.id) return;
     const dbItems = await this.shopping.getItemsForPurchase(this.purchase.id);
-    this.items = dbItems.map(i => ({ ...i }));
-    this.originalItems = dbItems.map(i => ({ ...i }));
+    this.items = dbItems.map((i) => ({ ...i }));
+    this.originalItems = dbItems.map((i) => ({ ...i }));
     this.deletedItemIds = [];
     this.editingItem = null;
     this.recalcTotals();
   }
 
   recalcTotals() {
-    this.countTotal  = this.items.length;
-    this.countBought = this.items.filter(i => i.isBought).length;
+    this.countTotal = this.items.length;
+    this.countBought = this.items.filter((i) => i.isBought).length;
     this.totalBought = this.items
-      .filter(i => i.isBought)
+      .filter((i) => i.isBought)
       .reduce((s, i) => s + i.totalPrice, 0);
+  }
+
+  get defaultItemIsBought(): boolean {
+    return this.purchase?.isPlanned !== true;
+  }
+
+  get sortedItems(): PurchaseItem[] {
+    const list = [...this.items];
+    const directionFactor = this.sortDirection === 'asc' ? 1 : -1;
+
+    switch (this.sortBy) {
+      case 'name':
+        return list.sort(
+          (a, b) =>
+            a.productNameSnap.localeCompare(b.productNameSnap) *
+              directionFactor ||
+            a.productNameSnap.localeCompare(b.productNameSnap)
+        );
+      case 'unitPrice':
+        return list.sort(
+          (a, b) =>
+            (a.unitPrice - b.unitPrice) * directionFactor ||
+            a.productNameSnap.localeCompare(b.productNameSnap)
+        );
+      case 'totalPrice':
+        return list.sort(
+          (a, b) =>
+            (a.totalPrice - b.totalPrice) * directionFactor ||
+            a.productNameSnap.localeCompare(b.productNameSnap)
+        );
+      case 'quantity':
+        return list.sort(
+          (a, b) =>
+            (a.quantity - b.quantity) * directionFactor ||
+            a.productNameSnap.localeCompare(b.productNameSnap)
+        );
+      case 'category':
+        return list.sort(
+          (a, b) =>
+            a.categorySnap.localeCompare(b.categorySnap) * directionFactor ||
+            a.productNameSnap.localeCompare(b.productNameSnap)
+        );
+      case 'added':
+      default:
+        return directionFactor === 1 ? list : list.reverse();
+    }
   }
 
   toggleBought(item: PurchaseItem) {
@@ -108,7 +185,9 @@ export class PurchaseDetailPage implements OnInit {
     }
   }
 
-  isNoteExpanded(id: number) { return this.expandedNotes.has(id); }
+  isNoteExpanded(id: number) {
+    return this.expandedNotes.has(id);
+  }
 
   async openAddModal(itemToEdit?: PurchaseItem) {
     this.productSearchQuery = '';
@@ -124,7 +203,7 @@ export class PurchaseDetailPage implements OnInit {
         category: itemToEdit.categorySnap,
         isActive: true,
         creationDate: '',
-        lastModDate: ''
+        lastModDate: '',
       };
       this.newItemQty = itemToEdit.quantity;
       this.newItemPrice = itemToEdit.unitPrice;
@@ -181,7 +260,7 @@ export class PurchaseDetailPage implements OnInit {
           category: this.newProductCategory,
           isActive: true,
           creationDate: new Date().toISOString(),
-          lastModDate: new Date().toISOString()
+          lastModDate: new Date().toISOString(),
         });
         productName = toLower(this.newProductName);
         categorySnap = this.newProductCategory;
@@ -189,8 +268,10 @@ export class PurchaseDetailPage implements OnInit {
         if (err.message === 'PRODUCT_NAME_DUPLICATE') {
           const alert = await this.alertCtrl.create({
             header: await this.translate.get('DUPLICATE_PRODUCT').toPromise(),
-            message: await this.translate.get('PRODUCT_EXISTS_REUSE').toPromise(),
-            buttons: ['OK']
+            message: await this.translate
+              .get('PRODUCT_EXISTS_REUSE')
+              .toPromise(),
+            buttons: ['OK'],
           });
           await alert.present();
           return;
@@ -209,13 +290,15 @@ export class PurchaseDetailPage implements OnInit {
 
     // Check if same item already added (excluding the one being edited)
     const alreadyAdded = this.items.some(
-      i => i.productId === productId && (!this.editingItem || this.editingItem.productId !== productId)
+      (i) =>
+        i.productId === productId &&
+        (!this.editingItem || this.editingItem.productId !== productId)
     );
     if (alreadyAdded) {
       const toast = await this.toastCtrl.create({
         message: await this.translate.get('ITEM_ALREADY_ADDED').toPromise(),
         duration: 1800,
-        position: 'top'
+        position: 'top',
       });
       await toast.present();
       return;
@@ -230,7 +313,9 @@ export class PurchaseDetailPage implements OnInit {
       this.editingItem.quantity = this.newItemQty;
       this.editingItem.unitPrice = price;
       this.editingItem.totalPrice = this.newItemQty * price;
-      this.editingItem.notes = this.newItemNote ? toLower(this.newItemNote) : undefined;
+      this.editingItem.notes = this.newItemNote
+        ? toLower(this.newItemNote)
+        : undefined;
     } else {
       const item: PurchaseItem = {
         purchaseId: this.purchase.id,
@@ -240,9 +325,9 @@ export class PurchaseDetailPage implements OnInit {
         quantity: this.newItemQty,
         unitPrice: price,
         totalPrice: this.newItemQty * price,
-        isBought: false,
+        isBought: this.defaultItemIsBought,
         notes: this.newItemNote ? toLower(this.newItemNote) : undefined,
-        addedDate: new Date().toISOString()
+        addedDate: new Date().toISOString(),
       };
       this.items.push(item);
     }
@@ -255,7 +340,7 @@ export class PurchaseDetailPage implements OnInit {
     if (item.id) {
       this.deletedItemIds.push(item.id);
     }
-    this.items = this.items.filter(i => i !== item);
+    this.items = this.items.filter((i) => i !== item);
     this.recalcTotals();
   }
 
@@ -266,7 +351,7 @@ export class PurchaseDetailPage implements OnInit {
 
     for (const item of this.items) {
       if (!item.id) return true;
-      const orig = this.originalItems.find(o => o.id === item.id);
+      const orig = this.originalItems.find((o) => o.id === item.id);
       if (!orig) return true;
       if (
         item.isBought !== orig.isBought ||
@@ -320,18 +405,23 @@ export class PurchaseDetailPage implements OnInit {
   async completePurchase() {
     const alert = await this.alertCtrl.create({
       header: await this.translate.get('COMPLETE_PURCHASE').toPromise(),
-      message: await this.translate.get('COMPLETE_PURCHASE_CONFIRM').toPromise(),
+      message: await this.translate
+        .get('COMPLETE_PURCHASE_CONFIRM')
+        .toPromise(),
       buttons: [
-        { text: await this.translate.get('CANCEL').toPromise(), role: 'cancel' },
+        {
+          text: await this.translate.get('CANCEL').toPromise(),
+          role: 'cancel',
+        },
         {
           text: await this.translate.get('CONFIRM').toPromise(),
           handler: async () => {
             await this.shopping.completePurchase(this.purchase.id!);
             this.purchase.status = 'completed';
             this.showToast('PURCHASE_COMPLETED');
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     await alert.present();
   }
@@ -341,7 +431,10 @@ export class PurchaseDetailPage implements OnInit {
       header: await this.translate.get('REOPEN_PURCHASE').toPromise(),
       message: await this.translate.get('REOPEN_PURCHASE_CONFIRM').toPromise(),
       buttons: [
-        { text: await this.translate.get('CANCEL').toPromise(), role: 'cancel' },
+        {
+          text: await this.translate.get('CANCEL').toPromise(),
+          role: 'cancel',
+        },
         {
           text: await this.translate.get('CONFIRM').toPromise(),
           handler: async () => {
@@ -349,18 +442,24 @@ export class PurchaseDetailPage implements OnInit {
             this.purchase.status = 'active';
             await this.loadItems();
             this.showToast('PURCHASE_REOPENED');
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     await alert.present();
   }
 
   async showToast(key: string) {
     const msg = await this.translate.get(key).toPromise();
-    const toast = await this.toastCtrl.create({ message: msg, duration: 1800, position: 'top' });
+    const toast = await this.toastCtrl.create({
+      message: msg,
+      duration: 1800,
+      position: 'top',
+    });
     await toast.present();
   }
 
-  isActive() { return this.purchase?.status === 'active'; }
+  isActive() {
+    return this.purchase?.status === 'active';
+  }
 }
