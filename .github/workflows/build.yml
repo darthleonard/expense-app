@@ -1,6 +1,6 @@
-name: Build Expenses App Android Bundle
+name: Build Spendly Android Bundle
 
-on: 
+on:
   push:
   pull_request:
     branches:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build Expenses App
+    name: Build Spendly
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -17,13 +17,13 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "21"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: "22.x"
 
       - name: Install Ionic
         run: npm install -g @ionic/cli
@@ -40,7 +40,7 @@ jobs:
       - name: Generate bundle
         working-directory: ./android/
         run: ./gradlew bundleRelease
-        
+
       - name: Sign bundle
         uses: ilharp/sign-android-release@v1
         id: sign_app
@@ -55,5 +55,5 @@ jobs:
       - name: Upload bundle
         uses: actions/upload-artifact@v4
         with:
-          name: expenses-app
+          name: spendly-app
           path: ${{steps.sign_app.outputs.signedFile}}

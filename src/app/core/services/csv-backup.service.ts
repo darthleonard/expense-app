@@ -19,15 +19,14 @@ interface ExportBundle {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CsvBackupService {
-
   constructor(
     private db: DatabaseService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController
-  ) { }
+  ) {}
 
   private toCsv(rows: any[]): string {
     if (!rows.length) return '';
@@ -43,17 +42,17 @@ export class CsvBackupService {
     };
     const lines = [
       headers.join(','),
-      ...rows.map(row => headers.map(h => escape(row[h])).join(','))
+      ...rows.map((row) => headers.map((h) => escape(row[h])).join(',')),
     ];
     return lines.join('\n');
   }
 
   private parseCsv(csv: string): any[] {
     if (!csv.trim()) return [];
-    const lines = csv.split('\n').filter(l => l.trim());
+    const lines = csv.split('\n').filter((l) => l.trim());
     if (lines.length < 2) return [];
     const headers = this.parseCsvLine(lines[0]);
-    return lines.slice(1).map(line => {
+    return lines.slice(1).map((line) => {
       const values = this.parseCsvLine(line);
       const obj: any = {};
       headers.forEach((h, i) => {
@@ -61,7 +60,10 @@ export class CsvBackupService {
         v = v.trim();
         // Remove enclosing quotes if present
         if (v.startsWith('"') && v.endsWith('"')) {
-          v = v.substring(1, v.length - 1).replace(/""/g, '"').trim();
+          v = v
+            .substring(1, v.length - 1)
+            .replace(/""/g, '"')
+            .trim();
         }
 
         const isIdField = h === 'id' || h.endsWith('Id');
@@ -112,17 +114,17 @@ export class CsvBackupService {
   async exportAll(): Promise<void> {
     try {
       const bundle: ExportBundle = {
-        expenses:      await this.db.expenses.toArray(),
-        fuelRecords:   await this.db.fuelRecords.toArray(),
-        cars:          await this.db.cars.toArray(),
-        houses:        await this.db.houses.toArray(),
+        expenses: await this.db.expenses.toArray(),
+        fuelRecords: await this.db.fuelRecords.toArray(),
+        cars: await this.db.cars.toArray(),
+        houses: await this.db.houses.toArray(),
         incomeRecords: await this.db.incomeRecords.toArray(),
         establishments: await this.db.establishments.toArray(),
-        products:      await this.db.products.toArray(),
-        purchases:     await this.db.purchases.toArray(),
+        products: await this.db.products.toArray(),
+        purchases: await this.db.purchases.toArray(),
         purchaseItems: await this.db.purchaseItems.toArray(),
-        priceHistory:  await this.db.priceHistory.toArray(),
-        individualExpenses: await this.db.individualExpenses.toArray()
+        priceHistory: await this.db.priceHistory.toArray(),
+        individualExpenses: await this.db.individualExpenses.toArray(),
       };
 
       const files: Zippable = {};
@@ -134,25 +136,28 @@ export class CsvBackupService {
       // Build zip
       const zipBuffer = await new Promise<Uint8Array>((resolve, reject) => {
         zip(files, {}, (err, data) => {
-          if (err) reject(err); else resolve(data);
+          if (err) reject(err);
+          else resolve(data);
         });
       });
 
-      const fileName = `expense_backup_${this.dateStamp()}.zip`;
+      const fileName = `spendly_backup_${this.dateStamp()}.zip`;
 
       if (Capacitor.isNativePlatform()) {
         await this.shareOnNative(zipBuffer, fileName);
       } else {
         this.downloadOnBrowser(zipBuffer, fileName);
       }
-
     } catch (err) {
       console.error('[CsvBackup] Export error:', err);
       throw err;
     }
   }
 
-  private async shareOnNative(buffer: Uint8Array, fileName: string): Promise<void> {
+  private async shareOnNative(
+    buffer: Uint8Array,
+    fileName: string
+  ): Promise<void> {
     // Dynamic imports to avoid breaking desktop build where plugins aren't available
     const { Filesystem, Directory } = await import('@capacitor/filesystem');
     const { Share } = await import('@capacitor/share');
@@ -162,20 +167,23 @@ export class CsvBackupService {
     const { uri } = await Filesystem.writeFile({
       path: fileName,
       data: base64,
-      directory: Directory.Cache
+      directory: Directory.Cache,
     });
 
     await Share.share({
-      title: 'Expense App Backup',
-      text: 'Backup file from Expense App',
+      title: 'Spendly Backup',
+      text: 'Backup file from Spendly',
       url: uri,
-      dialogTitle: 'Share your backup'
+      dialogTitle: 'Share your backup',
     });
   }
 
   private downloadOnBrowser(buffer: Uint8Array, fileName: string): void {
     // Copy to a plain ArrayBuffer to satisfy strict TypeScript Blob typing
-    const ab = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+    const ab = buffer.buffer.slice(
+      buffer.byteOffset,
+      buffer.byteOffset + buffer.byteLength
+    ) as ArrayBuffer;
     const blob = new Blob([ab], { type: 'application/zip' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -189,11 +197,14 @@ export class CsvBackupService {
     const buffer = await file.arrayBuffer();
     const uint8 = new Uint8Array(buffer);
 
-    const files = await new Promise<{ [name: string]: Uint8Array }>((resolve, reject) => {
-      unzip(uint8, (err, data) => {
-        if (err) reject(err); else resolve(data as { [name: string]: Uint8Array });
-      });
-    });
+    const files = await new Promise<{ [name: string]: Uint8Array }>(
+      (resolve, reject) => {
+        unzip(uint8, (err, data) => {
+          if (err) reject(err);
+          else resolve(data as { [name: string]: Uint8Array });
+        });
+      }
+    );
 
     const getTable = (name: string): any[] => {
       const entry = files[`${name}.csv`];
@@ -206,10 +217,17 @@ export class CsvBackupService {
     const stripId = (rows: any[]) => rows.map(({ id, ...rest }) => rest);
 
     const tables = [
-      this.db.expenses, this.db.fuelRecords, this.db.cars, this.db.houses,
-      this.db.incomeRecords, this.db.establishments, this.db.products,
-      this.db.purchases, this.db.purchaseItems, this.db.priceHistory,
-      this.db.individualExpenses
+      this.db.expenses,
+      this.db.fuelRecords,
+      this.db.cars,
+      this.db.houses,
+      this.db.incomeRecords,
+      this.db.establishments,
+      this.db.products,
+      this.db.purchases,
+      this.db.purchaseItems,
+      this.db.priceHistory,
+      this.db.individualExpenses,
     ];
 
     await this.db.transaction('rw', tables, async () => {
@@ -225,35 +243,42 @@ export class CsvBackupService {
       await this.db.priceHistory.clear();
       await this.db.individualExpenses.clear();
 
-      const expenses       = getTable('expenses');
-      const fuelRecords    = getTable('fuelRecords');
-      const cars           = getTable('cars');
-      const houses         = getTable('houses');
-      const incomeRecords  = getTable('incomeRecords');
+      const expenses = getTable('expenses');
+      const fuelRecords = getTable('fuelRecords');
+      const cars = getTable('cars');
+      const houses = getTable('houses');
+      const incomeRecords = getTable('incomeRecords');
       const establishments = getTable('establishments');
-      const products       = getTable('products');
-      const purchases      = getTable('purchases');
-      const purchaseItems  = getTable('purchaseItems');
-      const priceHistory   = getTable('priceHistory');
+      const products = getTable('products');
+      const purchases = getTable('purchases');
+      const purchaseItems = getTable('purchaseItems');
+      const priceHistory = getTable('priceHistory');
       const individualExpenses = getTable('individualExpenses');
 
-      if (expenses.length)       await this.db.expenses.bulkAdd(expenses);
-      if (fuelRecords.length)    await this.db.fuelRecords.bulkAdd(fuelRecords);
-      if (cars.length)           await this.db.cars.bulkAdd(cars);
-      if (houses.length)         await this.db.houses.bulkAdd(houses);
-      if (incomeRecords.length)  await this.db.incomeRecords.bulkAdd(incomeRecords);
-      if (establishments.length) await this.db.establishments.bulkAdd(establishments);
-      if (products.length)       await this.db.products.bulkAdd(products);
-      if (purchases.length)      await this.db.purchases.bulkAdd(purchases);
-      if (purchaseItems.length)  await this.db.purchaseItems.bulkAdd(purchaseItems);
-      if (priceHistory.length)   await this.db.priceHistory.bulkAdd(priceHistory);
-      if (individualExpenses.length) await this.db.individualExpenses.bulkAdd(individualExpenses);
+      if (expenses.length) await this.db.expenses.bulkAdd(expenses);
+      if (fuelRecords.length) await this.db.fuelRecords.bulkAdd(fuelRecords);
+      if (cars.length) await this.db.cars.bulkAdd(cars);
+      if (houses.length) await this.db.houses.bulkAdd(houses);
+      if (incomeRecords.length)
+        await this.db.incomeRecords.bulkAdd(incomeRecords);
+      if (establishments.length)
+        await this.db.establishments.bulkAdd(establishments);
+      if (products.length) await this.db.products.bulkAdd(products);
+      if (purchases.length) await this.db.purchases.bulkAdd(purchases);
+      if (purchaseItems.length)
+        await this.db.purchaseItems.bulkAdd(purchaseItems);
+      if (priceHistory.length) await this.db.priceHistory.bulkAdd(priceHistory);
+      if (individualExpenses.length)
+        await this.db.individualExpenses.bulkAdd(individualExpenses);
     });
   }
 
   private dateStamp(): string {
     const d = new Date();
-    return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+    return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(
+      2,
+      '0'
+    )}${String(d.getDate()).padStart(2, '0')}`;
   }
 
   private uint8ToBase64(bytes: Uint8Array): string {

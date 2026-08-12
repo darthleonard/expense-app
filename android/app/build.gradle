@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.darthleonard.expensesapp"
+    namespace = "com.darthleonard.spendly"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.darthleonard.expensesapp"
+        applicationId "com.darthleonard.spendly"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

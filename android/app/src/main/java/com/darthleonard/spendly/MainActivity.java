@@ -1,4 +1,4 @@
-package com.darthleonard.expensesapp;
+package com.darthleonard.spendly;
 
 import com.getcapacitor.BridgeActivity;
 
