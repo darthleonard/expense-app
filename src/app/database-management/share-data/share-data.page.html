@@ -1,0 +1,362 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ 'SHARE_DATA_TITLE' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="share-content">
+  <div class="share-container">
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+      <div class="hero-icon-wrap" [class.pulsing]="state === 'waiting_connection' || state === 'discovering_devices'">
+        <ion-icon name="bluetooth" class="hero-icon"></ion-icon>
+      </div>
+      <h1 class="hero-title">{{ 'SHARE_DATA_TITLE' | translate }}</h1>
+      <p class="hero-subtitle">{{ 'SHARE_DATA_SUBTITLE' | translate }}</p>
+    </div>
+
+    <!-- ─── 1. IDLE STATE: TWO MAIN OPTIONS (SEND / RECEIVE) ───────────────── -->
+    <div *ngIf="mode === 'idle'" class="options-container">
+      <!-- Send Option Card -->
+      <div class="share-card send-card">
+        <div class="card-icon-wrap send-icon">
+          <ion-icon name="arrow-up-circle-outline"></ion-icon>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">{{ 'SHARE_SEND_TITLE' | translate }}</h2>
+          <p class="card-desc">{{ 'SHARE_SEND_DESC' | translate }}</p>
+          <ion-button
+            id="btn-send"
+            expand="block"
+            class="action-btn send-btn"
+            (click)="onSelectSend()"
+          >
+            <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
+            {{ 'SHARE_SEND_BUTTON' | translate }}
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Receive Option Card -->
+      <div class="share-card receive-card">
+        <div class="card-icon-wrap receive-icon">
+          <ion-icon name="arrow-down-circle-outline"></ion-icon>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title">{{ 'SHARE_RECEIVE_TITLE' | translate }}</h2>
+          <p class="card-desc">{{ 'SHARE_RECEIVE_DESC' | translate }}</p>
+          <ion-button
+            id="btn-receive"
+            expand="block"
+            class="action-btn receive-btn"
+            fill="outline"
+            (click)="onSelectReceive()"
+          >
+            <ion-icon name="radio-outline" slot="start"></ion-icon>
+            {{ 'SHARE_RECEIVE_BUTTON' | translate }}
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── 2. SEND FLOW ───────────────────────────────────────────────────── -->
+    <div *ngIf="mode === 'send'" class="flow-container">
+
+      <!-- Device Discovery -->
+      <div *ngIf="state === 'discovering_devices' || state === 'checking_permissions'" class="status-card">
+        <div class="status-header">
+          <ion-spinner *ngIf="isDiscovering" name="crescent" color="primary"></ion-spinner>
+          <h3>{{ 'SHARE_SEARCHING_DEVICES' | translate }}</h3>
+        </div>
+        <p class="status-subtitle">{{ 'SHARE_SELECT_DEVICE_PROMPT' | translate }}</p>
+
+        <!-- Paired Devices List -->
+        <div *ngIf="pairedDevices.length > 0" class="device-section">
+          <span class="section-label">{{ 'SHARE_PAIRED_DEVICES' | translate }}</span>
+          <ion-list class="device-list" lines="full">
+            <ion-item
+              *ngFor="let dev of pairedDevices"
+              button
+              detail="true"
+              (click)="onSelectDevice(dev)"
+            >
+              <ion-icon name="hardware-chip-outline" slot="start" color="medium"></ion-icon>
+              <ion-label>
+                <h2>{{ dev.name }}</h2>
+                <p>{{ dev.address }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="light">{{ 'SHARE_PAIRED_BADGE' | translate }}</ion-badge>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <!-- Discovered Nearby Devices List -->
+        <div class="device-section">
+          <span class="section-label">{{ 'SHARE_NEARBY_DEVICES' | translate }}</span>
+          <ion-list *ngIf="discoveredDevices.length > 0" class="device-list" lines="full">
+            <ion-item
+              *ngFor="let dev of discoveredDevices"
+              button
+              detail="true"
+              (click)="onSelectDevice(dev)"
+            >
+              <ion-icon name="phone-portrait-outline" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h2>{{ dev.name }}</h2>
+                <p>{{ dev.address }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+
+          <div *ngIf="discoveredDevices.length === 0 && !isDiscovering" class="no-devices">
+            <ion-icon name="search-outline"></ion-icon>
+            <p>{{ 'SHARE_NO_DEVICES_FOUND' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <ion-button
+            expand="block"
+            fill="outline"
+            class="half-btn"
+            [disabled]="isDiscovering"
+            (click)="startDeviceDiscovery()"
+          >
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            {{ 'SHARE_REFRESH_DEVICES' | translate }}
+          </ion-button>
+          <ion-button
+            expand="block"
+            color="medium"
+            fill="clear"
+            class="half-btn"
+            (click)="onCancel()"
+          >
+            {{ 'CANCEL' | translate }}
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Connecting / Preparing / Sending -->
+      <div *ngIf="state === 'connecting' || state === 'preparing_data' || state === 'sending'" class="status-card in-progress-card">
+        <div class="in-progress-icon-wrap">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+        </div>
+
+        <h3 *ngIf="state === 'connecting'">{{ 'SHARE_CONNECTING' | translate }}</h3>
+        <h3 *ngIf="state === 'preparing_data'">{{ 'SHARE_PREPARING_DATA' | translate }}</h3>
+        <h3 *ngIf="state === 'sending'">{{ 'SHARE_SENDING' | translate }}</h3>
+
+        <p class="target-name" *ngIf="selectedDevice">
+          {{ 'SHARE_TARGET_DEVICE' | translate }}: <strong>{{ selectedDevice.name }}</strong>
+        </p>
+
+        <!-- Progress Bar for Sending -->
+        <div *ngIf="state === 'sending'" class="progress-wrap">
+          <ion-progress-bar [value]="progress.percentage / 100" color="primary"></ion-progress-bar>
+          <div class="progress-text">
+            <span>{{ progress.percentage }}%</span>
+            <span *ngIf="progress.totalBytes > 0">({{ progress.bytesTransferred }} / {{ progress.totalBytes }} B)</span>
+          </div>
+        </div>
+
+        <ion-button expand="block" fill="clear" color="danger" (click)="onCancel()">
+          {{ 'CANCEL' | translate }}
+        </ion-button>
+      </div>
+
+      <!-- Send Completed -->
+      <div *ngIf="state === 'completed'" class="status-card completed-card">
+        <div class="success-icon-wrap">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+        <h3>{{ 'SHARE_TRANSFER_COMPLETED' | translate }}</h3>
+        <p>{{ 'SHARE_SEND_SUCCESS_MSG' | translate }}</p>
+
+        <ion-button expand="block" class="action-btn" (click)="resetState()">
+          {{ 'DONE' | translate }}
+        </ion-button>
+      </div>
+
+    </div>
+
+    <!-- ─── 3. RECEIVE FLOW ────────────────────────────────────────────────── -->
+    <div *ngIf="mode === 'receive'" class="flow-container">
+
+      <!-- Waiting for Connection -->
+      <div *ngIf="state === 'waiting_connection' || state === 'checking_permissions'" class="status-card waiting-card">
+        <div class="radar-wrap">
+          <div class="radar-circle"></div>
+          <ion-icon name="radio" class="radar-icon"></ion-icon>
+        </div>
+
+        <h3>{{ 'SHARE_WAITING_CONNECTION' | translate }}</h3>
+        <p class="status-subtitle">{{ 'SHARE_WAITING_DESC' | translate }}</p>
+
+        <ion-button expand="block" fill="clear" color="medium" (click)="onCancel()">
+          {{ 'CANCEL' | translate }}
+        </ion-button>
+      </div>
+
+      <!-- Receiving / Updating Database -->
+      <div *ngIf="state === 'receiving' || state === 'updating_db'" class="status-card in-progress-card">
+        <div class="in-progress-icon-wrap">
+          <ion-spinner name="crescent" color="success"></ion-spinner>
+        </div>
+
+        <h3 *ngIf="state === 'receiving'">{{ 'SHARE_RECEIVING' | translate }}</h3>
+        <h3 *ngIf="state === 'updating_db'">{{ 'SHARE_UPDATING_DB' | translate }}</h3>
+
+        <!-- Progress Bar for Receiving -->
+        <div *ngIf="state === 'receiving'" class="progress-wrap">
+          <ion-progress-bar [value]="progress.percentage / 100" color="success"></ion-progress-bar>
+          <div class="progress-text">
+            <span>{{ progress.percentage }}%</span>
+            <span *ngIf="progress.totalBytes > 0">({{ progress.bytesTransferred }} / {{ progress.totalBytes }} B)</span>
+          </div>
+        </div>
+
+        <p class="sub-info" *ngIf="state === 'updating_db'">{{ 'SHARE_UPDATING_ATOMIC_NOTE' | translate }}</p>
+      </div>
+
+      <!-- Receive Completed & Summary Breakdown -->
+      <div *ngIf="state === 'completed' && summary" class="status-card summary-card">
+        <div class="success-icon-wrap">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+
+        <h3>{{ 'SHARE_TRANSFER_COMPLETED' | translate }}</h3>
+        <p class="summary-subtitle">{{ 'SHARE_SUMMARY_TITLE' | translate }}</p>
+
+        <!-- Summary Totals Grid -->
+        <div class="summary-stats-grid">
+          <div class="stat-box total">
+            <span class="stat-val">{{ summary.totalReceived }}</span>
+            <span class="stat-lbl">{{ 'SHARE_TOTAL_RECEIVED' | translate }}</span>
+          </div>
+          <div class="stat-box inserted">
+            <span class="stat-val">{{ summary.totalInserted }}</span>
+            <span class="stat-lbl">{{ 'SHARE_INSERTED' | translate }}</span>
+          </div>
+          <div class="stat-box updated">
+            <span class="stat-val">{{ summary.totalUpdated }}</span>
+            <span class="stat-lbl">{{ 'SHARE_UPDATED' | translate }}</span>
+          </div>
+          <div class="stat-box skipped">
+            <span class="stat-val">{{ summary.totalSkipped }}</span>
+            <span class="stat-lbl">{{ 'SHARE_SKIPPED' | translate }}</span>
+          </div>
+        </div>
+
+        <!-- Table Breakdown List -->
+        <div class="table-breakdown-section">
+          <span class="section-label">{{ 'SHARE_BY_TABLE' | translate }}</span>
+          <ion-list class="breakdown-list" lines="full">
+            <ion-item *ngIf="summary.byTable.expenses && summary.byTable.expenses.received > 0">
+              <ion-icon name="cash-outline" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h2>{{ 'EXPENSES_TITLE' | translate }}</h2>
+                <p>+{{ summary.byTable.expenses.inserted }} / ~{{ summary.byTable.expenses.updated }} / ={{ summary.byTable.expenses.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="primary">{{ summary.byTable.expenses.received }}</ion-badge>
+            </ion-item>
+
+            <ion-item *ngIf="summary.byTable.fuelRecords && summary.byTable.fuelRecords.received > 0">
+              <ion-icon name="car-outline" slot="start" color="tertiary"></ion-icon>
+              <ion-label>
+                <h2>{{ 'FUEL_TITLE' | translate }}</h2>
+                <p>+{{ summary.byTable.fuelRecords.inserted }} / ~{{ summary.byTable.fuelRecords.updated }} / ={{ summary.byTable.fuelRecords.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="tertiary">{{ summary.byTable.fuelRecords.received }}</ion-badge>
+            </ion-item>
+
+            <ion-item *ngIf="summary.byTable.establishments && summary.byTable.establishments.received > 0">
+              <ion-icon name="business-outline" slot="start" color="secondary"></ion-icon>
+              <ion-label>
+                <h2>{{ 'ESTABLISHMENTS' | translate }}</h2>
+                <p>+{{ summary.byTable.establishments.inserted }} / ~{{ summary.byTable.establishments.updated }} / ={{ summary.byTable.establishments.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="secondary">{{ summary.byTable.establishments.received }}</ion-badge>
+            </ion-item>
+
+            <ion-item *ngIf="summary.byTable.products && summary.byTable.products.received > 0">
+              <ion-icon name="pricetags-outline" slot="start" color="warning"></ion-icon>
+              <ion-label>
+                <h2>{{ 'PRODUCTS' | translate }}</h2>
+                <p>+{{ summary.byTable.products.inserted }} / ~{{ summary.byTable.products.updated }} / ={{ summary.byTable.products.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="warning">{{ summary.byTable.products.received }}</ion-badge>
+            </ion-item>
+
+            <ion-item *ngIf="summary.byTable.purchases && summary.byTable.purchases.received > 0">
+              <ion-icon name="cart-outline" slot="start" color="success"></ion-icon>
+              <ion-label>
+                <h2>{{ 'PURCHASES_TITLE' | translate }}</h2>
+                <p>+{{ summary.byTable.purchases.inserted }} / ~{{ summary.byTable.purchases.updated }} / ={{ summary.byTable.purchases.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="success">{{ summary.byTable.purchases.received }}</ion-badge>
+            </ion-item>
+
+            <ion-item *ngIf="summary.byTable.purchaseItems && summary.byTable.purchaseItems.received > 0">
+              <ion-icon name="list-outline" slot="start" color="medium"></ion-icon>
+              <ion-label>
+                <h2>{{ 'PURCHASE_ITEMS' | translate }}</h2>
+                <p>+{{ summary.byTable.purchaseItems.inserted }} / ~{{ summary.byTable.purchaseItems.updated }} / ={{ summary.byTable.purchaseItems.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="medium">{{ summary.byTable.purchaseItems.received }}</ion-badge>
+            </ion-item>
+
+            <ion-item *ngIf="summary.byTable.individualExpenses && summary.byTable.individualExpenses.received > 0">
+              <ion-icon name="wallet-outline" slot="start" color="dark"></ion-icon>
+              <ion-label>
+                <h2>{{ 'INDIVIDUAL_EXPENSES_TITLE' | translate }}</h2>
+                <p>+{{ summary.byTable.individualExpenses.inserted }} / ~{{ summary.byTable.individualExpenses.updated }} / ={{ summary.byTable.individualExpenses.skipped }}</p>
+              </ion-label>
+              <ion-badge slot="end" color="dark">{{ summary.byTable.individualExpenses.received }}</ion-badge>
+            </ion-item>
+          </ion-list>
+        </div>
+
+        <ion-button expand="block" class="action-btn" (click)="resetState()">
+          {{ 'DONE' | translate }}
+        </ion-button>
+      </div>
+
+    </div>
+
+    <!-- ─── 4. ERROR STATE ─────────────────────────────────────────────────── -->
+    <div *ngIf="state === 'error'" class="status-card error-card">
+      <div class="error-icon-wrap">
+        <ion-icon name="alert-circle"></ion-icon>
+      </div>
+      <h3>{{ 'SHARE_ERROR_TITLE' | translate }}</h3>
+      <p class="error-msg">{{ errorMessage | translate }}</p>
+
+      <div class="button-row">
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="half-btn"
+          (click)="mode === 'send' ? onSelectSend() : onSelectReceive()"
+        >
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          {{ 'RETRY' | translate }}
+        </ion-button>
+        <ion-button
+          expand="block"
+          color="medium"
+          fill="clear"
+          class="half-btn"
+          (click)="resetState()"
+        >
+          {{ 'CLOSE' | translate }}
+        </ion-button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

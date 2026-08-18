@@ -20,6 +20,10 @@ const routes: Routes = [
         loadChildren: () => import('./database-analysis/database-analysis.module').then(m => m.DatabaseAnalysisPageModule)
       },
       {
+        path: 'share-data',
+        loadChildren: () => import('./share-data/share-data.module').then(m => m.ShareDataPageModule)
+      },
+      {
         path: '',
         redirectTo: 'info',
         pathMatch: 'full'

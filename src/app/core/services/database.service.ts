@@ -86,6 +86,7 @@ export interface Purchase {
   establishmentNameSnap?: string; // historical snapshot
   totalPriceCalculated: number; // sum of bought items only
   isPlanned?: boolean; // true = planned list (items default isBought=false), false/undefined = buying now (isBought=true)
+  lastModDate?: string;
 }
 
 export interface PurchaseItem {
@@ -100,6 +101,7 @@ export interface PurchaseItem {
   isBought: boolean;
   notes?: string;
   addedDate: string;
+  lastModDate?: string;
 }
 
 export interface PriceHistory {
