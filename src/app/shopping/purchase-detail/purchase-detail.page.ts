@@ -10,6 +10,7 @@ import {
   Establishment,
   ExpenseCategory,
   toLower,
+  generateGuid,
 } from '../../core/services/database.service';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -39,7 +40,7 @@ export class PurchaseDetailPage implements OnInit {
   };
   items: PurchaseItem[] = [];
   originalItems: PurchaseItem[] = [];
-  deletedItemIds: number[] = [];
+  deletedItemIds: string[] = [];
   establishments: Establishment[] = [];
   sortBy: PurchaseItemSort = 'added';
   sortDirection: PurchaseSortDirection = 'asc';
@@ -72,7 +73,7 @@ export class PurchaseDetailPage implements OnInit {
   editingItem: PurchaseItem | null = null;
 
   // Expanded notes set
-  expandedNotes = new Set<number>();
+  expandedNotes = new Set<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -88,8 +89,8 @@ export class PurchaseDetailPage implements OnInit {
   ngOnInit() {}
 
   async ionViewWillEnter() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (!id || isNaN(id)) {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
       this.router.navigate(['/shopping']);
       return;
     }
@@ -177,7 +178,7 @@ export class PurchaseDetailPage implements OnInit {
     this.recalcTotals();
   }
 
-  toggleNote(id: number) {
+  toggleNote(id: string) {
     if (this.expandedNotes.has(id)) {
       this.expandedNotes.delete(id);
     } else {
@@ -185,7 +186,7 @@ export class PurchaseDetailPage implements OnInit {
     }
   }
 
-  isNoteExpanded(id: number) {
+  isNoteExpanded(id: string) {
     return this.expandedNotes.has(id);
   }
 
@@ -248,7 +249,7 @@ export class PurchaseDetailPage implements OnInit {
   async addItemToCart() {
     if (!this.purchase?.id) return;
 
-    let productId: number | undefined;
+    let productId: string | undefined;
     let productName = '';
     let categorySnap: ExpenseCategory = 'variable';
 
@@ -382,16 +383,18 @@ export class PurchaseDetailPage implements OnInit {
     }
     this.deletedItemIds = [];
 
+    const now = new Date().toISOString();
     // Save/Update items
     for (const item of this.items) {
       item.totalPrice = item.quantity * item.unitPrice;
-      if (item.id) {
-        await this.db.purchaseItems.update(item.id, item);
-      } else {
-        const toAdd = { ...item };
-        delete toAdd.id;
-        await this.db.purchaseItems.add(toAdd);
-      }
+      const itemId = item.id || generateGuid();
+      const itemToSave: PurchaseItem = {
+        ...item,
+        id: itemId,
+        addedDate: item.addedDate || now,
+        lastModDate: now
+      };
+      await this.db.purchaseItems.put(itemToSave);
     }
 
     // Recalculate purchase total in the database

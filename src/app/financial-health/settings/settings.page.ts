@@ -77,7 +77,7 @@ export class SettingsPage implements OnInit {
     this.loadHistory();
   }
 
-  async deleteRecord(id: number | undefined) {
+  async deleteRecord(id: string | undefined) {
     if (id !== undefined) {
       await this.financialHealth.deleteIncomeRecord(id);
       this.loadHistory();

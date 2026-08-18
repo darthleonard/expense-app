@@ -20,8 +20,8 @@ export class DashboardPage implements OnInit {
 
   vehicles: Car[] = [];
   houses: House[] = [];
-  selectedCarId: number | 'all' = 'all';
-  selectedHouseId: number | 'all' = 'all';
+  selectedCarId: string | 'all' = 'all';
+  selectedHouseId: string | 'all' = 'all';
   pieTimeRange: string = 'all_data';
   lineTimeRange: string = 'last_6_months';
 

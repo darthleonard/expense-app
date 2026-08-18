@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService, Car, toLower } from '../core/services/database.service';
+import { DatabaseService, Car, toLower, generateGuid } from '../core/services/database.service';
 import { AlertController, IonModal } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../core/services/has-changes.service';
@@ -71,19 +71,14 @@ export class VehiclesPage implements OnInit {
     
     this.isSaving = true;
     try {
-      if (this.editingVehicle && this.editingVehicle.id) {
-        await this.db.cars.update(this.editingVehicle.id, {
-          ...this.currentVehicle,
-          name: toLower(this.currentVehicle.name),
-          description: toLower(this.currentVehicle.description)
-        });
-      } else {
-        await this.db.cars.add({
-          ...this.currentVehicle,
-          name: toLower(this.currentVehicle.name),
-          description: toLower(this.currentVehicle.description)
-        });
-      }
+      const id = this.editingVehicle?.id || generateGuid();
+      const carToSave: Car = {
+        ...this.currentVehicle,
+        id,
+        name: toLower(this.currentVehicle.name),
+        description: toLower(this.currentVehicle.description)
+      };
+      await this.db.cars.put(carToSave);
       await this.modal.dismiss(null, 'save');
       await this.loadData();
     } catch (err) {

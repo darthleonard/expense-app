@@ -82,50 +82,50 @@ export class SettingsService {
     await this._storage?.set('initial_screen', screen);
   }
 
-  async getSelectedHouse(): Promise<number | null> {
+  async getSelectedHouse(): Promise<string | null> {
     const id = await this._storage?.get('selected_house');
-    return id ? parseInt(id, 10) : null;
+    return id || null;
   }
 
-  async setSelectedHouse(id: number | null) {
+  async setSelectedHouse(id: string | null) {
     if (id === null) {
       await this._storage?.remove('selected_house');
     } else {
-      await this._storage?.set('selected_house', id.toString());
+      await this._storage?.set('selected_house', id);
     }
   }
 
-  async getSelectedCar(): Promise<number | null> {
+  async getSelectedCar(): Promise<string | null> {
     const id = await this._storage?.get('selected_car');
-    return id ? parseInt(id, 10) : null;
+    return id || null;
   }
 
-  async setSelectedCar(id: number | null) {
+  async setSelectedCar(id: string | null) {
     if (id === null) {
       await this._storage?.remove('selected_car');
     } else {
-      await this._storage?.set('selected_car', id.toString());
+      await this._storage?.set('selected_car', id);
     }
   }
 
-  async getDashboardSelectedHouse(): Promise<number | 'all'> {
+  async getDashboardSelectedHouse(): Promise<string | 'all'> {
     const id = await this._storage?.get('dashboard_selected_house');
     if (id === undefined || id === null) return 'all';
-    return id === 'all' ? 'all' : parseInt(id, 10);
+    return id;
   }
 
-  async setDashboardSelectedHouse(id: number | 'all') {
-    await this._storage?.set('dashboard_selected_house', id.toString());
+  async setDashboardSelectedHouse(id: string | 'all') {
+    await this._storage?.set('dashboard_selected_house', id);
   }
 
-  async getDashboardSelectedCar(): Promise<number | 'all'> {
+  async getDashboardSelectedCar(): Promise<string | 'all'> {
     const id = await this._storage?.get('dashboard_selected_car');
     if (id === undefined || id === null) return 'all';
-    return id === 'all' ? 'all' : parseInt(id, 10);
+    return id;
   }
 
-  async setDashboardSelectedCar(id: number | 'all') {
-    await this._storage?.set('dashboard_selected_car', id.toString());
+  async setDashboardSelectedCar(id: string | 'all') {
+    await this._storage?.set('dashboard_selected_car', id);
   }
 
   async getDashboardPieTimeRange(): Promise<string> {

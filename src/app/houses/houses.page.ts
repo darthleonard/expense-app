@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DatabaseService, House, toLower } from '../core/services/database.service';
+import { DatabaseService, House, toLower, generateGuid } from '../core/services/database.service';
 import { AlertController, IonModal } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../core/services/has-changes.service';
@@ -71,19 +71,14 @@ export class HousesPage implements OnInit {
     
     this.isSaving = true;
     try {
-      if (this.editingHouse && this.editingHouse.id) {
-        await this.db.houses.update(this.editingHouse.id, {
-          ...this.currentHouse,
-          name: toLower(this.currentHouse.name),
-          description: toLower(this.currentHouse.description)
-        });
-      } else {
-        await this.db.houses.add({
-          ...this.currentHouse,
-          name: toLower(this.currentHouse.name),
-          description: toLower(this.currentHouse.description)
-        });
-      }
+      const id = this.editingHouse?.id || generateGuid();
+      const houseToSave: House = {
+        ...this.currentHouse,
+        id,
+        name: toLower(this.currentHouse.name),
+        description: toLower(this.currentHouse.description)
+      };
+      await this.db.houses.put(houseToSave);
       await this.modal.dismiss(null, 'save');
       await this.loadData();
     } catch (err) {

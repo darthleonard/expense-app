@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
-import { DatabaseService, IndividualExpense, toLower } from '../core/services/database.service';
+import { DatabaseService, IndividualExpense, toLower, generateGuid } from '../core/services/database.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../core/services/has-changes.service';
 import { SettingsService } from '../core/services/settings.service';
@@ -155,25 +155,21 @@ export class IndividualExpensesPage implements OnInit {
     this.isSaving = true;
     try {
       const now = new Date().toISOString();
+      const id = this.editingExpense?.id || generateGuid();
       const payload: IndividualExpense = {
+        id,
         concept: toLower(this.currentExpense.concept),
         price: this.currentExpense.price,
         category: this.currentExpense.category,
         date: this.currentExpense.date,
         notes: this.currentExpense.notes ? toLower(this.currentExpense.notes) : '',
+        creationDate: this.editingExpense?.creationDate || now,
         lastModDate: now
       };
 
-      if (this.editingExpense && this.editingExpense.id) {
-        payload.id = this.editingExpense.id;
-        payload.creationDate = this.editingExpense.creationDate;
-        await this.db.individualExpenses.update(this.editingExpense.id, payload);
-      } else {
-        payload.creationDate = now;
-        await this.db.individualExpenses.add(payload);
-      }
+      await this.db.individualExpenses.put(payload);
 
-      this.isModalOpen = false
+      this.isModalOpen = false;
       await this.loadData();
     } catch (err) {
       this.isSaving = false;

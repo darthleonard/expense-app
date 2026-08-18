@@ -4,22 +4,22 @@ import Dexie, { Table } from 'dexie';
 // ─── Existing interfaces ──────────────────────────────────────────────────────
 
 export interface Car {
-  id?: number;
+  id?: string;
   name: string;
   description?: string;
   icon?: string;
 }
 
 export interface House {
-  id?: number;
+  id?: string;
   name: string;
   description?: string;
   icon?: string;
 }
 
 export interface ExpenseRecord {
-  id?: number;
-  houseId?: number;
+  id?: string;
+  houseId?: string;
   type: 'housing' | 'electricity' | 'water' | 'gas_bill' | 'telecom';
   amount: number;
   date: string;
@@ -29,8 +29,8 @@ export interface ExpenseRecord {
 }
 
 export interface FuelRecord {
-  id?: number;
-  carId?: number;
+  id?: string;
+  carId?: string;
   odometer: number;
   unitPrice: number;
   totalPrice: number;
@@ -41,7 +41,7 @@ export interface FuelRecord {
 }
 
 export interface IncomeRecord {
-  id?: number;
+  id?: string;
   amount: number;
   period: 'monthly' | 'biweekly' | 'semimonthly';
   date: string;
@@ -50,7 +50,7 @@ export interface IncomeRecord {
 // ─── Shopping module interfaces ───────────────────────────────────────────────
 
 export interface Establishment {
-  id?: number;
+  id?: string;
   name: string;
   description?: string;
   address?: string;
@@ -62,7 +62,7 @@ export interface Establishment {
 export type ExpenseCategory = 'fixed' | 'variable';
 
 export interface ProductCatalog {
-  id?: number;
+  id?: string;
   name: string;
   description?: string;
   category: ExpenseCategory;
@@ -76,13 +76,13 @@ export interface ProductCatalog {
 export type PurchaseStatus = 'active' | 'completed' | 'canceled';
 
 export interface Purchase {
-  id?: number;
+  id?: string;
   name: string;
   status: PurchaseStatus;
   creationDate: string;
   purchaseDate?: string;
   notes?: string;
-  establishmentId?: number;
+  establishmentId?: string;
   establishmentNameSnap?: string; // historical snapshot
   totalPriceCalculated: number; // sum of bought items only
   isPlanned?: boolean; // true = planned list (items default isBought=false), false/undefined = buying now (isBought=true)
@@ -90,9 +90,9 @@ export interface Purchase {
 }
 
 export interface PurchaseItem {
-  id?: number;
-  purchaseId: number;
-  productId?: number;
+  id?: string;
+  purchaseId: string;
+  productId?: string;
   productNameSnap: string; // historical snapshot
   categorySnap: ExpenseCategory; // historical snapshot
   quantity: number;
@@ -105,19 +105,19 @@ export interface PurchaseItem {
 }
 
 export interface PriceHistory {
-  id?: number;
-  productId: number;
-  establishmentId?: number;
+  id?: string;
+  productId: string;
+  establishmentId?: string;
   establishmentNameSnap?: string;
   price: number;
   recordedDate: string;
-  purchaseId?: number;
+  purchaseId?: string;
   quantity: number;
   notes?: string;
 }
 
 export interface IndividualExpense {
-  id?: number;
+  id?: string;
   concept: string;
   price: number;
   category: ExpenseCategory;
@@ -132,42 +132,54 @@ export function toLower(value: string | undefined | null): string {
   return value?.trim().toLowerCase() ?? '';
 }
 
+/** Generates a standard RFC 4122 v4 UUID / GUID. */
+export function generateGuid(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 // ─── Database ─────────────────────────────────────────────────────────────────
 
 @Injectable({
   providedIn: 'root',
 })
 export class DatabaseService extends Dexie {
-  expenses!: Table<ExpenseRecord, number>;
-  fuelRecords!: Table<FuelRecord, number>;
-  cars!: Table<Car, number>;
-  houses!: Table<House, number>;
-  incomeRecords!: Table<IncomeRecord, number>;
-  establishments!: Table<Establishment, number>;
-  products!: Table<ProductCatalog, number>;
-  purchases!: Table<Purchase, number>;
-  purchaseItems!: Table<PurchaseItem, number>;
-  priceHistory!: Table<PriceHistory, number>;
-  individualExpenses!: Table<IndividualExpense, number>;
+  expenses!: Table<ExpenseRecord, string>;
+  fuelRecords!: Table<FuelRecord, string>;
+  cars!: Table<Car, string>;
+  houses!: Table<House, string>;
+  incomeRecords!: Table<IncomeRecord, string>;
+  establishments!: Table<Establishment, string>;
+  products!: Table<ProductCatalog, string>;
+  purchases!: Table<Purchase, string>;
+  purchaseItems!: Table<PurchaseItem, string>;
+  priceHistory!: Table<PriceHistory, string>;
+  individualExpenses!: Table<IndividualExpense, string>;
 
   constructor() {
     super('ExpenseAppDB');
     
     this.version(1)
       .stores({
-        cars: '++id, name',
-        houses: '++id, name',
-        expenses: '++id, houseId, type, amount, date',
-        fuelRecords: '++id, carId, odometer, unitPrice, totalPrice, liters, date',
-        incomeRecords: '++id, amount, period, date',
-        establishments: '++id, name, isActive, creationDate',
-        products: '++id, name, category, code, isActive, creationDate',
+        cars: 'id, name',
+        houses: 'id, name',
+        expenses: 'id, houseId, type, amount, date',
+        fuelRecords: 'id, carId, odometer, unitPrice, totalPrice, liters, date',
+        incomeRecords: 'id, amount, period, date',
+        establishments: 'id, name, isActive, creationDate',
+        products: 'id, name, category, code, isActive, creationDate',
         purchases:
-          '++id, name, status, establishmentId, creationDate, purchaseDate',
-        purchaseItems: '++id, purchaseId, productId, isBought, addedDate',
+          'id, name, status, establishmentId, creationDate, purchaseDate',
+        purchaseItems: 'id, purchaseId, productId, isBought, addedDate',
         priceHistory:
-          '++id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
-        individualExpenses: '++id, concept, price, category, date, creationDate'
+          'id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
+        individualExpenses: 'id, concept, price, category, date, creationDate'
       });
   }
 }

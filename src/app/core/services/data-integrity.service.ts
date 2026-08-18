@@ -81,7 +81,7 @@ export class DataIntegrityService {
       return allowZero ? n < 0 : n <= 0;
     };
 
-    // Helper: Check basic ID issues (string_id / missing_id)
+    // Helper: Check basic ID issues (missing_id only — string GUIDs are correct)
     const checkId = (table: string, rec: any) => {
       if (rec.id === undefined || rec.id === null) {
         issues.push({
@@ -95,20 +95,6 @@ export class DataIntegrityService {
           title: 'Missing record ID',
           description: 'This record does not have a primary key ID.',
           canAutofix: false
-        });
-      } else if (typeof rec.id === 'string') {
-        issues.push({
-          id: `${table}_${rec.id}_string_id`,
-          table,
-          recordId: rec.id,
-          record: rec,
-          issueType: 'string_id',
-          titleKey: 'ISSUE_TITLE_STRING_ID',
-          descriptionKey: 'ISSUE_DESC_STRING_ID',
-          descriptionParams: { value: rec.id },
-          title: 'String primary key',
-          description: `Primary key 'id' is a string ("${rec.id}") instead of a number.`,
-          canAutofix: true
         });
       }
     };
@@ -158,24 +144,9 @@ export class DataIntegrityService {
     for (const exp of expenses) {
       checkId('expenses', exp);
       
-      // Foreign key type check
+      // Foreign key check
       if (exp.houseId !== undefined && exp.houseId !== null) {
-        if (typeof exp.houseId === 'string') {
-          issues.push({
-            id: `expenses_${exp.id}_string_fk_houseId`,
-            table: 'expenses',
-            recordId: exp.id,
-            record: exp,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'houseId', value: exp.houseId },
-            title: 'String house ID',
-            description: `Foreign key 'houseId' is a string ("${exp.houseId}") instead of a number.`,
-            field: 'houseId',
-            canAutofix: true
-          });
-        } else if (!houseIds.has(Number(exp.houseId))) {
+        if (!houseIds.has(exp.houseId)) {
           issues.push({
             id: `expenses_${exp.id}_orphan_houseId`,
             table: 'expenses',
@@ -271,22 +242,7 @@ export class DataIntegrityService {
 
       // Foreign key check
       if (fuel.carId !== undefined && fuel.carId !== null) {
-        if (typeof fuel.carId === 'string') {
-          issues.push({
-            id: `fuelRecords_${fuel.id}_string_fk_carId`,
-            table: 'fuelRecords',
-            recordId: fuel.id,
-            record: fuel,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'carId', value: fuel.carId },
-            title: 'String vehicle ID',
-            description: `Foreign key 'carId' is a string ("${fuel.carId}") instead of a number.`,
-            field: 'carId',
-            canAutofix: true
-          });
-        } else if (!carIds.has(Number(fuel.carId))) {
+        if (!carIds.has(fuel.carId)) {
           issues.push({
             id: `fuelRecords_${fuel.id}_orphan_carId`,
             table: 'fuelRecords',
@@ -545,22 +501,7 @@ export class DataIntegrityService {
 
       // Foreign key
       if (purch.establishmentId !== undefined && purch.establishmentId !== null) {
-        if (typeof purch.establishmentId === 'string') {
-          issues.push({
-            id: `purchases_${purch.id}_string_fk_establishmentId`,
-            table: 'purchases',
-            recordId: purch.id,
-            record: purch,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'establishmentId', value: purch.establishmentId },
-            title: 'String store ID',
-            description: `Foreign key 'establishmentId' is a string ("${purch.establishmentId}") instead of a number.`,
-            field: 'establishmentId',
-            canAutofix: true
-          });
-        } else if (!establishmentIds.has(Number(purch.establishmentId))) {
+        if (!establishmentIds.has(purch.establishmentId)) {
           issues.push({
             id: `purchases_${purch.id}_orphan_establishmentId`,
             table: 'purchases',
@@ -586,22 +527,7 @@ export class DataIntegrityService {
 
       // Parent purchase
       if (item.purchaseId !== undefined && item.purchaseId !== null) {
-        if (typeof item.purchaseId === 'string') {
-          issues.push({
-            id: `purchaseItems_${item.id}_string_fk_purchaseId`,
-            table: 'purchaseItems',
-            recordId: item.id,
-            record: item,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'purchaseId', value: item.purchaseId },
-            title: 'String purchase ID',
-            description: `Foreign key 'purchaseId' is a string ("${item.purchaseId}") instead of a number.`,
-            field: 'purchaseId',
-            canAutofix: true
-          });
-        } else if (!purchaseIds.has(Number(item.purchaseId))) {
+        if (!purchaseIds.has(item.purchaseId)) {
           issues.push({
             id: `purchaseItems_${item.id}_orphan_purchaseId`,
             table: 'purchaseItems',
@@ -638,22 +564,7 @@ export class DataIntegrityService {
 
       // Optional Product
       if (item.productId !== undefined && item.productId !== null) {
-        if (typeof item.productId === 'string') {
-          issues.push({
-            id: `purchaseItems_${item.id}_string_fk_productId`,
-            table: 'purchaseItems',
-            recordId: item.id,
-            record: item,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'productId', value: item.productId },
-            title: 'String product ID',
-            description: `Foreign key 'productId' is a string ("${item.productId}") instead of a number.`,
-            field: 'productId',
-            canAutofix: true
-          });
-        } else if (!productIds.has(Number(item.productId))) {
+        if (!productIds.has(item.productId)) {
           issues.push({
             id: `purchaseItems_${item.id}_orphan_productId`,
             table: 'purchaseItems',
@@ -713,22 +624,7 @@ export class DataIntegrityService {
 
       // Product relation
       if (hist.productId !== undefined && hist.productId !== null) {
-        if (typeof hist.productId === 'string') {
-          issues.push({
-            id: `priceHistory_${hist.id}_string_fk_productId`,
-            table: 'priceHistory',
-            recordId: hist.id,
-            record: hist,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'productId', value: hist.productId },
-            title: 'String product ID',
-            description: `Foreign key 'productId' is a string ("${hist.productId}") instead of a number.`,
-            field: 'productId',
-            canAutofix: true
-          });
-        } else if (!productIds.has(Number(hist.productId))) {
+        if (!productIds.has(hist.productId)) {
           issues.push({
             id: `priceHistory_${hist.id}_orphan_productId`,
             table: 'priceHistory',
@@ -765,22 +661,7 @@ export class DataIntegrityService {
 
       // Optional Store relation
       if (hist.establishmentId !== undefined && hist.establishmentId !== null) {
-        if (typeof hist.establishmentId === 'string') {
-          issues.push({
-            id: `priceHistory_${hist.id}_string_fk_establishmentId`,
-            table: 'priceHistory',
-            recordId: hist.id,
-            record: hist,
-            issueType: 'string_fk',
-            titleKey: 'ISSUE_TITLE_STRING_FK',
-            descriptionKey: 'ISSUE_DESC_STRING_FK',
-            descriptionParams: { field: 'establishmentId', value: hist.establishmentId },
-            title: 'String store ID',
-            description: `Foreign key 'establishmentId' is a string ("${hist.establishmentId}") instead of a number.`,
-            field: 'establishmentId',
-            canAutofix: true
-          });
-        } else if (!establishmentIds.has(Number(hist.establishmentId))) {
+        if (!establishmentIds.has(hist.establishmentId)) {
           issues.push({
             id: `priceHistory_${hist.id}_orphan_establishmentId`,
             table: 'priceHistory',
@@ -843,18 +724,9 @@ export class DataIntegrityService {
 
     const table = this.db.table(issue.table);
 
-    // 1. String primary key conversion
+    // 1. String primary key — no longer converted (GUIDs are the correct type)
     if (issue.issueType === 'string_id') {
-      const oldId = issue.recordId;
-      const newId = Number(oldId);
-      if (!isNaN(newId)) {
-        const record = { ...issue.record, id: newId };
-        await this.db.transaction('rw', [table], async () => {
-          await table.delete(oldId);
-          await table.put(record);
-        });
-      }
-      return;
+      return; // Nothing to fix; string IDs are now correct
     }
 
     // Load current record state to ensure we are modifying the latest values
@@ -863,10 +735,9 @@ export class DataIntegrityService {
 
     const record = { ...latestRecord };
 
-    // 2. String foreign key conversion
+    // 2. String foreign key — no longer converted (GUIDs are the correct type)
     if (issue.issueType === 'string_fk' && issue.field) {
-      const val = Number(record[issue.field]);
-      record[issue.field] = isNaN(val) ? undefined : val;
+      return; // Nothing to fix; string FKs are now correct
     }
 
     // 3. Orphan relations resolution
@@ -876,7 +747,9 @@ export class DataIntegrityService {
         if (firstHouse) {
           record.houseId = firstHouse.id;
         } else {
-          const newHouseId = await this.db.houses.add({ name: 'casa recuperada', icon: 'home' });
+          const { generateGuid } = await import('./database.service');
+          const newHouseId = generateGuid();
+          await this.db.houses.put({ id: newHouseId, name: 'casa recuperada', icon: 'home' });
           record.houseId = newHouseId;
         }
       } else if (issue.field === 'carId') {
@@ -884,7 +757,9 @@ export class DataIntegrityService {
         if (firstCar) {
           record.carId = firstCar.id;
         } else {
-          const newCarId = await this.db.cars.add({ name: 'auto recuperado', icon: 'car' });
+          const { generateGuid } = await import('./database.service');
+          const newCarId = generateGuid();
+          await this.db.cars.put({ id: newCarId, name: 'auto recuperado', icon: 'car' });
           record.carId = newCarId;
         }
       } else if (issue.field === 'purchaseId') {
@@ -892,7 +767,10 @@ export class DataIntegrityService {
         if (firstPurchase) {
           record.purchaseId = firstPurchase.id;
         } else {
-          const newPurchaseId = await this.db.purchases.add({
+          const { generateGuid } = await import('./database.service');
+          const newPurchaseId = generateGuid();
+          await this.db.purchases.put({
+            id: newPurchaseId,
             name: 'compra recuperada',
             status: 'completed',
             creationDate: new Date().toISOString(),

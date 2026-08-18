@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DatabaseService, FuelRecord, Car } from '../core/services/database.service';
+import { DatabaseService, FuelRecord, Car, generateGuid } from '../core/services/database.service';
 import { SettingsService } from '../core/services/settings.service';
 import { IonModal } from '@ionic/angular';
 import { HasChangesService } from '../core/services/has-changes.service';
@@ -13,7 +13,7 @@ import { HasChangesService } from '../core/services/has-changes.service';
 export class FuelPage implements OnInit {
   records: FuelRecord[] = [];
   vehicles: Car[] = [];
-  selectedCarId: number | null = null;
+  selectedCarId: string | null = null;
   isImperial = false;
   
   isModalOpen = false;
@@ -159,25 +159,22 @@ export class FuelPage implements OnInit {
     }
 
     const now = new Date().toISOString();
+    const id = this.editingRecord?.id || generateGuid();
 
     const recToSave: FuelRecord = {
+      id,
       carId: this.selectedCarId,
       odometer: internalOdometer || 0,
       unitPrice: internalPrice || 0,
       totalPrice: totalPrice || 0,
       liters: internalLiters || 0,
       date: date || now,
+      creationDate: this.editingRecord?.creationDate || now,
       lastModDate: now
     };
 
     try {
-      if (this.editingRecord && this.editingRecord.id) {
-        recToSave.creationDate = this.editingRecord.creationDate || now;
-        await this.db.fuelRecords.update(this.editingRecord.id, recToSave);
-      } else {
-        recToSave.creationDate = now;
-        await this.db.fuelRecords.add(recToSave);
-      }
+      await this.db.fuelRecords.put(recToSave);
       await this.modal.dismiss(null, 'save');
       await this.loadData();
     } catch (err) {
@@ -205,7 +202,7 @@ export class FuelPage implements OnInit {
     return this.isImperial ? upL * 3.78541 : upL;
   }
 
-  getCarIcon(carId?: number | null): string {
+  getCarIcon(carId?: string | null): string {
     if (!carId) return 'car';
     const car = this.vehicles.find(v => v.id === carId);
     return car?.icon || 'car';

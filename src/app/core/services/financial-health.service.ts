@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DatabaseService, IncomeRecord } from './database.service';
+import { DatabaseService, IncomeRecord, generateGuid } from './database.service';
 
 export interface FinancialHealthValues {
   monthlyIncome: number;
@@ -19,11 +19,12 @@ export class FinancialHealthService {
 
   async saveIncome(amount: number, period: 'monthly' | 'biweekly' | 'semimonthly'): Promise<void> {
     const record: IncomeRecord = {
+      id: generateGuid(),
       amount,
       period,
       date: new Date().toISOString()
     };
-    await this.db.incomeRecords.add(record);
+    await this.db.incomeRecords.put(record);
   }
 
   async getLatestIncome(): Promise<IncomeRecord | undefined> {
@@ -35,7 +36,7 @@ export class FinancialHealthService {
     return await this.db.incomeRecords.orderBy('date').reverse().toArray();
   }
 
-  async deleteIncomeRecord(id: number): Promise<void> {
+  async deleteIncomeRecord(id: string): Promise<void> {
     await this.db.incomeRecords.delete(id);
   }
 
@@ -57,3 +58,4 @@ export class FinancialHealthService {
     };
   }
 }
+

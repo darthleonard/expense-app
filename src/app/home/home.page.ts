@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DatabaseService, ExpenseRecord, House, toLower } from '../core/services/database.service';
+import { DatabaseService, ExpenseRecord, House, toLower, generateGuid } from '../core/services/database.service';
 import { SettingsService } from '../core/services/settings.service';
 import { IonModal } from '@ionic/angular';
 import { HasChangesService } from '../core/services/has-changes.service';
@@ -13,7 +13,7 @@ import { HasChangesService } from '../core/services/has-changes.service';
 export class HomePage implements OnInit {
   groupedExpenses: { month: string, expenses: ExpenseRecord[], expanded: boolean, total: number }[] = [];
   houses: House[] = [];
-  selectedHouseId: number | null = null;
+  selectedHouseId: string | null = null;
   
   isModalOpen = false;
   isSaving = false;
@@ -145,23 +145,17 @@ export class HomePage implements OnInit {
     const now = new Date().toISOString();
 
     try {
-      if (this.editingExpense && this.editingExpense.id) {
-        await this.db.expenses.update(this.editingExpense.id, {
-          ...this.currentExpense,
-          notes: toLower(this.currentExpense.notes),
-          houseId: this.selectedHouseId,
-          lastModDate: now,
-          creationDate: this.editingExpense.creationDate || now
-        });
-      } else {
-        await this.db.expenses.add({
-          ...this.currentExpense,
-          notes: toLower(this.currentExpense.notes),
-          houseId: this.selectedHouseId,
-          creationDate: now,
-          lastModDate: now
-        });
-      }
+      const id = this.editingExpense?.id || generateGuid();
+      const expenseToSave: ExpenseRecord = {
+        ...this.currentExpense,
+        id,
+        notes: toLower(this.currentExpense.notes),
+        houseId: this.selectedHouseId,
+        creationDate: this.editingExpense?.creationDate || now,
+        lastModDate: now
+      };
+
+      await this.db.expenses.put(expenseToSave);
       await this.modal.dismiss(null, 'save');
       await this.loadData();
     } catch (err) {
@@ -188,9 +182,10 @@ export class HomePage implements OnInit {
     }
   }
 
-  getHouseIcon(houseId: number | null): string {
+  getHouseIcon(houseId: string | null): string {
     if (!houseId) return 'home';
     const house = this.houses.find(h => h.id === houseId);
     return house?.icon || 'home';
   }
 }
+
