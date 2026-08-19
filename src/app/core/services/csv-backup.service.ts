@@ -49,30 +49,34 @@ export class CsvBackupService {
 
   private parseCsv(csv: string): any[] {
     if (!csv.trim()) return [];
-    const lines = csv.split('\n').filter((l) => l.trim());
+
+    const lines = csv
+      .split('\n')
+      .filter((l) => l.trim());
+
     if (lines.length < 2) return [];
-    const headers = this.parseCsvLine(lines[0]);
+
+    const headers = this.parseCsvLine(lines[0])
+      .map(h => h.trim());
+
     return lines.slice(1).map((line) => {
       const values = this.parseCsvLine(line);
       const obj: any = {};
+
       headers.forEach((h, i) => {
         let v = values[i] ?? '';
         v = v.trim();
-        // Remove enclosing quotes if present
-        if (v.startsWith('"') && v.endsWith('"')) {
-          v = v
-            .substring(1, v.length - 1)
-            .replace(/""/g, '"')
-            .trim();
-        }
 
-        const isIdField = h === 'id' || h.endsWith('Id');
+        const normalizedHeader = h.toLowerCase();
+
+        const isIdField =
+          normalizedHeader === 'id' ||
+          normalizedHeader.endsWith('id');
 
         if (v === '') {
           obj[h] = undefined;
         } else if (isIdField) {
-          const num = Number(v);
-          obj[h] = isNaN(num) ? v : num;
+          obj[h] = v;
         } else if (v === 'true') {
           obj[h] = true;
         } else if (v === 'false') {
@@ -83,6 +87,7 @@ export class CsvBackupService {
           obj[h] = v;
         }
       });
+
       return obj;
     });
   }
@@ -211,10 +216,6 @@ export class CsvBackupService {
       if (!entry) return [];
       return this.parseCsv(strFromU8(entry));
     };
-
-    // Strip IDs so Dexie auto-assigns new ones (preserving referential integrity
-    // is handled by the snapshot fields already stored in the rows)
-    const stripId = (rows: any[]) => rows.map(({ id, ...rest }) => rest);
 
     const tables = [
       this.db.expenses,
