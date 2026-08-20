@@ -5,10 +5,10 @@ import { DatabaseService } from '../../core/services/database.service';
   selector: 'app-app-info',
   templateUrl: './app-info.page.html',
   styleUrls: ['./app-info.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class AppInfoPage implements OnInit {
-  appVersion = '1.0.0';
+  appVersion = '1.2.0';
   dbVersion = 1;
   dbSizeFormatted = 'Loading...';
   tableCounts: { name: string; count: number }[] = [];
