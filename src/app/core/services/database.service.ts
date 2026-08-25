@@ -191,11 +191,7 @@ export class DatabaseService extends Dexie {
         purchaseItems: 'id, purchaseId, productId, isBought, addedDate',
         priceHistory:
           'id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
-        individualExpenses: 'id, concept, price, category, date, creationDate'
-      });
-
-    this.version(2)
-      .stores({
+        individualExpenses: 'id, concept, price, category, date, creationDate',
         expenseCategories: 'id, name, creationDate'
       });
   }
