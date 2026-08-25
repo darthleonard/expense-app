@@ -45,7 +45,9 @@ export class DataIntegrityService {
       products,
       purchases,
       purchaseItems,
-      priceHistory
+      priceHistory,
+      expenseCategories,
+      individualExpenses
     ] = await Promise.all([
       this.db.cars.toArray(),
       this.db.houses.toArray(),
@@ -56,7 +58,9 @@ export class DataIntegrityService {
       this.db.products.toArray(),
       this.db.purchases.toArray(),
       this.db.purchaseItems.toArray(),
-      this.db.priceHistory.toArray()
+      this.db.priceHistory.toArray(),
+      this.db.expenseCategories.toArray(),
+      this.db.individualExpenses.toArray()
     ]);
 
     // Create maps of existing IDs for quick orphan checks
@@ -65,6 +69,7 @@ export class DataIntegrityService {
     const establishmentIds = new Set(establishments.map(e => e.id));
     const productIds = new Set(products.map(p => p.id));
     const purchaseIds = new Set(purchases.map(p => p.id));
+    const categoryIds = new Set(expenseCategories.map(c => c.id));
 
     // Helper: validate date string
     const isInvalidDate = (dStr: any): boolean => {
@@ -459,6 +464,26 @@ export class DataIntegrityService {
           canAutofix: true
         });
       }
+
+      if (prod.categoryId !== undefined && prod.categoryId !== null) {
+        if (!categoryIds.has(prod.categoryId)) {
+          issues.push({
+            id: `products_${prod.id}_orphan_categoryId`,
+            table: 'products',
+            recordId: prod.id,
+            record: prod,
+            issueType: 'orphan',
+            titleKey: 'ISSUE_TITLE_ORPHAN',
+            descriptionKey: 'ISSUE_DESC_ORPHAN',
+            descriptionParams: { id: prod.categoryId, table: 'expenseCategories' },
+            title: 'Orphan category record',
+            description: `References category ID ${prod.categoryId} which does not exist.`,
+            field: 'categoryId',
+            referencedTable: 'expenseCategories',
+            canAutofix: true
+          });
+        }
+      }
     }
 
     // 8. PURCHASES
@@ -583,6 +608,27 @@ export class DataIntegrityService {
         }
       }
 
+      // Optional Category
+      if (item.categoryId !== undefined && item.categoryId !== null) {
+        if (!categoryIds.has(item.categoryId)) {
+          issues.push({
+            id: `purchaseItems_${item.id}_orphan_categoryId`,
+            table: 'purchaseItems',
+            recordId: item.id,
+            record: item,
+            issueType: 'orphan',
+            titleKey: 'ISSUE_TITLE_ORPHAN',
+            descriptionKey: 'ISSUE_DESC_ORPHAN',
+            descriptionParams: { id: item.categoryId, table: 'expenseCategories' },
+            title: 'Orphan category record',
+            description: `References category ID ${item.categoryId} which does not exist.`,
+            field: 'categoryId',
+            referencedTable: 'expenseCategories',
+            canAutofix: true
+          });
+        }
+      }
+
       // Valid metrics
       if (isInvalidNumeric(item.quantity)) {
         issues.push({
@@ -694,6 +740,119 @@ export class DataIntegrityService {
           title: 'Invalid price value',
           description: `Price is invalid (${hist.price}).`,
           field: 'price',
+          canAutofix: true
+        });
+      }
+    }
+
+    // 11. EXPENSE CATEGORIES
+    for (const cat of expenseCategories) {
+      checkId('expenseCategories', cat);
+      if (!cat.name?.trim()) {
+        issues.push({
+          id: `expenseCategories_${cat.id}_empty_name`,
+          table: 'expenseCategories',
+          recordId: cat.id,
+          record: cat,
+          issueType: 'empty_name',
+          titleKey: 'ISSUE_TITLE_EMPTY_NAME',
+          descriptionKey: 'ISSUE_DESC_EMPTY_NAME',
+          title: 'Empty category name',
+          description: 'The category must have a name.',
+          field: 'name',
+          canAutofix: true
+        });
+      }
+    }
+
+    // 12. INDIVIDUAL EXPENSES
+    const validExpenseCategories = new Set(['fixed', 'variable']);
+    for (const exp of individualExpenses) {
+      checkId('individualExpenses', exp);
+
+      if (!exp.concept?.trim()) {
+        issues.push({
+          id: `individualExpenses_${exp.id}_empty_name`,
+          table: 'individualExpenses',
+          recordId: exp.id,
+          record: exp,
+          issueType: 'empty_name',
+          titleKey: 'ISSUE_TITLE_EMPTY_NAME',
+          descriptionKey: 'ISSUE_DESC_EMPTY_NAME',
+          title: 'Empty concept',
+          description: 'The expense must have a concept.',
+          field: 'concept',
+          canAutofix: true
+        });
+      }
+
+      if (!validExpenseCategories.has(exp.category)) {
+        issues.push({
+          id: `individualExpenses_${exp.id}_invalid_category`,
+          table: 'individualExpenses',
+          recordId: exp.id,
+          record: exp,
+          issueType: 'invalid_enum',
+          titleKey: 'ISSUE_TITLE_INVALID_CATEGORY',
+          descriptionKey: 'ISSUE_DESC_INVALID_CATEGORY',
+          descriptionParams: { value: exp.category },
+          title: 'Invalid expense category',
+          description: `Category '${exp.category}' is invalid.`,
+          field: 'category',
+          canAutofix: true
+        });
+      }
+
+      if (exp.categoryId !== undefined && exp.categoryId !== null) {
+        if (!categoryIds.has(exp.categoryId)) {
+          issues.push({
+            id: `individualExpenses_${exp.id}_orphan_categoryId`,
+            table: 'individualExpenses',
+            recordId: exp.id,
+            record: exp,
+            issueType: 'orphan',
+            titleKey: 'ISSUE_TITLE_ORPHAN',
+            descriptionKey: 'ISSUE_DESC_ORPHAN',
+            descriptionParams: { id: exp.categoryId, table: 'expenseCategories' },
+            title: 'Orphan category record',
+            description: `References category ID ${exp.categoryId} which does not exist.`,
+            field: 'categoryId',
+            referencedTable: 'expenseCategories',
+            canAutofix: true
+          });
+        }
+      }
+
+      if (isInvalidNumeric(exp.price)) {
+        issues.push({
+          id: `individualExpenses_${exp.id}_invalid_price`,
+          table: 'individualExpenses',
+          recordId: exp.id,
+          record: exp,
+          issueType: 'invalid_value',
+          titleKey: 'ISSUE_TITLE_INVALID_AMOUNT',
+          descriptionKey: 'ISSUE_DESC_INVALID_AMOUNT',
+          descriptionParams: { value: exp.price },
+          title: 'Invalid expense amount',
+          description: `Amount is negative or zero (${exp.price}).`,
+          field: 'price',
+          canAutofix: true
+        });
+      }
+
+      if (isInvalidDate(exp.date)) {
+        issues.push({
+          id: `individualExpenses_${exp.id}_invalid_date`,
+          table: 'individualExpenses',
+          recordId: exp.id,
+          record: exp,
+          issueType: 'invalid_date',
+          titleKey: 'ISSUE_TITLE_INVALID_DATE',
+          descriptionKey: 'ISSUE_DESC_INVALID_DATE',
+          descriptionParams: { value: exp.date },
+          title: 'Invalid date format',
+          description: `Date field is invalid ("${exp.date}").`,
+          field: 'date',
           canAutofix: true
         });
       }

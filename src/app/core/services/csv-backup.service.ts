@@ -16,6 +16,7 @@ interface ExportBundle {
   purchaseItems: any[];
   priceHistory: any[];
   individualExpenses: any[];
+  expenseCategories: any[];
 }
 
 @Injectable({
@@ -130,6 +131,7 @@ export class CsvBackupService {
         purchaseItems: await this.db.purchaseItems.toArray(),
         priceHistory: await this.db.priceHistory.toArray(),
         individualExpenses: await this.db.individualExpenses.toArray(),
+        expenseCategories: await this.db.expenseCategories.toArray(),
       };
 
       const files: Zippable = {};
@@ -229,6 +231,7 @@ export class CsvBackupService {
       this.db.purchaseItems,
       this.db.priceHistory,
       this.db.individualExpenses,
+      this.db.expenseCategories,
     ];
 
     await this.db.transaction('rw', tables, async () => {
@@ -243,6 +246,7 @@ export class CsvBackupService {
       await this.db.purchaseItems.clear();
       await this.db.priceHistory.clear();
       await this.db.individualExpenses.clear();
+      await this.db.expenseCategories.clear();
 
       const expenses = getTable('expenses');
       const fuelRecords = getTable('fuelRecords');
@@ -255,6 +259,7 @@ export class CsvBackupService {
       const purchaseItems = getTable('purchaseItems');
       const priceHistory = getTable('priceHistory');
       const individualExpenses = getTable('individualExpenses');
+      const expenseCategories = getTable('expenseCategories');
 
       if (expenses.length) await this.db.expenses.bulkAdd(expenses);
       if (fuelRecords.length) await this.db.fuelRecords.bulkAdd(fuelRecords);
@@ -271,6 +276,8 @@ export class CsvBackupService {
       if (priceHistory.length) await this.db.priceHistory.bulkAdd(priceHistory);
       if (individualExpenses.length)
         await this.db.individualExpenses.bulkAdd(individualExpenses);
+      if (expenseCategories.length)
+        await this.db.expenseCategories.bulkAdd(expenseCategories);
     });
   }
 

@@ -33,6 +33,14 @@
             <ion-badge [color]="getCategoryColor(p.category)" class="cat-badge">
               {{ p.category | translate }}
             </ion-badge>
+            <ion-badge
+              *ngIf="getCategoryTag(p.categoryId) as tag"
+              class="cat-badge"
+              [style.background-color]="tag.color"
+              [style.color]="'#fff'"
+            >
+              {{ tag.name | titlecase }}
+            </ion-badge>
             <span *ngIf="p.code" class="product-code">{{ p.code }}</span>
             <ion-badge *ngIf="!p.isActive" color="medium" class="cat-badge">
               {{ 'INACTIVE' | translate }}
@@ -82,6 +90,13 @@
           <ion-select [(ngModel)]="current.category" interface="popover">
             <ion-select-option value="fixed">{{ 'CAT_FIXED' | translate }}</ion-select-option>
             <ion-select-option value="variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">{{ 'EXPENSE_CATEGORY' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label>
+          <ion-select [(ngModel)]="current.categoryId" interface="popover" [placeholder]="'SELECT_CATEGORY' | translate">
+            <ion-select-option [value]="undefined">{{ 'NONE' | translate }}</ion-select-option>
+            <ion-select-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | titlecase }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>

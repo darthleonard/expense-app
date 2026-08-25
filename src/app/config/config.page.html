@@ -49,6 +49,12 @@
   </div>
 
   <ion-list style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <ion-item button routerLink="/categories" routerDirection="forward">
+      <ion-icon name="pricetags" slot="start" color="primary"></ion-icon>
+      <ion-label>{{ 'EXPENSE_CATEGORIES' | translate }}</ion-label>
+      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+    </ion-item>
+
     <ion-item button routerLink="/vehicles" routerDirection="forward">
       <ion-icon name="car" slot="start" color="primary"></ion-icon>
       <ion-label>{{ 'VEHICLES' | translate }}</ion-label>

@@ -66,6 +66,7 @@ export interface ProductCatalog {
   name: string;
   description?: string;
   category: ExpenseCategory;
+  categoryId?: string;
   subCategory?: string;
   code?: string;
   isActive: boolean;
@@ -93,6 +94,7 @@ export interface PurchaseItem {
   id?: string;
   purchaseId: string;
   productId?: string;
+  categoryId?: string; // historical snapshot
   productNameSnap: string; // historical snapshot
   categorySnap: ExpenseCategory; // historical snapshot
   quantity: number;
@@ -121,10 +123,19 @@ export interface IndividualExpense {
   concept: string;
   price: number;
   category: ExpenseCategory;
+  categoryId?: string;
   date: string;
   notes?: string;
   creationDate?: string;
   lastModDate?: string;
+}
+
+export interface ExpenseCategoryTag {
+  id?: string;
+  name: string;
+  color: string;
+  creationDate: string;
+  lastModDate: string;
 }
 
 /** Normalizes a user-entered string for storage: trimmed + lowercase. */
@@ -161,6 +172,7 @@ export class DatabaseService extends Dexie {
   purchaseItems!: Table<PurchaseItem, string>;
   priceHistory!: Table<PriceHistory, string>;
   individualExpenses!: Table<IndividualExpense, string>;
+  expenseCategories!: Table<ExpenseCategoryTag, string>;
 
   constructor() {
     super('ExpenseAppDB');
@@ -180,6 +192,11 @@ export class DatabaseService extends Dexie {
         priceHistory:
           'id, productId, establishmentId, [productId+establishmentId], recordedDate, purchaseId',
         individualExpenses: 'id, concept, price, category, date, creationDate'
+      });
+
+    this.version(2)
+      .stores({
+        expenseCategories: 'id, name, creationDate'
       });
   }
 }

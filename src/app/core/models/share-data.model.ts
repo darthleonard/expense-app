@@ -6,6 +6,7 @@ import {
   Purchase,
   PurchaseItem,
   IndividualExpense,
+  ExpenseCategoryTag,
 } from '../services/database.service';
 
 /**
@@ -19,6 +20,7 @@ export const SHARE_TABLES = [
   'purchases',
   'purchaseItems',
   'individualExpenses',
+  'expenseCategories',
 ] as const;
 
 export type ShareTableName = (typeof SHARE_TABLES)[number];
@@ -31,6 +33,7 @@ export interface ShareDataCollections {
   purchases?: Purchase[];
   purchaseItems?: PurchaseItem[];
   individualExpenses?: IndividualExpense[];
+  expenseCategories?: ExpenseCategoryTag[];
 }
 
 export interface SharePayload {

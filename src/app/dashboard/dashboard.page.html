@@ -88,4 +88,66 @@
     </ion-popover>
     <canvas #lineCanvas></canvas>
   </div>
+
+  <div class="chart-container" style="position: relative; min-height: 380px; width: 100%; margin-bottom: 30px; background: var(--ion-background-color); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px;">
+    <ion-button id="category-filter-trigger" fill="clear" color="medium" size="small" style="position: absolute; top: 10px; right: 10px; z-index: 10; --padding-start: 4px; --padding-end: 4px; margin: 0;">
+      <ion-icon slot="icon-only" name="menu-outline" style="font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-popover trigger="category-filter-trigger" triggerAction="click" dismissOnSelect="true">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <ion-item button (click)="setCategoryTimeRange('current_month')">
+              <ion-label>{{ 'CURRENT_MONTH' | translate }}</ion-label>
+              <ion-icon *ngIf="categoryTimeRange === 'current_month'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setCategoryTimeRange('last_3_months')">
+              <ion-label>{{ 'LAST_3_MONTHS' | translate }}</ion-label>
+              <ion-icon *ngIf="categoryTimeRange === 'last_3_months'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setCategoryTimeRange('last_6_months')">
+              <ion-label>{{ 'LAST_6_MONTHS' | translate }}</ion-label>
+              <ion-icon *ngIf="categoryTimeRange === 'last_6_months'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+            <ion-item button (click)="setCategoryTimeRange('all_data')">
+              <ion-label>{{ 'ALL_DATA' | translate }}</ion-label>
+              <ion-icon *ngIf="categoryTimeRange === 'all_data'" name="checkmark" slot="end" color="primary"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
+
+    <!-- Multi-select category filter -->
+    <ion-item style="border-radius: 8px; margin-bottom: 12px; margin-right: 40px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+      <ion-icon name="funnel-outline" slot="start" color="primary"></ion-icon>
+      <ion-select
+        [multiple]="true"
+        [(ngModel)]="selectedCategoryFilters"
+        (ionChange)="onCategoryFilterChange()"
+        [placeholder]="'ALL_CATEGORIES' | translate"
+        [okText]="'OK' | translate"
+        [cancelText]="'CANCEL' | translate"
+        interface="popover"
+        style="width: 100%;"
+      >
+        <ion-select-option value="uncategorized">{{ 'UNCATEGORIZED' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let cat of expenseCategories" [value]="cat.id">{{ cat.name | titlecase }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div *ngIf="!hasCategorySpending" style="text-align: center; padding: 60px 0; color: var(--ion-color-medium);">
+      <ion-icon name="pie-chart-outline" style="font-size: 48px;"></ion-icon>
+      <p style="margin-top: 10px;">{{ 'NO_SPENDING' | translate }}</p>
+    </div>
+
+    <div *ngIf="hasCategorySpending && !hasFilteredCategorySpending" style="text-align: center; padding: 60px 0; color: var(--ion-color-medium);">
+      <ion-icon name="funnel-outline" style="font-size: 48px;"></ion-icon>
+      <p style="margin-top: 10px;">{{ 'NO_SPENDING_FOR_SELECTED_CATEGORIES' | translate }}</p>
+    </div>
+
+    <div [hidden]="!hasFilteredCategorySpending || !hasCategorySpending" style="position: relative; height: 300px; width: 100%;">
+      <canvas #categoryCanvas></canvas>
+    </div>
+  </div>
 </ion-content>

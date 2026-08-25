@@ -29,6 +29,7 @@ export class ShareService {
     const purchases = await this.db.purchases.toArray();
     const purchaseItems = await this.db.purchaseItems.toArray();
     const individualExpenses = await this.db.individualExpenses.toArray();
+    const expenseCategories = await this.db.expenseCategories.toArray();
 
     return {
       app: 'Spendly',
@@ -42,6 +43,7 @@ export class ShareService {
         purchases,
         purchaseItems,
         individualExpenses,
+        expenseCategories,
       },
     };
   }
@@ -63,6 +65,7 @@ export class ShareService {
       purchases: this.db.purchases,
       purchaseItems: this.db.purchaseItems,
       individualExpenses: this.db.individualExpenses,
+      expenseCategories: this.db.expenseCategories,
     };
 
     const tablesToLock = SHARE_TABLES.map((name) => tableMap[name]);

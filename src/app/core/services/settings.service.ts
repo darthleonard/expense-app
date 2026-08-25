@@ -146,6 +146,15 @@ export class SettingsService {
     await this._storage?.set('dashboard_line_time_range', range);
   }
 
+  async getDashboardCategoryTimeRange(): Promise<string> {
+    const range = await this._storage?.get('dashboard_category_time_range');
+    return range || 'all_data';
+  }
+
+  async setDashboardCategoryTimeRange(range: string) {
+    await this._storage?.set('dashboard_category_time_range', range);
+  }
+
   async isFirstBoot(): Promise<boolean> {
     const booted = await this._storage?.get('first_boot_done');
     if (!booted) {

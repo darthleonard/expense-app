@@ -103,7 +103,18 @@
 
         <!-- Product info -->
         <ion-label class="item-label" [class.struck]="item.isBought">
-          <div class="item-name">{{ item.productNameSnap | titlecase }}</div>
+          <div class="item-name">
+            {{ item.productNameSnap | titlecase }}
+            <ion-badge
+              *ngIf="getCategoryTag(item.categoryId) as tag"
+              class="cat-badge"
+              [style.background-color]="tag.color"
+              [style.color]="'#fff'"
+              style="margin-left: 6px; font-size: 10px; padding: 2px 6px; border-radius: 4px;"
+            >
+              {{ tag.name | titlecase }}
+            </ion-badge>
+          </div>
           <div class="item-price-row">
             <span
               >{{ item.quantity }} × ${{ item.unitPrice | number:'1.2-2'
@@ -262,6 +273,15 @@
                 >
               </ion-select>
             </ion-item>
+            <ion-item>
+              <ion-label position="stacked"
+                >{{ 'EXPENSE_CATEGORY' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label
+              >
+              <ion-select [(ngModel)]="newProductCategoryId" interface="popover" [placeholder]="'SELECT_CATEGORY' | translate">
+                <ion-select-option [value]="undefined">{{ 'NONE' | translate }}</ion-select-option>
+                <ion-select-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | titlecase }}</ion-select-option>
+              </ion-select>
+            </ion-item>
           </ion-list>
         </ion-card-content>
       </ion-card>
@@ -273,6 +293,15 @@
           {{ (selectedProduct?.name || newProductName) | titlecase }}
         </h4>
         <ion-list lines="none">
+          <ion-item *ngIf="editingItem">
+            <ion-label position="stacked"
+              >{{ 'EXPENSE_CATEGORY' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label
+            >
+            <ion-select [(ngModel)]="editItemCategoryId" interface="popover" [placeholder]="'SELECT_CATEGORY' | translate">
+              <ion-select-option [value]="undefined">{{ 'NONE' | translate }}</ion-select-option>
+              <ion-select-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | titlecase }}</ion-select-option>
+            </ion-select>
+          </ion-item>
           <ion-item>
             <ion-label position="stacked"
               >{{ 'QUANTITY' | translate }}</ion-label

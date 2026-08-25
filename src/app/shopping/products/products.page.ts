@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
 import { ShoppingService } from '../../core/services/shopping.service';
-import { ProductCatalog, ExpenseCategory } from '../../core/services/database.service';
+import { ProductCatalog, ExpenseCategory, ExpenseCategoryTag } from '../../core/services/database.service';
+import { CategoryService } from '../../core/services/category.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { ViewChild } from '@angular/core';
@@ -14,6 +15,8 @@ import { ViewChild } from '@angular/core';
 })
 export class ProductsPage implements OnInit {
   products: ProductCatalog[] = [];
+  categories: ExpenseCategoryTag[] = [];
+  categoryMap = new Map<string, ExpenseCategoryTag>();
   isModalOpen = false;
   isSaving = false;
   editingProduct: ProductCatalog | null = null;
@@ -24,6 +27,7 @@ export class ProductsPage implements OnInit {
 
   constructor(
     private shopping: ShoppingService,
+    private categoryService: CategoryService,
     private alertCtrl: AlertController,
     private translate: TranslateService,
     private hasChangesService: HasChangesService
@@ -36,6 +40,9 @@ export class ProductsPage implements OnInit {
   }
 
   async loadData() {
+    this.categories = await this.categoryService.getCategories();
+    this.categoryMap = await this.categoryService.getCategoryMap();
+
     const all = await this.shopping.getProducts();
     this.products = this.searchQuery
       ? all.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
@@ -53,7 +60,7 @@ export class ProductsPage implements OnInit {
       this.current = { ...product };
     } else {
       this.editingProduct = null;
-      this.current = { category: 'variable', isActive: true };
+      this.current = { category: 'variable', isActive: true, categoryId: undefined };
     }
     this.isModalOpen = true;
   }
@@ -80,6 +87,7 @@ export class ProductsPage implements OnInit {
         ...this.current,
         name: this.current.name!.trim(),
         category: this.current.category as ExpenseCategory || 'variable',
+        categoryId: this.current.categoryId || undefined,
         isActive: this.current.isActive ?? true,
         creationDate: this.editingProduct?.creationDate || new Date().toISOString(),
         lastModDate: new Date().toISOString()
@@ -89,6 +97,7 @@ export class ProductsPage implements OnInit {
       this.current = {};
       await this.loadData();
     } catch (err: any) {
+      this.isSaving = false;
       if (err.message === 'PRODUCT_NAME_DUPLICATE') {
         const alert = await this.alertCtrl.create({
           header: await this.translate.get('DUPLICATE_PRODUCT').toPromise(),
@@ -123,5 +132,9 @@ export class ProductsPage implements OnInit {
 
   getCategoryColor(cat: string) {
     return cat === 'fixed' ? 'tertiary' : 'warning';
+  }
+
+  getCategoryTag(categoryId?: string): ExpenseCategoryTag | undefined {
+    return categoryId ? this.categoryMap.get(categoryId) : undefined;
   }
 }

@@ -9,9 +9,11 @@ import {
   ProductCatalog,
   Establishment,
   ExpenseCategory,
+  ExpenseCategoryTag,
   toLower,
   generateGuid,
 } from '../../core/services/database.service';
+import { CategoryService } from '../../core/services/category.service';
 import { HasChangesService } from '../../core/services/has-changes.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -42,6 +44,8 @@ export class PurchaseDetailPage implements OnInit {
   originalItems: PurchaseItem[] = [];
   deletedItemIds: string[] = [];
   establishments: Establishment[] = [];
+  categories: ExpenseCategoryTag[] = [];
+  categoryMap = new Map<string, ExpenseCategoryTag>();
   sortBy: PurchaseItemSort = 'added';
   sortDirection: PurchaseSortDirection = 'asc';
 
@@ -70,6 +74,8 @@ export class PurchaseDetailPage implements OnInit {
   isCreatingNew = false;
   newProductName = '';
   newProductCategory: ExpenseCategory = 'variable';
+  newProductCategoryId?: string;
+  editItemCategoryId?: string;
   editingItem: PurchaseItem | null = null;
 
   // Expanded notes set
@@ -79,6 +85,7 @@ export class PurchaseDetailPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private shopping: ShoppingService,
+    private categoryService: CategoryService,
     private db: DatabaseService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
@@ -99,6 +106,8 @@ export class PurchaseDetailPage implements OnInit {
       if (p) {
         this.purchase = p;
         this.establishments = await this.shopping.getActiveEstablishments();
+        this.categories = await this.categoryService.getCategories();
+        this.categoryMap = await this.categoryService.getCategoryMap();
         await this.loadItems();
       } else {
         this.router.navigate(['/shopping']);
@@ -111,6 +120,8 @@ export class PurchaseDetailPage implements OnInit {
 
   async loadItems() {
     if (!this.purchase?.id) return;
+    this.categories = await this.categoryService.getCategories();
+    this.categoryMap = await this.categoryService.getCategoryMap();
     const dbItems = await this.shopping.getItemsForPurchase(this.purchase.id);
     this.items = dbItems.map((i) => ({ ...i }));
     this.originalItems = dbItems.map((i) => ({ ...i }));
@@ -195,13 +206,16 @@ export class PurchaseDetailPage implements OnInit {
     this.selectedProduct = null;
     this.isCreatingNew = false;
     this.newProductName = '';
+    this.newProductCategoryId = undefined;
 
     if (itemToEdit) {
       this.editingItem = itemToEdit;
+      this.editItemCategoryId = itemToEdit.categoryId;
       this.selectedProduct = {
         id: itemToEdit.productId,
         name: itemToEdit.productNameSnap,
         category: itemToEdit.categorySnap,
+        categoryId: itemToEdit.categoryId,
         isActive: true,
         creationDate: '',
         lastModDate: '',
@@ -211,6 +225,7 @@ export class PurchaseDetailPage implements OnInit {
       this.newItemNote = itemToEdit.notes || '';
     } else {
       this.editingItem = null;
+      this.editItemCategoryId = undefined;
       this.newItemQty = 1;
       this.newItemPrice = 0;
       this.newItemNote = '';
@@ -234,6 +249,7 @@ export class PurchaseDetailPage implements OnInit {
 
   selectProduct(p: ProductCatalog) {
     this.selectedProduct = p;
+    this.editItemCategoryId = p.categoryId;
     this.isCreatingNew = false;
     this.newItemPrice = 0;
   }
@@ -243,6 +259,8 @@ export class PurchaseDetailPage implements OnInit {
     this.selectedProduct = null;
     this.newProductName = this.productSearchQuery;
     this.newProductCategory = 'variable';
+    this.newProductCategoryId = undefined;
+    this.editItemCategoryId = undefined;
     this.newItemPrice = 0;
   }
 
@@ -252,6 +270,7 @@ export class PurchaseDetailPage implements OnInit {
     let productId: string | undefined;
     let productName = '';
     let categorySnap: ExpenseCategory = 'variable';
+    let categoryId: string | undefined;
 
     if (this.isCreatingNew) {
       if (!this.newProductName.trim()) return;
@@ -259,12 +278,14 @@ export class PurchaseDetailPage implements OnInit {
         productId = await this.shopping.saveProduct({
           name: toLower(this.newProductName),
           category: this.newProductCategory,
+          categoryId: this.newProductCategoryId || undefined,
           isActive: true,
           creationDate: new Date().toISOString(),
           lastModDate: new Date().toISOString(),
         });
         productName = toLower(this.newProductName);
         categorySnap = this.newProductCategory;
+        categoryId = this.newProductCategoryId;
       } catch (err: any) {
         if (err.message === 'PRODUCT_NAME_DUPLICATE') {
           const alert = await this.alertCtrl.create({
@@ -283,6 +304,7 @@ export class PurchaseDetailPage implements OnInit {
       productId = this.selectedProduct.id;
       productName = this.selectedProduct.name;
       categorySnap = this.selectedProduct.category;
+      categoryId = this.editItemCategoryId !== undefined ? this.editItemCategoryId : this.selectedProduct.categoryId;
     } else {
       return;
     }
@@ -311,6 +333,7 @@ export class PurchaseDetailPage implements OnInit {
       this.editingItem.productId = productId;
       this.editingItem.productNameSnap = productName;
       this.editingItem.categorySnap = categorySnap;
+      this.editingItem.categoryId = this.editItemCategoryId;
       this.editingItem.quantity = this.newItemQty;
       this.editingItem.unitPrice = price;
       this.editingItem.totalPrice = this.newItemQty * price;
@@ -321,6 +344,7 @@ export class PurchaseDetailPage implements OnInit {
       const item: PurchaseItem = {
         purchaseId: this.purchase.id,
         productId,
+        categoryId,
         productNameSnap: productName,
         categorySnap,
         quantity: this.newItemQty,
@@ -359,12 +383,17 @@ export class PurchaseDetailPage implements OnInit {
         item.quantity !== orig.quantity ||
         item.unitPrice !== orig.unitPrice ||
         item.notes !== orig.notes ||
-        item.productId !== orig.productId
+        item.productId !== orig.productId ||
+        item.categoryId !== orig.categoryId
       ) {
         return true;
       }
     }
     return false;
+  }
+
+  getCategoryTag(categoryId?: string): ExpenseCategoryTag | undefined {
+    return categoryId ? this.categoryMap.get(categoryId) : undefined;
   }
 
   async canDeactivate(): Promise<boolean> {

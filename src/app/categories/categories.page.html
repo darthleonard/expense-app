@@ -1,0 +1,125 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/config"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'EXPENSE_CATEGORIES' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section">
+    <h1>{{ 'EXPENSE_CATEGORIES' | translate }}</h1>
+  </div>
+
+  <ion-list *ngIf="categories.length > 0" class="categories-list">
+    <ion-item *ngFor="let category of categories" button (click)="openModal(category)" detail="false">
+      <div
+        class="category-color-badge"
+        slot="start"
+        [style.background-color]="category.color"
+      >
+        <ion-icon name="pricetag"></ion-icon>
+      </div>
+      <ion-label>
+        <h2>{{ category.name | titlecase }}</h2>
+      </ion-label>
+      <ion-button
+        fill="clear"
+        slot="end"
+        (click)="openModal(category); $event.stopPropagation()"
+      >
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button
+        fill="clear"
+        color="danger"
+        slot="end"
+        (click)="deleteCategory(category); $event.stopPropagation()"
+      >
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="categories.length === 0" class="no-categories-section">
+    <ion-icon name="pricetags-outline"></ion-icon>
+    <p>{{ 'NO_CATEGORIES_YET' | translate }}</p>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal
+    #modal
+    [isOpen]="isModalOpen"
+    [canDismiss]="canDismiss"
+    (didDismiss)="isModalOpen = false"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ (editingCategory ? 'EDIT_CATEGORY' : 'ADD_CATEGORY') | translate }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="modal.dismiss(null, 'cancel')">{{ 'CANCEL' | translate }}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-item>
+          <ion-label position="stacked">{{ 'CATEGORY_NAME' | translate }} <span class="required">*</span></ion-label>
+          <ion-input
+            [(ngModel)]="currentCategory.name"
+            placeholder="{{ 'CATEGORY_NAME' | translate }}"
+            clearInput
+          ></ion-input>
+        </ion-item>
+
+        <div class="color-picker-section">
+          <ion-label style="font-size: 14px; font-weight: 500; color: var(--ion-color-step-600, #666);">
+            {{ 'CATEGORY_COLOR' | translate }} <span class="required">*</span>
+          </ion-label>
+
+          <div class="color-presets-grid">
+            <button
+              type="button"
+              *ngFor="let color of presetColors"
+              class="color-preset-btn"
+              [class.selected]="currentCategory.color === color"
+              [style.background-color]="color"
+              (click)="selectColor(color)"
+            >
+              <ion-icon
+                *ngIf="currentCategory.color === color"
+                name="checkmark"
+              ></ion-icon>
+            </button>
+          </div>
+
+          <div class="custom-color-row">
+            <input
+              type="color"
+              class="native-color-input"
+              [(ngModel)]="currentCategory.color"
+            />
+            <ion-text color="medium" style="font-size: 13px;">
+              {{ currentCategory.color }}
+            </ion-text>
+          </div>
+        </div>
+
+        <ion-button
+          expand="block"
+          (click)="saveCategory()"
+          class="ion-margin-top"
+          [disabled]="!currentCategory.name.trim()"
+        >
+          {{ 'SAVE' | translate }}
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

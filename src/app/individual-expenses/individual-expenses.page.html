@@ -76,7 +76,18 @@
           <ion-icon [name]="exp.category === 'fixed' ? 'calendar-outline' : 'sparkles-outline'"></ion-icon>
         </div>
         <ion-label class="expense-info">
-          <h2 class="expense-concept">{{ exp.concept }}</h2>
+          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <h2 class="expense-concept">{{ exp.concept }}</h2>
+            <ion-badge
+              *ngIf="getCategoryTag(exp.categoryId) as tag"
+              class="cat-badge"
+              [style.background-color]="tag.color"
+              [style.color]="'#fff'"
+              style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"
+            >
+              {{ tag.name | titlecase }}
+            </ion-badge>
+          </div>
           <p class="expense-date">{{ exp.date | date:'dd/MM/yyyy' }}</p>
           <p *ngIf="exp.notes" class="expense-notes">{{ exp.notes }}</p>
         </ion-label>
@@ -134,6 +145,14 @@
             <ion-select [(ngModel)]="currentExpense.category" name="category" required interface="popover">
               <ion-select-option value="fixed">{{ 'CAT_FIXED' | translate }}</ion-select-option>
               <ion-select-option value="variable">{{ 'CAT_VARIABLE' | translate }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'EXPENSE_CATEGORY' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label>
+            <ion-select [(ngModel)]="currentExpense.categoryId" name="categoryId" interface="popover" [placeholder]="'SELECT_CATEGORY' | translate">
+              <ion-select-option [value]="undefined">{{ 'NONE' | translate }}</ion-select-option>
+              <ion-select-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name | titlecase }}</ion-select-option>
             </ion-select>
           </ion-item>
 

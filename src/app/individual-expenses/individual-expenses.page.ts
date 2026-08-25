@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
-import { DatabaseService, IndividualExpense, toLower, generateGuid } from '../core/services/database.service';
+import { DatabaseService, IndividualExpense, ExpenseCategoryTag, toLower, generateGuid } from '../core/services/database.service';
+import { CategoryService } from '../core/services/category.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../core/services/has-changes.service';
 import { SettingsService } from '../core/services/settings.service';
@@ -15,6 +16,8 @@ export class IndividualExpensesPage implements OnInit {
   selectedMonthIso: string = new Date().toISOString();
   expenses: IndividualExpense[] = [];
   filteredExpenses: IndividualExpense[] = [];
+  categories: ExpenseCategoryTag[] = [];
+  categoryMap = new Map<string, ExpenseCategoryTag>();
   isModalOpen = false;
   isSaving = false;
   editingExpense: IndividualExpense | null = null;
@@ -32,6 +35,7 @@ export class IndividualExpensesPage implements OnInit {
 
   constructor(
     private db: DatabaseService,
+    private categoryService: CategoryService,
     private alertCtrl: AlertController,
     private translate: TranslateService,
     private hasChangesService: HasChangesService,
@@ -46,6 +50,9 @@ export class IndividualExpensesPage implements OnInit {
   }
 
   async loadData() {
+    this.categories = await this.categoryService.getCategories();
+    this.categoryMap = await this.categoryService.getCategoryMap();
+
     const selectedDate = new Date(this.selectedMonthIso);
     const targetMonth = selectedDate.getMonth();
     const targetYear = selectedDate.getFullYear();
@@ -100,6 +107,7 @@ export class IndividualExpensesPage implements OnInit {
       concept: '',
       price: 0,
       category: 'variable',
+      categoryId: undefined,
       date: new Date().toISOString(),
       notes: ''
     };
@@ -161,6 +169,7 @@ export class IndividualExpensesPage implements OnInit {
         concept: toLower(this.currentExpense.concept),
         price: this.currentExpense.price,
         category: this.currentExpense.category,
+        categoryId: this.currentExpense.categoryId || undefined,
         date: this.currentExpense.date,
         notes: this.currentExpense.notes ? toLower(this.currentExpense.notes) : '',
         creationDate: this.editingExpense?.creationDate || now,
@@ -175,6 +184,10 @@ export class IndividualExpensesPage implements OnInit {
       this.isSaving = false;
       console.error(err);
     }
+  }
+
+  getCategoryTag(categoryId?: string): ExpenseCategoryTag | undefined {
+    return categoryId ? this.categoryMap.get(categoryId) : undefined;
   }
 
   async deleteExpense(expense: IndividualExpense) {
