@@ -33,7 +33,7 @@ describe('ShareService', () => {
 
   it('should get data only from SHARE_TABLES', async () => {
     const expense: ExpenseRecord = {
-      id: 1,
+      id: '1',
       type: 'housing',
       amount: 150,
       date: '2026-08-01',
@@ -56,7 +56,7 @@ describe('ShareService', () => {
       data: {
         expenses: [
           {
-            id: 101,
+            id: '101',
             type: 'telecom',
             amount: 50,
             date: '2026-08-10',
@@ -72,7 +72,7 @@ describe('ShareService', () => {
     expect(summary.totalUpdated).toBe(0);
     expect(summary.totalSkipped).toBe(0);
 
-    const saved = await db.expenses.get(101);
+    const saved = await db.expenses.get('101');
     expect(saved).toBeDefined();
     expect(saved?.amount).toBe(50);
   });
@@ -80,7 +80,7 @@ describe('ShareService', () => {
   it('should update record when received record has newer lastModDate', async () => {
     // Local record
     await db.expenses.put({
-      id: 201,
+      id: '201',
       type: 'water',
       amount: 40,
       date: '2026-08-01',
@@ -95,7 +95,7 @@ describe('ShareService', () => {
       data: {
         expenses: [
           {
-            id: 201,
+            id: '201',
             type: 'water',
             amount: 45, // updated amount
             date: '2026-08-01',
@@ -111,14 +111,14 @@ describe('ShareService', () => {
     expect(summary.totalUpdated).toBe(1);
     expect(summary.totalSkipped).toBe(0);
 
-    const saved = await db.expenses.get(201);
+    const saved = await db.expenses.get('201');
     expect(saved?.amount).toBe(45);
   });
 
   it('should NOT modify record when local record is newer or equal', async () => {
     // Local newer record
     await db.expenses.put({
-      id: 301,
+      id: '301',
       type: 'electricity',
       amount: 100,
       date: '2026-08-10',
@@ -133,7 +133,7 @@ describe('ShareService', () => {
       data: {
         expenses: [
           {
-            id: 301,
+            id: '301',
             type: 'electricity',
             amount: 80,
             date: '2026-08-10',
@@ -149,7 +149,7 @@ describe('ShareService', () => {
     expect(summary.totalUpdated).toBe(0);
     expect(summary.totalSkipped).toBe(1);
 
-    const saved = await db.expenses.get(301);
+    const saved = await db.expenses.get('301');
     expect(saved?.amount).toBe(100); // untouched
   });
 
