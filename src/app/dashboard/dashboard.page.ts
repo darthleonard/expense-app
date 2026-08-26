@@ -261,8 +261,10 @@ export class DashboardPage implements OnInit {
     const individual = await this.db.individualExpenses.toArray();
     const purchases = await this.db.purchases.toArray();
     const purchaseItems = await this.db.purchaseItems.toArray();
+    const products = await this.db.products.toArray();
 
     const purchaseMap = new Map(purchases.map(p => [p.id, p]));
+    const productMap = new Map(products.map(pr => [pr.id, pr]));
 
     // 1. Gather all actual spending records
     const allSpending: SpendingItem[] = [];
@@ -284,11 +286,13 @@ export class DashboardPage implements OnInit {
     for (const item of boughtItems) {
       const p = purchaseMap.get(item.purchaseId);
       const date = p?.purchaseDate || p?.creationDate || item.addedDate || new Date().toISOString();
+      const product = item.productId ? productMap.get(item.productId) : undefined;
+      const categoryId = item.categoryId || product?.categoryId;
       allSpending.push({
         id: item.id,
         amount: item.totalPrice,
         date,
-        categoryId: item.categoryId
+        categoryId
       });
     }
 
