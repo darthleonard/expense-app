@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonModal } from '@ionic/angular';
-import { DatabaseService, IndividualExpense, ExpenseCategoryTag, toLower, generateGuid } from '../core/services/database.service';
+import { DatabaseService, IndividualExpense, ExpenseCategoryTag, ProductCatalog, toLower, generateGuid } from '../core/services/database.service';
 import { CategoryService } from '../core/services/category.service';
+import { ShoppingService } from '../core/services/shopping.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HasChangesService } from '../core/services/has-changes.service';
 import { SettingsService } from '../core/services/settings.service';
@@ -31,11 +32,19 @@ export class IndividualExpensesPage implements OnInit {
   totalFixed = 0;
   totalVariable = 0;
 
+  // Product selector state
+  allProducts: ProductCatalog[] = [];
+  filteredProducts: ProductCatalog[] = [];
+  selectedProduct: ProductCatalog | null = null;
+  productSearchQuery = '';
+  showProductList = false;
+
   @ViewChild(IonModal) modal!: IonModal;
 
   constructor(
     private db: DatabaseService,
     private categoryService: CategoryService,
+    private shopping: ShoppingService,
     private alertCtrl: AlertController,
     private translate: TranslateService,
     private hasChangesService: HasChangesService,
@@ -52,6 +61,7 @@ export class IndividualExpensesPage implements OnInit {
   async loadData() {
     this.categories = await this.categoryService.getCategories();
     this.categoryMap = await this.categoryService.getCategoryMap();
+    this.allProducts = await this.shopping.getActiveProducts();
 
     const selectedDate = new Date(this.selectedMonthIso);
     const targetMonth = selectedDate.getMonth();
@@ -108,6 +118,7 @@ export class IndividualExpensesPage implements OnInit {
       price: 0,
       category: 'variable',
       categoryId: undefined,
+      productId: undefined,
       date: new Date().toISOString(),
       notes: ''
     };
@@ -115,14 +126,85 @@ export class IndividualExpensesPage implements OnInit {
 
   openModal(expense?: IndividualExpense) {
     this.isSaving = false;
+    this.productSearchQuery = '';
+    this.showProductList = false;
+
     if (expense) {
       this.editingExpense = expense;
       this.currentExpense = { ...expense };
+
+      // Restore the previously linked product if it still exists in the catalog
+      if (expense.productId) {
+        this.selectedProduct = this.allProducts.find(p => p.id === expense.productId) ?? null;
+      } else {
+        this.selectedProduct = null;
+      }
     } else {
       this.editingExpense = null;
       this.currentExpense = this.getDefaultExpense();
+      this.selectedProduct = null;
     }
+
+    this.filteredProducts = [...this.allProducts];
     this.isModalOpen = true;
+  }
+
+  onProductSearch() {
+    const q = this.productSearchQuery.trim().toLowerCase();
+    this.filteredProducts = q
+      ? this.allProducts.filter(p => p.name.toLowerCase().includes(q))
+      : [...this.allProducts];
+    this.showProductList = true;
+  }
+
+  onProductSearchFocus() {
+    this.showProductList = true;
+    if (!this.productSearchQuery.trim()) {
+      this.filteredProducts = [...this.allProducts];
+    }
+  }
+
+  async onProductSelected(product: ProductCatalog) {
+    const previousProductName = this.selectedProduct?.name ?? null;
+    this.selectedProduct = product;
+    this.currentExpense.productId = product.id;
+    this.productSearchQuery = '';
+    this.showProductList = false;
+
+    // Prefill concept only when empty or still equal to the previous product's name
+    const currentConcept = this.currentExpense.concept.trim();
+    if (!currentConcept || (previousProductName && currentConcept === previousProductName)) {
+      this.currentExpense.concept = product.name;
+    }
+
+    // Preselect expense category from the product (user can still change it)
+    if (product.categoryId) {
+      this.currentExpense.categoryId = product.categoryId;
+    }
+
+    // Prefill price from the latest price history entry if one exists
+    if (product.id) {
+      try {
+        const history = await this.shopping.getPriceEvolution(product.id);
+        if (history && history.length > 0) {
+          const latest = history[history.length - 1];
+          if (latest.price > 0) {
+            this.currentExpense.price = latest.price;
+          }
+        }
+      } catch {
+        // Price history unavailable — leave price as-is for the user to enter
+      }
+    }
+  }
+
+  clearProduct() {
+    // Clear only the product reference; preserve all other expense data
+    this.selectedProduct = null;
+    this.currentExpense.productId = undefined;
+    this.productSearchQuery = '';
+    this.showProductList = false;
+    this.filteredProducts = [...this.allProducts];
   }
 
   canDismiss = async (data?: any, role?: string) => {
@@ -170,6 +252,7 @@ export class IndividualExpensesPage implements OnInit {
         price: this.currentExpense.price,
         category: this.currentExpense.category,
         categoryId: this.currentExpense.categoryId || undefined,
+        productId: this.currentExpense.productId || undefined,
         date: this.currentExpense.date,
         notes: this.currentExpense.notes ? toLower(this.currentExpense.notes) : '',
         creationDate: this.editingExpense?.creationDate || now,

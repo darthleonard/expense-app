@@ -124,6 +124,7 @@ export interface IndividualExpense {
   price: number;
   category: ExpenseCategory;
   categoryId?: string;
+  productId?: string; // optional soft reference to ProductCatalog; historical expense data is independent
   date: string;
   notes?: string;
   creationDate?: string;

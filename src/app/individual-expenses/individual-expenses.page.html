@@ -130,6 +130,56 @@
 
       <ion-content class="ion-padding modal-content">
         <form (ngSubmit)="saveExpense()" class="modal-form">
+
+          <!-- ── Product selector ─────────────────────────────────────── -->
+          <ion-item class="form-item" lines="none">
+            <ion-label position="stacked">{{ 'PRODUCT' | translate }} ({{ 'OPTIONAL' | translate }})</ion-label>
+
+            <!-- Selected product chip -->
+            <div *ngIf="selectedProduct" class="product-chip-row">
+              <ion-chip class="selected-product-chip">
+                <ion-icon name="pricetag-outline"></ion-icon>
+                <ion-label>{{ selectedProduct.name | titlecase }}</ion-label>
+                <ion-icon name="close-circle" (click)="clearProduct()" style="cursor:pointer;" [attr.aria-label]="'CLEAR_PRODUCT' | translate"></ion-icon>
+              </ion-chip>
+            </div>
+
+            <!-- Search input (shown when no product selected) -->
+            <div *ngIf="!selectedProduct" class="product-search-wrapper">
+              <ion-searchbar
+                [(ngModel)]="productSearchQuery"
+                name="productSearch"
+                (ionInput)="onProductSearch()"
+                (ionFocus)="onProductSearchFocus()"
+                [placeholder]="'SEARCH_CATALOG' | translate"
+                class="product-searchbar"
+                debounce="150">
+              </ion-searchbar>
+
+              <!-- Filtered product list -->
+              <div *ngIf="showProductList" class="product-dropdown">
+                <div *ngIf="filteredProducts.length === 0" class="product-no-match">
+                  {{ 'NO_PRODUCTS_MATCH' | translate }}
+                </div>
+                <ion-list lines="none" class="product-picker-list">
+                  <ion-item
+                    *ngFor="let p of filteredProducts"
+                    button
+                    detail="false"
+                    (click)="onProductSelected(p)"
+                    class="product-picker-item">
+                    <ion-icon name="pricetag-outline" slot="start" class="picker-icon"></ion-icon>
+                    <ion-label>
+                      <span class="picker-name">{{ p.name | titlecase }}</span>
+                      <span *ngIf="getCategoryTag(p.categoryId) as tag" class="picker-cat-badge" [style.background-color]="tag.color">{{ tag.name | titlecase }}</span>
+                    </ion-label>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </div>
+          </ion-item>
+          <!-- ── /Product selector ────────────────────────────────────── -->
+
           <ion-item class="form-item">
             <ion-label position="stacked">{{ 'CONCEPT' | translate }}</ion-label>
             <ion-input [(ngModel)]="currentExpense.concept" name="concept" required></ion-input>

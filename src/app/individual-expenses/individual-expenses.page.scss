@@ -311,3 +311,94 @@
   }
 }
 
+/* ── Product Selector ─────────────────────────────────────────────────────── */
+
+.product-chip-row {
+  width: 100%;
+  padding: 8px 0 4px;
+
+  .selected-product-chip {
+    --background: rgba(112, 68, 255, 0.1);
+    --color: var(--total-color, #7044ff);
+    border: 1px solid rgba(112, 68, 255, 0.25);
+    font-weight: 600;
+    font-size: 14px;
+
+    ion-icon:last-child {
+      color: var(--ion-color-medium, #8e8e93);
+      font-size: 18px;
+      margin-left: 4px;
+    }
+  }
+}
+
+.product-search-wrapper {
+  width: 100%;
+  position: relative;
+
+  .product-searchbar {
+    padding: 6px 0 0;
+    --border-radius: 8px;
+    --box-shadow: none;
+    --background: rgba(0, 0, 0, 0.04);
+    font-size: 14px;
+  }
+}
+
+.product-dropdown {
+  background: var(--ion-item-background, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+
+  .product-no-match {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--ion-color-medium, #8e8e93);
+    text-align: center;
+  }
+
+  .product-picker-list {
+    background: transparent;
+    padding: 4px 0;
+  }
+
+  .product-picker-item {
+    --background: transparent;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --min-height: 44px;
+
+    &:hover, &:active {
+      --background: rgba(112, 68, 255, 0.06);
+    }
+
+    .picker-icon {
+      color: var(--ion-color-medium, #8e8e93);
+      font-size: 16px;
+      margin-right: 10px;
+    }
+
+    .picker-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ion-text-color, #1e1e24);
+      margin-right: 6px;
+    }
+
+    .picker-cat-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      color: #ffffff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      vertical-align: middle;
+    }
+  }
+}
+
+
